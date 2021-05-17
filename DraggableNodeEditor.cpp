@@ -9,43 +9,48 @@
 */
 
 #include <JuceHeader.h>
-#include "DraggableNode.h"
+#include "DraggableNodeEditor.h"
 
 //==============================================================================
-DraggableNode::DraggableNode()
+DraggableNodeEditor::DraggableNodeEditor(juce::Rectangle<int> bounds)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
+    
+    containerBounds = new juce::ComponentBoundsConstrainer();
+    containerBounds->setMinimumOnscreenAmounts(15, 15, 15, 15);
+    //containerBounds->setSizeLimits(10, 10, 50, 50);
 
 }
 
-DraggableNode::~DraggableNode()
+DraggableNodeEditor::~DraggableNodeEditor()
 {
 }
 
-void DraggableNode::paint (juce::Graphics& g)
+void DraggableNodeEditor::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
+    // g.fillAll (juce::Colours::blue);   // clear the background
 
-       You should replace everything in this method with your own
-       drawing code..
-    */
+    g.setColour (juce::Colours::red);
+    g.fillEllipse(0, 0, 10, 10);
+    g.drawEllipse(0, 0, 10, 10, 1);
 
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
-    g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
-    g.setColour (juce::Colours::white);
-    g.setFont (14.0f);
-    g.drawText ("DraggableNode", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
 }
 
-void DraggableNode::resized()
+void DraggableNodeEditor::resized()
 {
     // This method is where you should set the bounds of any child
     // components that your component contains..
 
+}
+
+ 
+void DraggableNodeEditor::mouseDown (const juce::MouseEvent& e)
+{
+    myDragger.startDraggingComponent (this, e);
+}
+
+void DraggableNodeEditor::mouseDrag (const juce::MouseEvent& e)
+{
+    myDragger.dragComponent (this, e, containerBounds);
 }

@@ -15,15 +15,21 @@
 //==============================================================================
 /*
 */
-class DraggableNode  : public juce::Component
+class DraggableNodeEditor  : public juce::Component
 {
 public:
-    DraggableNode();
-    ~DraggableNode() override;
+    DraggableNodeEditor(juce::Rectangle<int> bounds);
+    ~DraggableNodeEditor() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
+    void mouseDown (const juce::MouseEvent& e) override;
+    void mouseDrag (const juce::MouseEvent& e) override;
 
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DraggableNode)
+    
+    juce::ComponentDragger myDragger;
+    juce::ComponentBoundsConstrainer* containerBounds;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DraggableNodeEditor)
 };
