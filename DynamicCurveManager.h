@@ -9,3 +9,21 @@
 */
 
 #pragma once
+#include <JuceHeader.h>
+
+
+class DynamicCurveManager
+{
+private:
+    int numberOfNodes;
+    
+public:
+    DynamicCurveManager();
+    ~DynamicCurveManager();
+    
+    //==============================================================================
+    juce::Component* createEditor();
+    
+    int getNumberOfNodes();
+    
+};

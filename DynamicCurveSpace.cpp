@@ -10,15 +10,23 @@
 
 #include <JuceHeader.h>
 #include "DynamicCurveSpace.h"
-
 //==============================================================================
-DynamicCurveSpace::DynamicCurveSpace() : draggableNodeEditor(getLocalBounds())
+DynamicCurveSpace::DynamicCurveSpace(DynamicCurveManager& dynCurM) : dynamicCurveManager(dynCurM), draggableNodeEditor(getLocalBounds())
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
     
-    addAndMakeVisible(&draggableNodeEditor);
 
+    
+    for(int i = 0; i < dynamicCurveManager.getNumberOfNodes();i++)
+    {
+        DraggableNodeEditor* node = new DraggableNodeEditor(getLocalBounds());
+        draggableNodes.emplace_back(node);
+        addAndMakeVisible(*draggableNodes[i]);
+        
+    }
+    //addAndMakeVisible(&draggableNodeEditor);
+    
 }
 
 DynamicCurveSpace::~DynamicCurveSpace()
@@ -38,6 +46,9 @@ void DynamicCurveSpace::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::grey);
     g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    
+    
+    
 
 }
 
@@ -45,8 +56,12 @@ void DynamicCurveSpace::resized()
 {
     // This method is where you should set the bounds of any child
     // components that your component contains..
+
+    //draggableNodeEditor.setBounds(0,0,10,10);
     
-    
-    draggableNodeEditor.setBounds(0,0,10,10);
+    for(int i = 0; i < dynamicCurveManager.getNumberOfNodes();i++)
+    {
+        draggableNodes[i]->setBounds(i * 10, 0, 10, 10);
+    }
 
 }

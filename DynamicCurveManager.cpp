@@ -8,4 +8,22 @@
   ==============================================================================
 */
 
+#include "DynamicCurveManager.h"
 #include "DynamicCurveSpace.h"
+
+DynamicCurveManager::DynamicCurveManager(){
+    numberOfNodes = 8;
+}
+DynamicCurveManager::~DynamicCurveManager(){
+ 
+}
+
+
+juce::Component* DynamicCurveManager::createEditor()
+{
+    return new DynamicCurveSpace(*this);
+}
+
+int DynamicCurveManager::getNumberOfNodes(){
+    return numberOfNodes;
+}

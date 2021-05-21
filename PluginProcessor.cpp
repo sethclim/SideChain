@@ -19,7 +19,7 @@ SideChainAudioProcessor::SideChainAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), dynamicCurveManager()
 #endif
 {
 }
