@@ -9,3 +9,26 @@
 */
 
 #include "DraggableNode.h"
+
+
+
+DraggableNode::DraggableNode(float x, float y){
+    posX = x;
+    posY = y;
+}
+
+DraggableNode::~DraggableNode(){
+  
+}
+
+
+float DraggableNode::getX(){
+    return posX;
+}
+
+
+
+float DraggableNode::getY(){
+    return posY;
+}
+

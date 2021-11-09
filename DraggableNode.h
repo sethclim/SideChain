@@ -9,3 +9,21 @@
 */
 
 #pragma once
+#include <JuceHeader.h>
+
+class DraggableNode : public juce::ReferenceCountedObject
+{
+private:
+    float posX;
+    float posY;
+    
+public:
+    DraggableNode(float x, float y);
+    ~DraggableNode();
+    
+    float getX();
+    float getY();
+    
+    //==============================================================================
+    juce::Component* createEditor();
+};
