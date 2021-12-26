@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    DynamicCurveSpace.h
+    DynamicCurveEditor.h
     Created: 16 May 2021 11:37:51pm
     Author:  Seth Climenhaga
 
@@ -12,24 +12,26 @@
 
 #include <JuceHeader.h>
 #include "DraggableNodeEditor.h"
-#include "DynamicCurveManager.h"
+#include "DynamicCurve.h"
 #include "DraggableNodeIdentifiers.h"
+
+#include "LineEditor.hpp"
 
 //==============================================================================
 /*
 */
-class DynamicCurveSpace  : public juce::Component ,public juce::ValueTree::Listener
+class DynamicCurveEditor  : public juce::Component ,public juce::ValueTree::Listener
 {
 public:
-    DynamicCurveSpace(DynamicCurveManager&, juce::ValueTree);
-    ~DynamicCurveSpace() override;
+    DynamicCurveEditor(DynamicCurve&, juce::ValueTree);
+    ~DynamicCurveEditor() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
     void mouseDown (const juce::MouseEvent& event) override;
     void addNewNodeCallbackHandler(int childIndex);
     
-    //=================================
+    //=============================================================================================
     
     // All the listeners for the ValueTree class. Most of these aren't being used at the moment.
     
@@ -49,14 +51,18 @@ public:
     
     void valueTreeParentChanged (juce::ValueTree& treeWhoseParentHasChanged) override;
     
-    //=================================
+    //=============================================================================================
 
 private:
-    DynamicCurveManager dynamicCurveManager;
+    DynamicCurve dynamicCurve;
     //DraggableNodeEditor draggableNodeEditor;
     juce::ValueTree nodeTree;
     
+    std::vector<std::unique_ptr<LineEditor>> lines;
+    
     std::vector<std::unique_ptr<DraggableNodeEditor>> draggableNodes;
     
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DynamicCurveSpace)
+    juce::Point<float> getPointFromNode(juce::ValueTree);
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DynamicCurveEditor)
 };

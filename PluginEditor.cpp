@@ -11,7 +11,7 @@
 
 //==============================================================================
 SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), dynamicCurveSpace(p.dynamicCurveManager, p.dynamicCurveManager.draggableNodes)
+    : AudioProcessorEditor (&p), audioProcessor (p), DynamicCurveEditor(p.DynamicCurve, p.DynamicCurve.draggableNodes)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -21,7 +21,7 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProc
     setResizeLimits(400, 360, 1000, 600);
     setSize (400, 300);
     
-    addAndMakeVisible(&dynamicCurveSpace);
+    addAndMakeVisible(&DynamicCurveEditor);
 }
 
 SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor()
@@ -53,7 +53,7 @@ void SideChainAudioProcessorEditor::resized()
     grid.templateColumns = { Track (Fr (2)), Track (Fr (4)), Track (Fr (1)) };
 
     grid.items.addArray({
-        juce::GridItem (dynamicCurveSpace).withArea(1, 1, 3, 3),
+        juce::GridItem (DynamicCurveEditor).withArea(1, 1, 3, 3),
         });
     
 

@@ -10,7 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "DynamicCurveSpace.h"
+#include "DynamicCurveEditor.h"
 
 //==============================================================================
 /**
@@ -31,7 +31,7 @@ private:
     SideChainAudioProcessor& audioProcessor;
     
 public:
-    DynamicCurveSpace dynamicCurveSpace;
+    DynamicCurveEditor DynamicCurveEditor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideChainAudioProcessorEditor)
 };

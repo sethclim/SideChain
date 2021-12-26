@@ -11,6 +11,8 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "DraggableNode.h"
+#include "DraggableNodeIdentifiers.h"
 
 //==============================================================================
 /*
@@ -18,7 +20,7 @@
 class DraggableNodeEditor  : public juce::Component
 {
 public:
-    DraggableNodeEditor(juce::Rectangle<int> bounds);
+    DraggableNodeEditor(juce::Rectangle<int> bounds, juce::ValueTree nodes, int id);
     ~DraggableNodeEditor() override;
 
     void paint (juce::Graphics&) override;
@@ -30,6 +32,9 @@ private:
     
     juce::ComponentDragger myDragger;
     juce::ComponentBoundsConstrainer* containerBounds;
+    
+    int id;
+    juce::ValueTree nodeTree;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DraggableNodeEditor)
 };

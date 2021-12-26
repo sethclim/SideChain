@@ -1,42 +1,44 @@
 /*
   ==============================================================================
 
-    DynamicCurveSpace.cpp
+    DynamicCurveEditor.cpp
     Created: 16 May 2021 11:37:16pm
     Author:  Seth Climenhaga
 
   ==============================================================================
 */
 
-#include "DynamicCurveManager.h"
-#include "DynamicCurveSpace.h"
+#include "DynamicCurve.h"
+#include "DynamicCurveEditor.h"
 
-DynamicCurveManager::DynamicCurveManager(){
-    numberOfNodes = 8;
+DynamicCurve::DynamicCurve(){
+    numberOfNodes = 0;
     
     juce::ValueTree myNodes (DraggableNodeIdentifiers::myRootDraggableTreeType);
     draggableNodes = myNodes;
     
+    addNewNode(10,10);
+    addNewNode(100,100);
+    
 }
-DynamicCurveManager::~DynamicCurveManager(){
+DynamicCurve::~DynamicCurve(){
  
 }
 
-juce::Component* DynamicCurveManager::createEditor()
+juce::Component* DynamicCurve::createEditor()
 {
-    return new DynamicCurveSpace(*this, draggableNodes);
+    return new DynamicCurveEditor(*this, draggableNodes);
 }
 
-int DynamicCurveManager::getNumberOfNodes(){
+int DynamicCurve::getNumberOfNodes(){
     return numberOfNodes;
 }
-void DynamicCurveManager::addNewNode(float x, float y){
+void DynamicCurve::addNewNode(float x, float y){
     
     
     DraggableNode* dNode = new DraggableNode(x,y);
 
     //nodes.emplace_back(dNode);
-    numberOfNodes++;
     
     if (draggableNodes.isValid())
     {
@@ -45,8 +47,11 @@ void DynamicCurveManager::addNewNode(float x, float y){
         
         myNode.setProperty(DraggableNodeIdentifiers::posX, dNode->getX(), nullptr);
         myNode.setProperty(DraggableNodeIdentifiers::posY, dNode->getY(), nullptr);
+        myNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
         
         draggableNodes.addChild(myNode, -1, nullptr);
         
     }
+    
+    numberOfNodes++;
 }

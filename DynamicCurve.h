@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    DynamicCurveSpace.h
+    DynamicCurveEditor.h
     Created: 16 May 2021 11:37:16pm
     Author:  Seth Climenhaga
 
@@ -13,7 +13,7 @@
 #include "DraggableNode.h"
 #include "DraggableNodeIdentifiers.h"
 
-class DynamicCurveManager //: public juce::ActionBroadcaster
+class DynamicCurve //: public juce::ActionBroadcaster
 {
 private:
     int numberOfNodes;
@@ -21,8 +21,8 @@ private:
      std::vector<DraggableNode> nodes;
     
 public:
-    DynamicCurveManager();
-    ~DynamicCurveManager();
+    DynamicCurve();
+    ~DynamicCurve();
     //==============================================================================
 //    void addActionListener (juce::ActionListener *listener);
 //    void removeActionListener (juce::ActionListener *listener)

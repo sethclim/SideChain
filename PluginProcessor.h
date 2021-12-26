@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "DynamicCurveManager.h"
+#include "DynamicCurve.h"
 
 //==============================================================================
 /**
@@ -59,7 +59,7 @@ private:
     
     
 public:
-    DynamicCurveManager dynamicCurveManager;
+    DynamicCurve DynamicCurve;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideChainAudioProcessor)
 };

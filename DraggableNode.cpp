@@ -32,3 +32,15 @@ float DraggableNode::getY(){
     return posY;
 }
 
+
+void DraggableNode::setX(float x){
+    this->posX = x;
+}
+
+
+
+void DraggableNode::setY(float y){
+    this->posY = y;
+}
+
+

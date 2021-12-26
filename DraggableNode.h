@@ -24,6 +24,9 @@ public:
     float getX();
     float getY();
     
+    void setX(float x);
+    void setY(float y);
+    
     //==============================================================================
     juce::Component* createEditor();
 };
