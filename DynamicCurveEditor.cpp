@@ -127,8 +127,7 @@ void DynamicCurveEditor::mouseDown (const juce::MouseEvent& event)
     {
         float x = event.getMouseDownX();
         float y = event.getMouseDownY();
-        
-        //add between nodes here
+    
         dynamicCurve.addNewNode(x,y);
     }
         

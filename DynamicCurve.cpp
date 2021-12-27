@@ -35,7 +35,6 @@ int DynamicCurve::getNumberOfNodes(){
 }
 void DynamicCurve::addNewNode(float x, float y){
     
-    
     DraggableNode* dNode = new DraggableNode(x,y);
 
     //nodes.emplace_back(dNode);
@@ -49,9 +48,33 @@ void DynamicCurve::addNewNode(float x, float y){
         myNode.setProperty(DraggableNodeIdentifiers::posY, dNode->getY(), nullptr);
         myNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
         
-        draggableNodes.addChild(myNode, -1, nullptr);
+        //DBG(draggableNodes.toXmlString());
         
+        // get the right index to land the node between two other nodes
+        
+        bool slotFound = false;
+        
+        // X ----- here ----- X //
+        for(const auto& child : draggableNodes)
+        {
+            auto child_X = child.getProperty(DraggableNodeIdentifiers::posX);
+            auto childNext_X = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
+            
+            if((float)child_X < x && x < (float)childNext_X)
+            {
+               auto childIdx =  draggableNodes.indexOf(child);
+                
+                draggableNodes.addChild(myNode, childIdx + 1, nullptr);
+                numberOfNodes++;
+                slotFound = true;
+                break;
+            }
+        }
+        
+        if(!slotFound)
+        {
+            draggableNodes.addChild(myNode, -1, nullptr);
+            numberOfNodes++;
+        }
     }
-    
-    numberOfNodes++;
 }
