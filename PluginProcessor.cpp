@@ -9,6 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+
 //==============================================================================
 SideChainAudioProcessor::SideChainAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -19,7 +20,7 @@ SideChainAudioProcessor::SideChainAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), DynamicCurve()
+                       ), dynamicCurve()
 #endif
 {
 }
@@ -127,6 +128,19 @@ bool SideChainAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 }
 #endif
 
+
+
+
+// start, end, slope, y intercept
+//std::vector<DataPoint> points {
+//    DataPoint(0.0,0.2,2.0,0.0),
+//    DataPoint(0.2,0.4,-2.0,0.8),
+//    DataPoint(0.4,0.6,2.0,-0.8),
+//    DataPoint(0.6,0.8,-2.0,1.6),
+//    DataPoint(0.8,1.0,2.0,-1.6),
+//};
+
+
 void SideChainAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -141,6 +155,15 @@ void SideChainAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+    
+    playHead = this->getPlayHead();
+    
+
+    if(playHead != nullptr)
+    {
+        playHead->getCurrentPosition(hostInfo);
+      
+    }
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -148,13 +171,15 @@ void SideChainAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
+    
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+        auto* channelData = buffer.getWritePointer(channel);
+        
+        dynamicCurve.ProcessAudio(channelData, buffer.getNumSamples(), hostInfo);
     }
 }
+
 
 //==============================================================================
 bool SideChainAudioProcessor::hasEditor() const

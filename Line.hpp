@@ -8,7 +8,6 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "Point.h"
 #include "LineEditor.hpp"
 
 

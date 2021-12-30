@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "DynamicCurve.h"
 
+
 //==============================================================================
 /**
 */
@@ -56,10 +57,11 @@ public:
 
 private:
     //==============================================================================
-    
+    juce::AudioPlayHead* playHead;
+    juce::AudioPlayHead::CurrentPositionInfo hostInfo;
     
 public:
-    DynamicCurve DynamicCurve;
+    DynamicCurve dynamicCurve;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideChainAudioProcessor)
 };

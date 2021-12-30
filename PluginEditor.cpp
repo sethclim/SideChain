@@ -11,7 +11,7 @@
 
 //==============================================================================
 SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), DynamicCurveEditor(p.DynamicCurve, p.DynamicCurve.draggableNodes)
+    : AudioProcessorEditor (&p), audioProcessor (p), DynamicCurveEditor(p.dynamicCurve, p.dynamicCurve.draggableNodes)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.

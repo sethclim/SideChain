@@ -20,4 +20,7 @@ namespace DraggableNodeIdentifiers
     static const juce::Identifier posY ("posY");
     static const juce::Identifier id ("id");
 
+    static const juce::Identifier width ("width");
+    static const juce::Identifier height ("height");
+
 }

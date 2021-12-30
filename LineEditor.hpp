@@ -8,7 +8,6 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "Point.h"
 #include "Line.hpp"
 
 class LineEditor  : public juce::Component{

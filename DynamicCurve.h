@@ -12,14 +12,11 @@
 #include <JuceHeader.h>
 #include "DraggableNode.h"
 #include "DraggableNodeIdentifiers.h"
+#include "DataPoint.h"
+
 
 class DynamicCurve //: public juce::ActionBroadcaster
 {
-private:
-    int numberOfNodes;
-    
-     std::vector<DraggableNode> nodes;
-    
 public:
     DynamicCurve();
     ~DynamicCurve();
@@ -36,9 +33,17 @@ public:
     int getNumberOfNodes();
     void setNumberOfNodes();
     void addNewNode(float x, float y);
-    
-    
-    
+    void calculateDataPointsFromTree(float width, float height);
+    std::vector<DataPoint> getSegments();
+    void ProcessAudio(float* channelData, int numSamples, juce::AudioPlayHead::CurrentPositionInfo& hostInfo);
     
     juce::ValueTree draggableNodes;
+    std::vector<DataPoint> segments;
+
+    
+private:
+    int numberOfNodes;
+    std::vector<DraggableNode> nodes;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DynamicCurve)
 };

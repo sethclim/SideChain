@@ -51,8 +51,35 @@ void DraggableNodeEditor::mouseDown (const juce::MouseEvent& e)
 
 void DraggableNodeEditor::mouseDrag (const juce::MouseEvent& e)
 {
-    myDragger.dragComponent (this, e, containerBounds);
     auto node = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, id);
+    
+    std::cout<< "Tree" << nodeTree.toXmlString() << std::endl;
+
+    
+    //move to callback?
+    
+    int minWidth = 0;
+    int maxWidth = 500;
+     
+    auto prevSib = node.getSibling(-1);
+    auto nextSib = node.getSibling(1);
+    
+    if(prevSib.isValid())
+    {
+        minWidth = (int)prevSib.getProperty(DraggableNodeIdentifiers::posX);
+    }
+    
+    if(nextSib.isValid())
+    {
+        maxWidth = (int)nextSib.getProperty(DraggableNodeIdentifiers::posX);
+    }
+    
+    std::cout<<"minW " << minWidth << " MaxW " << maxWidth << std::endl;
+
+    containerBounds->setSizeLimits(minWidth, 0, maxWidth, this->getHeight());
+    
+    myDragger.dragComponent (this, e, containerBounds);
+
     node.setProperty(DraggableNodeIdentifiers::posX, this->getX() , nullptr);
     node.setProperty(DraggableNodeIdentifiers::posY, this->getY() , nullptr);
 }

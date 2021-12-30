@@ -113,6 +113,7 @@ void DynamicCurveEditor::resized()
 //        }
         
         draggableNodes[idx]->setBounds(x ,y, 10, 10);
+        // set Bounds here so they know the new min max width
         
         idx++;
         jdx++;
@@ -183,8 +184,10 @@ void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged,
 //        DBG(lines[lineIDX]->getBounds().toString());
 //    }
    //addNewNodeCallbackHandler(nodeTree.indexOf(treeWhosePropertyHasChanged));
-    repaint();
     
+
+    repaint();
+    dynamicCurve.calculateDataPointsFromTree((float) this->getWidth(), (float) this->getHeight());
 }
 
 void DynamicCurveEditor::valueTreeChildAdded (juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded)

@@ -54,7 +54,7 @@ public:
     //=============================================================================================
 
 private:
-    DynamicCurve dynamicCurve;
+    DynamicCurve& dynamicCurve;
     //DraggableNodeEditor draggableNodeEditor;
     juce::ValueTree nodeTree;
     
