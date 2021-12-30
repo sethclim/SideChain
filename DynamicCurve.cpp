@@ -106,14 +106,14 @@ void DynamicCurve::calculateDataPointsFromTree(float width, float height){
             float slope = std::abs(y2Pos - y1Pos) / std::abs(x2Pos - x1Pos);
             
             
-            std::cout << "(x1,y1) (" << x1Pos <<","<< y1Pos << ")" << "(x2,y2) (" << x2Pos <<","<< y2Pos << ")" << std::endl;
+            //std::cout << "(x1,y1) (" << x1Pos <<","<< y1Pos << ")" << "(x2,y2) (" << x2Pos <<","<< y2Pos << ")" << std::endl;
             
-            std::cout << "slope " << slope << std::endl;
+            //std::cout << "slope " << slope << std::endl;
             
             float yIntercept =  y2Pos - (slope * x2Pos);
             
             
-            std::cout << "yIntercept " << yIntercept << " = " << y2Pos << "- (" << slope <<" * " << x2Pos << ")" << std::endl;
+            //std::cout << "yIntercept " << yIntercept << " = " << y2Pos << "- (" << slope <<" * " << x2Pos << ")" << std::endl;
             
             // start %, end %, slope, y-intercept
             auto segment = DataPoint(x1Pos, x2Pos, slope, yIntercept);
@@ -122,7 +122,7 @@ void DynamicCurve::calculateDataPointsFromTree(float width, float height){
         }
         else
         {
-            DBG("Bad Child");
+            //DBG("Bad Child");
         }
     }
 }

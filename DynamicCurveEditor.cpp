@@ -26,12 +26,12 @@ DynamicCurveEditor::DynamicCurveEditor(DynamicCurve& dynCurM, juce::ValueTree no
     
     int i = 0;
     
-    DBG(nodeTree.getNumChildren());
+    //DBG(nodeTree.getNumChildren());
     
     for(const auto& child : nodeTree)
     {
         if(i < nodeTree.getNumChildren() - 1){
-            DBG("creating Line");
+            //DBG("creating Line");
             LineEditor* line = new LineEditor();
             
             lines.emplace_back(line);
@@ -40,6 +40,7 @@ DynamicCurveEditor::DynamicCurveEditor(DynamicCurve& dynCurM, juce::ValueTree no
    
         
         DraggableNodeEditor* node = new DraggableNodeEditor(getLocalBounds(), nodeTree, child.getProperty(DraggableNodeIdentifiers::id));
+        node->setParentBounds(this->getBounds());
         draggableNodes.emplace_back(node);
         addAndMakeVisible(*draggableNodes[i]);
         
@@ -97,7 +98,6 @@ void DynamicCurveEditor::resized()
     
     int idx = 0;
     int jdx = 0;
-    int numNodes = nodeTree.getNumChildren();   
     
     for(const auto& child : nodeTree)
     {
@@ -113,6 +113,8 @@ void DynamicCurveEditor::resized()
 //        }
         
         draggableNodes[idx]->setBounds(x ,y, 10, 10);
+        draggableNodes[idx]->setParentBounds(this->getBounds());
+        
         // set Bounds here so they know the new min max width
         
         idx++;
@@ -132,6 +134,14 @@ void DynamicCurveEditor::mouseDown (const juce::MouseEvent& event)
         dynamicCurve.addNewNode(x,y);
     }
         
+}
+
+void DynamicCurveEditor::mouseDrag (const juce::MouseEvent& event)
+{
+    
+//    std::cout<<"Mouse X" << event.x << " Mouse Y " << event.y << std::endl;
+    
+    
 }
 
 //void DynamicCurveEditor::addNewNodeCallbackHandler(int childIndex)
@@ -185,8 +195,38 @@ void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged,
 //    }
    //addNewNodeCallbackHandler(nodeTree.indexOf(treeWhosePropertyHasChanged));
     
-
+    auto id = nodeChanged.getProperty(DraggableNodeIdentifiers::id);
+    auto x = nodeChanged.getProperty(DraggableNodeIdentifiers::posX);
+    auto y = nodeChanged.getProperty(DraggableNodeIdentifiers::posY);
+    
+    int minWidth = 0;
+    int maxWidth = this->getWidth();
+    
+    int minHeight = 0;
+    int maxHeight = this->getHeight();
+    
+    auto prevSib = nodeChanged.getSibling(-1);
+    auto nextSib = nodeChanged.getSibling(1);
+    
+    if(prevSib.isValid()){
+        minWidth = prevSib.getProperty(DraggableNodeIdentifiers::posX);
+    }
+    
+    if(nextSib.isValid()){
+        maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
+    }
+    
+    std::cout<< "X " << (int)x <<" Y "<< (int)y << " MinWidth " << (int)minWidth << " MaxWidth " << (int)maxWidth << std::endl;
+    
+    if(minWidth <= (int) x && (int) x <= maxWidth  && minHeight <= (int) y && (int) y <= maxHeight )
+    {
+        std::cout<< "Passed the Check!" << std::endl;
+        draggableNodes[(int)id]->setBounds(x, y, 10, 10);
+       
+    }
+    
     repaint();
+
     dynamicCurve.calculateDataPointsFromTree((float) this->getWidth(), (float) this->getHeight());
 }
 
@@ -196,6 +236,7 @@ void DynamicCurveEditor::valueTreeChildAdded (juce::ValueTree& parentTree, juce:
     float posY = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posY);
     
     DraggableNodeEditor* node = new DraggableNodeEditor(getLocalBounds(), nodeTree,childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::id));
+    node->setParentBounds(this->getBounds());
     draggableNodes.emplace_back(node);
     addAndMakeVisible(node);
     node->setBounds(posX, posY, 10, 10);

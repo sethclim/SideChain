@@ -17,16 +17,11 @@ DraggableNodeEditor::DraggableNodeEditor(juce::Rectangle<int> bounds, juce::Valu
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
     
-    containerBounds = new juce::ComponentBoundsConstrainer();
-    containerBounds->setMinimumOnscreenAmounts(15, 15, 15, 15);
-    //containerBounds->setSizeLimits(10, 10, 50, 50);
-    
     this->id = id;
+    this->parentBounds = bounds;
 }
 
-DraggableNodeEditor::~DraggableNodeEditor()
-{
-}
+DraggableNodeEditor::~DraggableNodeEditor(){}
 
 void DraggableNodeEditor::paint (juce::Graphics& g)
 {
@@ -43,43 +38,52 @@ void DraggableNodeEditor::resized()
     // components that your component contains..
 }
 
- 
-void DraggableNodeEditor::mouseDown (const juce::MouseEvent& e)
-{
-    myDragger.startDraggingComponent (this, e);
-}
 
 void DraggableNodeEditor::mouseDrag (const juce::MouseEvent& e)
 {
+   
     auto node = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, id);
     
-    std::cout<< "Tree" << nodeTree.toXmlString() << std::endl;
-
-    
-    //move to callback?
+    //std::cout<< "id: " << id <<"Mouse X " << e.x << " Mouse Y " << e.y << std::endl;
+    //std::cout<<"getX " << this->getX() << " getY " << this->getY() << std::endl;
     
     int minWidth = 0;
-    int maxWidth = 500;
-     
+    int maxWidth = parentBounds.getWidth() - 10;
+    int minHeight = 0;
+    int maxHeight = parentBounds.getHeight() - 10;
+    
     auto prevSib = node.getSibling(-1);
     auto nextSib = node.getSibling(1);
     
-    if(prevSib.isValid())
-    {
-        minWidth = (int)prevSib.getProperty(DraggableNodeIdentifiers::posX);
+    if(prevSib.isValid()){
+        minWidth = prevSib.getProperty(DraggableNodeIdentifiers::posX);
     }
     
-    if(nextSib.isValid())
-    {
-        maxWidth = (int)nextSib.getProperty(DraggableNodeIdentifiers::posX);
+    if(nextSib.isValid()){
+        maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
     }
     
-    std::cout<<"minW " << minWidth << " MaxW " << maxWidth << std::endl;
-
-    containerBounds->setSizeLimits(minWidth, 0, maxWidth, this->getHeight());
+    //std::cout<<"W " << this->getWidth() << " H " << this->getHeight() << std::endl;
     
-    myDragger.dragComponent (this, e, containerBounds);
+    auto newX = this->getX();
+    auto newY =  this->getY();
+    
+    newX += e.x - 5;
+    newY += e.y - 5;
 
-    node.setProperty(DraggableNodeIdentifiers::posX, this->getX() , nullptr);
-    node.setProperty(DraggableNodeIdentifiers::posY, this->getY() , nullptr);
+    
+    if(minWidth <= newX && newX <= maxWidth)
+    {
+        node.setProperty(DraggableNodeIdentifiers::posX,newX, nullptr);
+    }
+    
+    if(minHeight <= newY && newY <= maxHeight)
+    {
+        node.setProperty(DraggableNodeIdentifiers::posY,newY, nullptr);
+    }
+}
+
+void DraggableNodeEditor::setParentBounds(juce::Rectangle<int> bounds)
+{
+    parentBounds = bounds;
 }

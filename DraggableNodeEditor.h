@@ -25,16 +25,18 @@ public:
 
     void paint (juce::Graphics&) override;
     void resized() override;
-    void mouseDown (const juce::MouseEvent& e) override;
+    //void mouseDown (const juce::MouseEvent& e) override;
     void mouseDrag (const juce::MouseEvent& e) override;
+    void setParentBounds(juce::Rectangle<int> bounds);
 
 private:
     
-    juce::ComponentDragger myDragger;
-    juce::ComponentBoundsConstrainer* containerBounds;
+    //juce::ComponentDragger myDragger;
+    //juce::ComponentBoundsConstrainer* containerBounds;
     
     int id;
     juce::ValueTree nodeTree;
+    juce::Rectangle<int> parentBounds;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DraggableNodeEditor)
 };
