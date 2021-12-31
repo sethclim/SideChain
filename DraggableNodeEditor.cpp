@@ -44,9 +44,6 @@ void DraggableNodeEditor::mouseDrag (const juce::MouseEvent& e)
    
     auto node = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, id);
     
-    //std::cout<< "id: " << id <<"Mouse X " << e.x << " Mouse Y " << e.y << std::endl;
-    //std::cout<<"getX " << this->getX() << " getY " << this->getY() << std::endl;
-    
     int minWidth = 0;
     int maxWidth = parentBounds.getWidth() - 10;
     int minHeight = 0;
@@ -77,14 +74,12 @@ void DraggableNodeEditor::mouseDrag (const juce::MouseEvent& e)
         
         
     }
-    //std::cout<<"W " << this->getWidth() << " H " << this->getHeight() << std::endl;
     
     auto newX = this->getX();
     auto newY =  this->getY();
     
     newX += e.x - 5;
     newY += e.y - 5;
-
     
     if(minWidth <= newX && newX <= maxWidth)
     {

@@ -50,8 +50,6 @@ void DynamicCurve::addNewNode(float x, float y){
         myNode.setProperty(DraggableNodeIdentifiers::posY, dNode->getY(), nullptr);
         myNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
         
-        //DBG(draggableNodes.toXmlString());
-        
         // get the right index to land the node between two other nodes
         
         bool slotFound = false;
@@ -131,44 +129,20 @@ std::vector<DataPoint> DynamicCurve::getSegments(){
     return segments;
 }
 
-int idx = 0;
-float currWhole = -1.0;
-
-
-void DynamicCurve::ProcessAudio(float* channelData, int numSamples, juce::AudioPlayHead::CurrentPositionInfo& hostInfo){
-    
-    float whole, frac_BeatPos = 0.0;
-    
-    auto currentPos = hostInfo.ppqPosition;
-    frac_BeatPos = std::modf(currentPos, &whole);
-    
-    
+void DynamicCurve::ProcessAudio(float* channelData, int numSamples, Transport& transport){
     float vol = 1.0;
-    
-    if(whole != currWhole){
-        idx = 0;
-        currWhole = whole;
-    }
-    
-    if(segments.size() > 0){
-       //std::cout <<"POS: " << frac_BeatPos << " start,end: (" << segments[idx].start << "," <<  segments[idx].end<< ")"<< "IDX: " << idx << " yintercept "<< segments[idx].yintercept << std::endl;
-        
-        if(frac_BeatPos >= segments[idx].start && frac_BeatPos < segments[idx].end)
-        {
-            vol = (frac_BeatPos * segments[idx].slope) + segments[idx].yintercept;
-            
-           // DBG(vol);
-        }
-//        else{
-//            if(idx <= segments.size())
-//                idx++;
-//        }
-        //std::cout <<"Vol: " << vol << " = " << frac_BeatPos << " * " <<  points[idx].slope<< " + " << points[idx].yintercept << std::endl;
-    }
-    
+   
     //Process applied per sample in buffer
     for (int sample = 0; sample < numSamples; ++sample)
     {
+        auto relativePosition = fmod(transport.ppqPositions[sample], 1.0);
+        int idx = 0;
+        
+        if(segments[idx].end < relativePosition)
+            idx++;
+        
+        vol = (relativePosition * segments[idx].slope) + segments[idx].yintercept;
+        
         channelData[sample] = channelData[sample] *  vol;
     }
 }

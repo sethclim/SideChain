@@ -96,6 +96,7 @@ void SideChainAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    transport.prepare(sampleRate, samplesPerBlock);
 }
 
 void SideChainAudioProcessor::releaseResources()
@@ -156,14 +157,16 @@ void SideChainAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     
-    playHead = this->getPlayHead();
+//    playHead = this->getPlayHead();
+//
+//
+//    if(playHead != nullptr)
+//    {
+//        playHead->getCurrentPosition(hostInfo);
+//
+//    }
     
-
-    if(playHead != nullptr)
-    {
-        playHead->getCurrentPosition(hostInfo);
-      
-    }
+    transport.process(getPlayHead(), buffer.getNumSamples());
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -176,7 +179,7 @@ void SideChainAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     {
         auto* channelData = buffer.getWritePointer(channel);
         
-        dynamicCurve.ProcessAudio(channelData, buffer.getNumSamples(), hostInfo);
+        dynamicCurve.ProcessAudio(channelData, buffer.getNumSamples(), transport);
     }
 }
 

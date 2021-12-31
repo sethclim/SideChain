@@ -16,22 +16,10 @@ DynamicCurveEditor::DynamicCurveEditor(DynamicCurve& dynCurM, juce::ValueTree no
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
     
-//    for(int i = 0; i < dynamicCurve.getNumberOfNodes() - 1;i++)
-//    {
-//        LineEditor* line = new LineEditor(juce::Point<float> (10.0f,10.0f), juce::Point<float> (50.0f,50.0f));
-//        lines.emplace_back(line);
-//        addAndMakeVisible(*lines[i]);
-//
-//    }
-    
     int i = 0;
-    
-    //DBG(nodeTree.getNumChildren());
-    
     for(const auto& child : nodeTree)
     {
         if(i < nodeTree.getNumChildren() - 1){
-            //DBG("creating Line");
             LineEditor* line = new LineEditor();
             
             lines.emplace_back(line);
@@ -76,8 +64,6 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
          
             g.setColour (juce::Colours::orange);
             g.drawLine (line, 4.0f);
-
-            //lines[idx]->setBounds(x, y, x2, y2);
         }
         
         idx++;
@@ -87,19 +73,11 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
 
 void DynamicCurveEditor::resized()
 {
-    
-//    for(int i = 0; i < dynamicCurve.getNumberOfNodes() - 1;i++)
-//    {
-//        lines[i]->setBounds(draggableNodes[i]->getX(), draggableNodes[i]->getY(), 50, 50);
-//    }
-    
-    
     auto zero = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, 0);
     auto one = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, 1);
     
     zero.setProperty(DraggableNodeIdentifiers::posY, this->getHeight() - 10, nullptr);
     
-    std::cout<<"GEt width " << this->getWidth() << std::endl;
     one.setProperty(DraggableNodeIdentifiers::posX, this->getWidth() - 10, nullptr);
     one.setProperty(DraggableNodeIdentifiers::posY, this->getHeight() - 10, nullptr);
     
@@ -111,19 +89,9 @@ void DynamicCurveEditor::resized()
         auto x = child.getProperty(DraggableNodeIdentifiers::posX);
         auto y = child.getProperty(DraggableNodeIdentifiers::posY);
         
-        
-//        if(jdx < numNodes - 1){
-//            auto x2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
-//            auto y2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
-//
-//            lines[idx]->setBounds(x, y, x2, y2);
-//        }
-        
         draggableNodes[idx]->setBounds(x ,y, 10, 10);
         draggableNodes[idx]->setParentBounds(this->getBounds());
-        
-        // set Bounds here so they know the new min max width
-        
+
         idx++;
         jdx++;
     }
@@ -143,65 +111,8 @@ void DynamicCurveEditor::mouseDown (const juce::MouseEvent& event)
         
 }
 
-void DynamicCurveEditor::mouseDrag (const juce::MouseEvent& event)
-{
-    
-//    std::cout<<"Mouse X" << event.x << " Mouse Y " << event.y << std::endl;
-    
-    
-}
-
-//void DynamicCurveEditor::addNewNodeCallbackHandler(int childIndex)
-//{
-//    int numNodes = nodeTree.getProperty(DraggableNodeIdentifiers::numberOfNodes);
-//
-//    for(int i = 0; i < numNodes;i++)
-//    {
-//        DraggableNodeEditor* node = new DraggableNodeEditor(getLocalBounds());
-//        addAndMakeVisible(node);
-//        node->setBounds(i * 10, 0, 10, 10);
-//
-//    }
-//
-//}
-
 void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged, const juce::Identifier& property)
 {
-    //Set up around 2 nodes and one line for now
-    
-    //2nd node at end of line
-//    if(nodeChanged.getSibling(-1).isValid()){
-//
-//        int lineIDX = (int) nodeChanged.getProperty(DraggableNodeIdentifiers::id) - 1;
-//
-//        juce::Point<float> start = getPointFromNode(nodeChanged.getSibling(-1));
-//        juce::Point<float> end = getPointFromNode(nodeChanged);
-//
-//
-//        lines[lineIDX]->setBounds(start.x, start.y, end.x - start.x , end.y - start.y);
-//
-//        printf("2nd Node XY (%0.2f,%0.2f)\n", end.x, end.y);
-//
-//        printf("Bounds of line ");
-//        DBG(lines[lineIDX]->getBounds().toString());
-//    }
-//    // first node at start of line
-//    else if(nodeChanged.getSibling(1).isValid()){
-//
-//        int lineIDX = (int) nodeChanged.getProperty(DraggableNodeIdentifiers::id);
-//
-//        juce::Point<float> start = getPointFromNode(nodeChanged);
-//        juce::Point<float> end = getPointFromNode(nodeChanged.getSibling(1));
-//
-//        printf("1st Node XY (%0.2f,%0.2f)\n", start.x, start.y);
-//
-//        lines[lineIDX]->setBounds(start.x, start.y, end.x - start.x, end.y - start.y);
-//
-//        printf("Bounds of line");
-//        DBG(lines[lineIDX]->getBounds().toString());
-//    }
-   //addNewNodeCallbackHandler(nodeTree.indexOf(treeWhosePropertyHasChanged));
-    
     auto id = nodeChanged.getProperty(DraggableNodeIdentifiers::id);
     auto x = nodeChanged.getProperty(DraggableNodeIdentifiers::posX);
     auto y = nodeChanged.getProperty(DraggableNodeIdentifiers::posY);

@@ -31,9 +31,6 @@ public:
 
 private:
     
-    //juce::ComponentDragger myDragger;
-    //juce::ComponentBoundsConstrainer* containerBounds;
-    
     int id;
     juce::ValueTree nodeTree;
     juce::Rectangle<int> parentBounds;

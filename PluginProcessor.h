@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "DynamicCurve.h"
+#include "Transport.h"
 
 
 //==============================================================================
@@ -62,6 +63,7 @@ private:
     
 public:
     DynamicCurve dynamicCurve;
+    Transport transport;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideChainAudioProcessor)
 };

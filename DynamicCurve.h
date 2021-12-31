@@ -13,6 +13,7 @@
 #include "DraggableNode.h"
 #include "DraggableNodeIdentifiers.h"
 #include "DataPoint.h"
+#include "Transport.h"
 
 
 class DynamicCurve //: public juce::ActionBroadcaster
@@ -35,7 +36,7 @@ public:
     void addNewNode(float x, float y);
     void calculateDataPointsFromTree(float width, float height);
     std::vector<DataPoint> getSegments();
-    void ProcessAudio(float* channelData, int numSamples, juce::AudioPlayHead::CurrentPositionInfo& hostInfo);
+    void ProcessAudio(float* channelData, int numSamples,Transport& transport);
     
     juce::ValueTree draggableNodes;
     std::vector<DataPoint> segments;
