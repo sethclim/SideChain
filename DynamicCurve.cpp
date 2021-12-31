@@ -19,8 +19,8 @@ DynamicCurve::DynamicCurve()
     juce::ValueTree myNodes (DraggableNodeIdentifiers::myRootDraggableTreeType);
     draggableNodes = myNodes;
     
-    addNewNode(10,10);
-    addNewNode(100,100);
+    addNewNode(0,100);
+    addNewNode(300,100);
     
 }
 DynamicCurve::~DynamicCurve(){

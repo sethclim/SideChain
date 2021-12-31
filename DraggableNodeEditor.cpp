@@ -52,17 +52,31 @@ void DraggableNodeEditor::mouseDrag (const juce::MouseEvent& e)
     int minHeight = 0;
     int maxHeight = parentBounds.getHeight() - 10;
     
-    auto prevSib = node.getSibling(-1);
-    auto nextSib = node.getSibling(1);
-    
-    if(prevSib.isValid()){
-        minWidth = prevSib.getProperty(DraggableNodeIdentifiers::posX);
+    if((int)node.getProperty(DraggableNodeIdentifiers::id) == 0)
+    {
+        DBG("This is One");
+        maxWidth = 10;
     }
-    
-    if(nextSib.isValid()){
-        maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
+    else if((int)node.getProperty(DraggableNodeIdentifiers::id) == 1)
+    {
+        DBG("Last one");
+        minWidth = parentBounds.getWidth() - 10 - 10;
     }
-    
+    else
+    {
+        auto prevSib = node.getSibling(-1);
+        auto nextSib = node.getSibling(1);
+        
+        if(prevSib.isValid()){
+            minWidth = prevSib.getProperty(DraggableNodeIdentifiers::posX);
+        }
+        
+        if(nextSib.isValid()){
+            maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
+        }
+        
+        
+    }
     //std::cout<<"W " << this->getWidth() << " H " << this->getHeight() << std::endl;
     
     auto newX = this->getX();

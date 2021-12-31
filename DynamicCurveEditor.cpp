@@ -37,7 +37,6 @@ DynamicCurveEditor::DynamicCurveEditor(DynamicCurve& dynCurM, juce::ValueTree no
             lines.emplace_back(line);
             addAndMakeVisible(*lines[i]);
         }
-   
         
         DraggableNodeEditor* node = new DraggableNodeEditor(getLocalBounds(), nodeTree, child.getProperty(DraggableNodeIdentifiers::id));
         node->setParentBounds(this->getBounds());
@@ -46,8 +45,6 @@ DynamicCurveEditor::DynamicCurveEditor(DynamicCurve& dynCurM, juce::ValueTree no
         
         i++;
     }
-    
-   
     nodeTree.addListener(this);
 }
 
@@ -95,6 +92,16 @@ void DynamicCurveEditor::resized()
 //    {
 //        lines[i]->setBounds(draggableNodes[i]->getX(), draggableNodes[i]->getY(), 50, 50);
 //    }
+    
+    
+    auto zero = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, 0);
+    auto one = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, 1);
+    
+    zero.setProperty(DraggableNodeIdentifiers::posY, this->getHeight() - 10, nullptr);
+    
+    std::cout<<"GEt width " << this->getWidth() << std::endl;
+    one.setProperty(DraggableNodeIdentifiers::posX, this->getWidth() - 10, nullptr);
+    one.setProperty(DraggableNodeIdentifiers::posY, this->getHeight() - 10, nullptr);
     
     int idx = 0;
     int jdx = 0;
