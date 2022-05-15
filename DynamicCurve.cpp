@@ -12,7 +12,7 @@
 #include "DynamicCurveEditor.h"
 
 
-DynamicCurve::DynamicCurve()
+DynamicCurve::DynamicCurve(Transport& t) : transport(t)
 {
     numberOfNodes = 0;
     
@@ -89,34 +89,33 @@ void DynamicCurve::calculateDataPointsFromTree(float width, float height){
     {
         if(child.getSibling(1).isValid())
         {
+            int id = (int)child.getProperty(DraggableNodeIdentifiers::id);
             float x1 = (float)child.getProperty(DraggableNodeIdentifiers::posX);
             float y1 = (float)child.getProperty(DraggableNodeIdentifiers::posY);
             
             float x2 = (float)child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
             float y2 = (float)child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
             
-            float x1Pos = x1 / width;
-            float x2Pos = x2 / width;
+            float x1Pos = x1  / (width - 10);
+            float x2Pos = x2  / (width - 10);
             
-            float y1Pos = juce::jmap<float>(y1 / height, 1.0, 0.0, 0.0, 1.0);
-            float y2Pos = juce::jmap<float>(y2 / height, 1.0, 0.0, 0.0, 1.0);
+            float y1Pos = juce::jmap<float>(y1  / (height  - 10) , 1.0, 0.0, 0.0, 1.0);
+            float y2Pos = juce::jmap<float>(y2 / (height - 10), 1.0, 0.0, 0.0, 1.0);
             
-            float slope = std::abs(y2Pos - y1Pos) / std::abs(x2Pos - x1Pos);
+            float slope = (y2Pos - y1Pos) / (x2Pos - x1Pos);
             
-            
-            //std::cout << "(x1,y1) (" << x1Pos <<","<< y1Pos << ")" << "(x2,y2) (" << x2Pos <<","<< y2Pos << ")" << std::endl;
-            
-            //std::cout << "slope " << slope << std::endl;
+            std::cout << "---------------------\n(x1,y1) (" << x1Pos <<","<< y1Pos << ")" << "(x2,y2) (" << x2Pos <<","<< y2Pos << ")" << std::endl;
+            std::cout << "slope " << slope << std::endl;
             
             float yIntercept =  y2Pos - (slope * x2Pos);
             
-            
-            //std::cout << "yIntercept " << yIntercept << " = " << y2Pos << "- (" << slope <<" * " << x2Pos << ")" << std::endl;
-            
+            std::cout << "yIntercept " << yIntercept << " = " << y2Pos << "- (" << slope <<" * " << x2Pos << ")" << std::endl;
             // start %, end %, slope, y-intercept
             auto segment = DataPoint(x1Pos, x2Pos, slope, yIntercept);
             
             segments.push_back(segment);
+            
+            std::cout<<"Segment id: " << id << " start " << segment.start << " end " <<segment.end << " slope " <<segment.slope << " YInercept " <<segment.yintercept<<std::endl;
         }
         else
         {
@@ -129,20 +128,40 @@ std::vector<DataPoint> DynamicCurve::getSegments(){
     return segments;
 }
 
-void DynamicCurve::ProcessAudio(float* channelData, int numSamples, Transport& transport){
-    float vol = 1.0;
-   
-    //Process applied per sample in buffer
-    for (int sample = 0; sample < numSamples; ++sample)
+
+float DynamicCurve::getNextSample() noexcept
+{
+    if(relativePosition == 0.0){
+        idx = 0;
+    }
+    
+    if(relativePosition > segments[idx].end )
+        idx++;
+    
+    float vol = (segments[idx].slope * (relativePosition - segments[idx].start)) + segments[idx].yintercept;
+    
+    if(vol > 1.0){
+        vol = 1.0;
+    }
+    
+    return vol;
+}
+
+
+void DynamicCurve::ApplySideChainToBuffer(juce::AudioBuffer<float>& buffer, int startSample, int numSamples){
+    
+    auto numChannels = buffer.getNumChannels();
+    
+    while (--numSamples >= 0)
     {
-        auto relativePosition = fmod(transport.ppqPositions[sample], 1.0);
-        int idx = 0;
+        auto vol = getNextSample();
+        currentVol.store(vol);
+        relativePosition = fmod(transport.ppqPositions[startSample], 1.0);
+        relPosition.store(relativePosition);
         
-        if(segments[idx].end < relativePosition)
-            idx++;
-        
-        vol = (relativePosition * segments[idx].slope) + segments[idx].yintercept;
-        
-        channelData[sample] = channelData[sample] *  vol;
+        for (int i = 0; i < numChannels; ++i)
+            buffer.getWritePointer (i)[startSample] *= vol;
+
+        ++startSample;
     }
 }

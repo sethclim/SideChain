@@ -11,7 +11,12 @@
 
 //==============================================================================
 SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), DynamicCurveEditor(p.dynamicCurve, p.dynamicCurve.draggableNodes)
+    : AudioProcessorEditor (&p),
+      audioProcessor (p),
+      DynamicCurveEditor(p.dynamicCurve, p.dynamicCurve.draggableNodes),
+      volLabel(p.dynamicCurve.currentVol),
+      relLabel(p.dynamicCurve.relPosition)
+
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -21,6 +26,8 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProc
     setResizeLimits(400, 360, 1000, 600);
     setSize (400, 300);
     
+    addAndMakeVisible(&volLabel, -1);
+    addAndMakeVisible(&relLabel, -1);
     addAndMakeVisible(&DynamicCurveEditor);
 }
 
@@ -36,7 +43,6 @@ void SideChainAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Hello World! SideChain", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void SideChainAudioProcessorEditor::resized()
@@ -49,11 +55,13 @@ void SideChainAudioProcessorEditor::resized()
     using Track = juce::Grid::TrackInfo;
     using Fr = juce::Grid::Fr;
        
-    grid.templateRows    = { Track (Fr (1)), Track (Fr (1)), Track (Fr (1)) };
+    grid.templateRows    = { Track (Fr (1)), Track (Fr (1)), Track (Fr (1)), Track (Fr (1)) };
     grid.templateColumns = { Track (Fr (2)), Track (Fr (4)), Track (Fr (1)) };
 
     grid.items.addArray({
-        juce::GridItem (DynamicCurveEditor).withArea(1, 1, 3, 3),
+        juce::GridItem (DynamicCurveEditor).withArea(1, 1, 3, 4),
+        juce::GridItem (volLabel).withArea(3, 1, 4, 3),
+        juce::GridItem (relLabel).withArea(3, 2, 4, 3),
         });
     
 

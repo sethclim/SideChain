@@ -13,8 +13,28 @@
 #include "DynamicCurveEditor.h"
 
 //==============================================================================
-/**
-*/
+struct AtomicLabel
+    : juce::Component
+    , juce::Timer
+{
+    AtomicLabel(std::atomic<double>& valueToUse)
+        : value(valueToUse)
+    {
+        startTimerHz(60);
+        addAndMakeVisible(label);
+    }
+
+    void resized() override { label.setBounds(getLocalBounds()); }
+
+    void timerCallback() override
+    {
+        label.setText(juce::String(value.load()), juce::dontSendNotification);
+    }
+
+    juce::Label label;
+    std::atomic<double>& value;
+};
+
 class SideChainAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
@@ -32,6 +52,9 @@ private:
     
 public:
     DynamicCurveEditor DynamicCurveEditor;
+    
+    AtomicLabel volLabel;
+    AtomicLabel relLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideChainAudioProcessorEditor)
 };

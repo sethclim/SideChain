@@ -45,6 +45,14 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
     g.setColour (juce::Colours::grey);
     g.drawRect (getLocalBounds(), 1);
     
+
+    
+    juce::Path p;
+    
+        p.startNewSubPath(0.0f, this->getHeight());
+        //p.quadraticTo(width / 2.0, ycurve, width, yright);
+      
+      
     
     int idx = 0;
     int jdx = 0;
@@ -55,12 +63,16 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
         auto x = child.getProperty(DraggableNodeIdentifiers::posX);
         auto y = child.getProperty(DraggableNodeIdentifiers::posY);
         
+        p.lineTo(x, y);
+        
         
         if(jdx < numNodes - 1){
             auto x2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
             auto y2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
             
             juce::Line<float> line (juce::Point<float>((int)x + 5 ,(int)y + 5 ), juce::Point<float>((int)x2 + 5,(int)y2 + 5));
+            
+            
          
             g.setColour (juce::Colours::orange);
             g.drawLine (line, 4.0f);
@@ -69,6 +81,19 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
         idx++;
         jdx++;
     }
+    
+    p.lineTo(this->getWidth(), this->getHeight());
+    
+    p.lineTo(0.0, this->getHeight());
+    p.closeSubPath();
+    
+    const juce::Colour c1 = juce::Colours::white.withAlpha(0.05f);
+    const juce::Colour c2 = juce::Colours::white.withAlpha(0.2f);
+    g.setGradientFill(juce::ColourGradient(c2, 0.0, 0.5,
+                                     c1, 0.0, this->getHeight(),
+                                     false));
+ 
+    g.fillPath(p);
 }
 
 void DynamicCurveEditor::resized()
@@ -134,13 +159,11 @@ void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged,
         maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
     }
     
-    std::cout<< "X " << (int)x <<" Y "<< (int)y << " MinWidth " << (int)minWidth << " MaxWidth " << (int)maxWidth << std::endl;
+    //std::cout<< "X " << (int)x <<" Y "<< (int)y << " MinWidth " << (int)minWidth << " MaxWidth " << (int)maxWidth << std::endl;
     
     if(minWidth <= (int) x && (int) x <= maxWidth  && minHeight <= (int) y && (int) y <= maxHeight )
     {
-        std::cout<< "Passed the Check!" << std::endl;
         draggableNodes[(int)id]->setBounds(x, y, 10, 10);
-       
     }
     
     repaint();

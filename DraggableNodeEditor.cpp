@@ -51,12 +51,10 @@ void DraggableNodeEditor::mouseDrag (const juce::MouseEvent& e)
     
     if((int)node.getProperty(DraggableNodeIdentifiers::id) == 0)
     {
-        DBG("This is One");
         maxWidth = 10;
     }
     else if((int)node.getProperty(DraggableNodeIdentifiers::id) == 1)
     {
-        DBG("Last one");
         minWidth = parentBounds.getWidth() - 10 - 10;
     }
     else

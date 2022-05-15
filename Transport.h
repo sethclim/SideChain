@@ -37,7 +37,7 @@ struct Transport
             ppqPositions[sample] = info.ppqPosition + offset;
             offset += ppqPerSample;
         }
-        //currentPosition.store
+        currentPosition.store(info.ppqPosition + offset);
     }
     
     std::atomic<double> currentPosition {0};

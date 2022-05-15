@@ -19,7 +19,7 @@
 class DynamicCurve //: public juce::ActionBroadcaster
 {
 public:
-    DynamicCurve();
+    DynamicCurve(Transport& t);
     ~DynamicCurve();
     //==============================================================================
 //    void addActionListener (juce::ActionListener *listener);
@@ -35,16 +35,25 @@ public:
     void setNumberOfNodes();
     void addNewNode(float x, float y);
     void calculateDataPointsFromTree(float width, float height);
+    //float getNextSample() noexcept;
     std::vector<DataPoint> getSegments();
-    void ProcessAudio(float* channelData, int numSamples,Transport& transport);
+    
+    void ApplySideChainToBuffer(juce::AudioBuffer<float>& buffer, int startSample, int numSamples);
+    
+    Transport& transport;
     
     juce::ValueTree draggableNodes;
     std::vector<DataPoint> segments;
-
+    std::atomic<double> currentVol {0};
+    std::atomic<double> relPosition {0};
     
 private:
     int numberOfNodes;
     std::vector<DraggableNode> nodes;
+    float getNextSample() noexcept;
+    float relativePosition  = 0.0;
+    int idx = 0;
+
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DynamicCurve)
 };
