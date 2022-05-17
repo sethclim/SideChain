@@ -10,7 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "DynamicCurveEditor.h"
+#include "UI/DynamicCurve/DynamicCurveEditor.h"
 
 //==============================================================================
 struct AtomicLabel

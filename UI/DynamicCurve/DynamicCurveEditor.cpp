@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "DynamicCurveEditor.h"
 //==============================================================================
-DynamicCurveEditor::DynamicCurveEditor(DynamicCurve& dynCurM, juce::ValueTree nodes) :dynamicCurve(dynCurM),nodeTree(nodes)
+DynamicCurveEditor::DynamicCurveEditor(EnvelopeProcessor& dynCurM, juce::ValueTree nodes) : envelopeProcessor(dynCurM), nodeTree(nodes)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
@@ -20,13 +20,13 @@ DynamicCurveEditor::DynamicCurveEditor(DynamicCurve& dynCurM, juce::ValueTree no
     for(const auto& child : nodeTree)
     {
         if(i < nodeTree.getNumChildren() - 1){
-            LineEditor* line = new LineEditor();
+            auto line = new LineEditor();
             
             lines.emplace_back(line);
             addAndMakeVisible(*lines[i]);
         }
         
-        DraggableNodeEditor* node = new DraggableNodeEditor(getLocalBounds(), nodeTree, child.getProperty(DraggableNodeIdentifiers::id));
+        auto node = new DraggableNodeEditor(getLocalBounds(), nodeTree, child.getProperty(DraggableNodeIdentifiers::id));
         node->setParentBounds(this->getBounds());
         draggableNodes.emplace_back(node);
         addAndMakeVisible(*draggableNodes[i]);
@@ -44,13 +44,11 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::grey);
     g.drawRect (getLocalBounds(), 1);
-    
 
-    
     juce::Path p;
     
-        p.startNewSubPath(0.0f, this->getHeight());
-        //p.quadraticTo(width / 2.0, ycurve, width, yright);
+    p.startNewSubPath(0.0f, this->getHeight());
+    //p.quadraticTo(width / 2.0, ycurve, width, yright);
       
       
     
@@ -71,9 +69,7 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
             auto y2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
             
             juce::Line<float> line (juce::Point<float>((int)x + 5 ,(int)y + 5 ), juce::Point<float>((int)x2 + 5,(int)y2 + 5));
-            
-            
-         
+
             g.setColour (juce::Colours::orange);
             g.drawLine (line, 4.0f);
         }
@@ -131,7 +127,7 @@ void DynamicCurveEditor::mouseDown (const juce::MouseEvent& event)
         float x = event.getMouseDownX();
         float y = event.getMouseDownY();
     
-        dynamicCurve.addNewNode(x,y);
+        envelopeProcessor.addNewNode(x, y);
     }
         
 }
@@ -168,7 +164,7 @@ void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged,
     
     repaint();
 
-    dynamicCurve.calculateDataPointsFromTree((float) this->getWidth(), (float) this->getHeight());
+    envelopeProcessor.calculateDataPointsFromTree((float) this->getWidth(), (float) this->getHeight());
 }
 
 void DynamicCurveEditor::valueTreeChildAdded (juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded)
@@ -176,7 +172,7 @@ void DynamicCurveEditor::valueTreeChildAdded (juce::ValueTree& parentTree, juce:
     float posX = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posX);
     float posY = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posY);
     
-    DraggableNodeEditor* node = new DraggableNodeEditor(getLocalBounds(), nodeTree,childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::id));
+    auto node = new DraggableNodeEditor(getLocalBounds(), nodeTree,childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::id));
     node->setParentBounds(this->getBounds());
     draggableNodes.emplace_back(node);
     addAndMakeVisible(node);

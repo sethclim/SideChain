@@ -11,19 +11,16 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "DraggableNodeEditor.h"
-#include "DynamicCurve.h"
-#include "DraggableNodeIdentifiers.h"
-
-#include "LineEditor.hpp"
+#include "../DraggableNodeEditor.h"
+#include "../../Backend/EnvelopeProcessor.h"
+#include "../../DraggableNodeIdentifiers.h"
+#include "../LineEditor.h"
 
 //==============================================================================
-/*
-*/
 class DynamicCurveEditor  : public juce::Component ,public juce::ValueTree::Listener
 {
 public:
-    DynamicCurveEditor(DynamicCurve&, juce::ValueTree);
+    DynamicCurveEditor(EnvelopeProcessor&, juce::ValueTree);
     ~DynamicCurveEditor() override;
 
     void paint (juce::Graphics&) override;
@@ -54,10 +51,10 @@ public:
     //=============================================================================================
 
 private:
-    DynamicCurve& dynamicCurve;
+    EnvelopeProcessor& envelopeProcessor;
     //DraggableNodeEditor draggableNodeEditor;
     juce::ValueTree nodeTree;
-    
+
     std::vector<std::unique_ptr<LineEditor>> lines;
     
     std::vector<std::unique_ptr<DraggableNodeEditor>> draggableNodes;

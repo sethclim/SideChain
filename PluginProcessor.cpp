@@ -25,9 +25,7 @@ SideChainAudioProcessor::SideChainAudioProcessor()
 {
 }
 
-SideChainAudioProcessor::~SideChainAudioProcessor()
-{
-}
+SideChainAudioProcessor::~SideChainAudioProcessor() = default;
 
 //==============================================================================
 const juce::String SideChainAudioProcessor::getName() const

@@ -9,13 +9,10 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "DynamicCurve.h"
-#include "Transport.h"
-
+#include "Backend/EnvelopeProcessor.h"
+#include "Backend/Transport.h"
 
 //==============================================================================
-/**
-*/
 class SideChainAudioProcessor  : public juce::AudioProcessor
 {
 public:
@@ -62,7 +59,7 @@ private:
     juce::AudioPlayHead::CurrentPositionInfo hostInfo;
     
 public:
-    DynamicCurve dynamicCurve;
+    EnvelopeProcessor dynamicCurve;
     Transport transport;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideChainAudioProcessor)
