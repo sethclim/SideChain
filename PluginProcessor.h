@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "Backend/EnvelopeProcessor.h"
 #include "Backend/Transport.h"
+#include "Backend/CurveManager.h"
 
 //==============================================================================
 class SideChainAudioProcessor  : public juce::AudioProcessor
@@ -52,6 +53,7 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    void callBack(std::vector<DataPoint> d);
 
 private:
     //==============================================================================
@@ -59,7 +61,8 @@ private:
     juce::AudioPlayHead::CurrentPositionInfo hostInfo;
     
 public:
-    EnvelopeProcessor dynamicCurve;
+    EnvelopeProcessor envelopeProcessor;
+    CurveManager curveManager;
     Transport transport;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideChainAudioProcessor)

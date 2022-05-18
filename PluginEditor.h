@@ -17,8 +17,7 @@ struct AtomicLabel
     : juce::Component
     , juce::Timer
 {
-    AtomicLabel(std::atomic<double>& valueToUse)
-        : value(valueToUse)
+    explicit AtomicLabel(std::atomic<double>& valueToUse) : value(valueToUse)
     {
         startTimerHz(60);
         addAndMakeVisible(label);
@@ -38,7 +37,7 @@ struct AtomicLabel
 class SideChainAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
-    SideChainAudioProcessorEditor (SideChainAudioProcessor&);
+    explicit SideChainAudioProcessorEditor (SideChainAudioProcessor&);
     ~SideChainAudioProcessorEditor() override;
 
     //==============================================================================

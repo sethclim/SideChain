@@ -15,12 +15,13 @@
 #include "../../Backend/EnvelopeProcessor.h"
 #include "../../DraggableNodeIdentifiers.h"
 #include "../LineEditor.h"
+#include "../../Backend/CurveManager.h"
 
 //==============================================================================
 class DynamicCurveEditor  : public juce::Component ,public juce::ValueTree::Listener
 {
 public:
-    DynamicCurveEditor(EnvelopeProcessor&, juce::ValueTree);
+    DynamicCurveEditor(CurveManager&);
     ~DynamicCurveEditor() override;
 
     void paint (juce::Graphics&) override;
@@ -41,17 +42,17 @@ public:
     void valueTreeChildRemoved (juce::ValueTree& parentTree,
                                 juce::ValueTree& childWhichHasBeenRemoved,
                                 int indexFromWhichChildWasRemoved) override;
-    
+
     void valueTreeChildOrderChanged (juce::ValueTree& parentTreeWhoseChildrenHaveMoved,
                                      int oldIndex,
                                      int newIndex) override;
-    
+
     void valueTreeParentChanged (juce::ValueTree& treeWhoseParentHasChanged) override;
     
     //=============================================================================================
 
 private:
-    EnvelopeProcessor& envelopeProcessor;
+    CurveManager& curveManager;
     //DraggableNodeEditor draggableNodeEditor;
     juce::ValueTree nodeTree;
 

@@ -11,11 +11,13 @@
 #include <JuceHeader.h>
 #include "DynamicCurveEditor.h"
 //==============================================================================
-DynamicCurveEditor::DynamicCurveEditor(EnvelopeProcessor& dynCurM, juce::ValueTree nodes) : envelopeProcessor(dynCurM), nodeTree(nodes)
+DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dynCurM)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
-    
+
+    nodeTree = dynCurM.nodes;
+
     int i = 0;
     for(const auto& child : nodeTree)
     {
@@ -127,7 +129,7 @@ void DynamicCurveEditor::mouseDown (const juce::MouseEvent& event)
         float x = event.getMouseDownX();
         float y = event.getMouseDownY();
     
-        envelopeProcessor.addNewNode(x, y);
+        curveManager.addNewNode(x, y);
     }
         
 }
@@ -164,7 +166,8 @@ void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged,
     
     repaint();
 
-    envelopeProcessor.calculateDataPointsFromTree((float) this->getWidth(), (float) this->getHeight());
+    //curveManager.calculateDataPointsFromTree((float) this->getWidth(), (float) this->getHeight());
+    //Will do it on its own
 }
 
 void DynamicCurveEditor::valueTreeChildAdded (juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded)

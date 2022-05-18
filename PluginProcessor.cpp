@@ -7,7 +7,10 @@
 */
 
 #include "PluginProcessor.h"
+
+#include <utility>
 #include "PluginEditor.h"
+
 
 
 //==============================================================================
@@ -20,9 +23,12 @@ SideChainAudioProcessor::SideChainAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), dynamicCurve(transport)
+                       ), envelopeProcessor(transport), curveManager(300,100)
 #endif
 {
+    curveManager.addCallback([this](std::vector<DataPoint> dataPoints){
+       envelopeProcessor.setSideChainEnv(std::move(dataPoints));
+    });
 }
 
 SideChainAudioProcessor::~SideChainAudioProcessor() = default;
@@ -130,6 +136,12 @@ bool SideChainAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 #endif
 
 
+ void SideChainAudioProcessor::callBack(std::vector<DataPoint> d){
+    DBG("Callback triggered");
+
+    envelopeProcessor.setSideChainEnv(d);
+}
+
 void SideChainAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -141,8 +153,8 @@ void SideChainAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     
     
     transport.process(getPlayHead(), buffer.getNumSamples());
-    
-    dynamicCurve.ApplySideChainToBuffer(buffer, 0,buffer.getNumSamples());
+
+    envelopeProcessor.ApplySideChainToBuffer(buffer, 0,buffer.getNumSamples());
 }
 
 

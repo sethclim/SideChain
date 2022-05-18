@@ -13,15 +13,13 @@
 SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProcessor& p)
     : AudioProcessorEditor (&p),
       audioProcessor (p),
-      DynamicCurveEditor(p.dynamicCurve, p.dynamicCurve.draggableNodes),
-      volLabel(p.dynamicCurve.currentVol),
-      relLabel(p.dynamicCurve.relPosition)
-
+      DynamicCurveEditor(p.curveManager),
+      volLabel(p.envelopeProcessor.currentVol),
+      relLabel(p.envelopeProcessor.relPosition)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    
-    
+
     setResizable(true, true);
     setResizeLimits(400, 360, 1000, 600);
     setSize (400, 300);
@@ -31,9 +29,7 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProc
     addAndMakeVisible(&DynamicCurveEditor);
 }
 
-SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor()
-{
-}
+SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor() = default;
 
 //==============================================================================
 void SideChainAudioProcessorEditor::paint (juce::Graphics& g)
@@ -62,10 +58,7 @@ void SideChainAudioProcessorEditor::resized()
         juce::GridItem (DynamicCurveEditor).withArea(1, 1, 3, 4),
         juce::GridItem (volLabel).withArea(3, 1, 4, 3),
         juce::GridItem (relLabel).withArea(3, 2, 4, 3),
-        });
-    
-
+    });
 
     grid.performLayout (getLocalBounds());
-    
 }
