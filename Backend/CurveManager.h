@@ -80,6 +80,53 @@ public:
         }
     }
 
+    void moveNode(int id,float x,float y) const{
+        auto node = nodes.getChildWithProperty(DraggableNodeIdentifiers::id, id);
+
+        int minWidth = 0;
+        int maxWidth = width;
+        int minHeight = 0;
+        int maxHeight = height - 10;
+
+        if((int)node.getProperty(DraggableNodeIdentifiers::id) == 0)
+        {
+            maxWidth = 10;
+        }
+        else if((int)node.getProperty(DraggableNodeIdentifiers::id) == 1)
+        {
+            minWidth = width - 10 - 10;
+        }
+        else
+        {
+            auto prevSib = node.getSibling(-1);
+            auto nextSib = node.getSibling(1);
+
+            if(prevSib.isValid()){
+                minWidth = prevSib.getProperty(DraggableNodeIdentifiers::posX);
+            }
+
+            if(nextSib.isValid()){
+                maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
+            }
+        }
+
+        auto newX = x;
+        auto newY = y;
+
+        newX += x - 5;
+        newY += y - 5;
+
+        if(static_cast<float>(minWidth) <= newX && newX <= static_cast<float>(maxWidth))
+        {
+            node.setProperty(DraggableNodeIdentifiers::posX,newX, nullptr);
+        }
+
+        if(static_cast<float>(minHeight) <= newY && newY <= static_cast<float>(maxHeight))
+        {
+            node.setProperty(DraggableNodeIdentifiers::posY,newY, nullptr);
+        }
+    }
+
 
 
 private:

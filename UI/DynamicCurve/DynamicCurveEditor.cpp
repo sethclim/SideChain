@@ -13,9 +13,6 @@
 //==============================================================================
 DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dynCurM)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
-
     nodeTree = dynCurM.nodes;
 
     unsigned int i = 0;
@@ -28,8 +25,7 @@ DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dyn
             addAndMakeVisible(*lines[i]);
         }
         
-        auto node = new DraggableNodeEditor(getLocalBounds(), nodeTree, child.getProperty(DraggableNodeIdentifiers::id));
-        node->setParentBounds(this->getBounds());
+        auto node = new DraggableNodeEditor(child.getProperty(DraggableNodeIdentifiers::id), curveManager);
         draggableNodes.emplace_back(node);
         addAndMakeVisible(*draggableNodes[i]);
         
@@ -84,10 +80,7 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
     
     const juce::Colour c1 = juce::Colours::white.withAlpha(0.05f);
     const juce::Colour c2 = juce::Colours::white.withAlpha(0.2f);
-    g.setGradientFill(juce::ColourGradient(c2, 0.0, 0.5,
-                                     c1, 0.0, static_cast<float>(curveManager.height),
-                                     false));
- 
+    g.setGradientFill(juce::ColourGradient(c2, 0.0, 0.5, c1, 0.0, static_cast<float>(curveManager.height),false));
     g.fillPath(p);
 }
 
@@ -113,7 +106,6 @@ void DynamicCurveEditor::resized()
         const auto& y = child.getProperty(DraggableNodeIdentifiers::posY);
         
         draggableNodes[idx]->setBounds(x ,y, 10, 10);
-        draggableNodes[idx]->setParentBounds(this->getBounds());
 
         idx++;
         jdx++;
@@ -173,8 +165,7 @@ void DynamicCurveEditor::valueTreeChildAdded (juce::ValueTree& parentTree, juce:
     int posX = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posX);
     int posY = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posY);
     
-    auto node = new DraggableNodeEditor(getLocalBounds(), nodeTree,childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::id));
-    node->setParentBounds(this->getBounds());
+    auto node = new DraggableNodeEditor(childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::id), curveManager);
     draggableNodes.emplace_back(node);
     addAndMakeVisible(node);
     node->setBounds(posX, posY, 10, 10);
