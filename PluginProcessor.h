@@ -55,12 +55,6 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     void callBack(std::vector<DataPoint> d);
 
-private:
-    //==============================================================================
-    juce::AudioPlayHead* playHead;
-    juce::AudioPlayHead::CurrentPositionInfo hostInfo;
-    
-public:
     EnvelopeProcessor envelopeProcessor;
     CurveManager curveManager;
     Transport transport;

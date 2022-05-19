@@ -24,12 +24,11 @@ public:
         juce::ValueTree myNodes (DraggableNodeIdentifiers::myRootDraggableTreeType);
     }
 
-    ~EnvelopeProcessor()= default;
+    ~EnvelopeProcessor() = default;
 
     void setSideChainEnv(std::vector<DataPoint> dataPoints){
         segments = std::move(dataPoints);
     }
-
 
     double getNextSample() noexcept
     {
@@ -42,7 +41,7 @@ public:
             if(relativePosition > segments[idx].end )
                 idx++;
 
-            double vol = (segments[idx].slope * (relativePosition - segments[idx].start)) + segments[idx].yintercept;
+            double vol = (segments[idx].slope * (relativePosition - segments[idx].start)) + segments[idx].y_intercept;
 
             if(vol > 1.0){
                 vol = 1.0;
@@ -63,7 +62,7 @@ public:
         {
             auto vol = getNextSample();
             currentVol.store(vol);
-            relativePosition = fmod(transport.ppqPositions[startSample], 1.0);
+            relativePosition = fmod(transport.ppqPositions[static_cast<unsigned long>(startSample)], 1.0);
             relPosition.store(relativePosition);
             
             for (int i = 0; i < numChannels; ++i)
@@ -80,7 +79,7 @@ public:
 private:
     Transport& transport;
     double relativePosition  = 0.0;
-    int idx = 0;
+    unsigned int idx = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopeProcessor)
 };

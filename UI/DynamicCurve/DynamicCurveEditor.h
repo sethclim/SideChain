@@ -21,13 +21,12 @@
 class DynamicCurveEditor  : public juce::Component ,public juce::ValueTree::Listener
 {
 public:
-    DynamicCurveEditor(CurveManager&);
+    explicit DynamicCurveEditor(CurveManager&);
     ~DynamicCurveEditor() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
     void mouseDown (const juce::MouseEvent& event) override;
-    void addNewNodeCallbackHandler(int childIndex);
     
     //=============================================================================================
     
@@ -53,14 +52,10 @@ public:
 
 private:
     CurveManager& curveManager;
-    //DraggableNodeEditor draggableNodeEditor;
     juce::ValueTree nodeTree;
-
     std::vector<std::unique_ptr<LineEditor>> lines;
-    
     std::vector<std::unique_ptr<DraggableNodeEditor>> draggableNodes;
-    
-    juce::Point<float> getPointFromNode(juce::ValueTree);
+    static juce::Point<float> getPointFromNode(const juce::ValueTree&);
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DynamicCurveEditor)
 };

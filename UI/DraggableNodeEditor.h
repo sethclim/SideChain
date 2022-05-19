@@ -25,7 +25,7 @@ public:
         this->parentBounds = bounds;
     }
 
-   ~DraggableNodeEditor(){}
+   ~DraggableNodeEditor() override{}
 
     void paint (juce::Graphics& g)
     {
@@ -37,7 +37,7 @@ public:
     }
 
 
-    void mouseDrag (const juce::MouseEvent& e)
+    void mouseDrag (const juce::MouseEvent& e) override
     {
 
         auto node = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, id);
@@ -84,6 +84,8 @@ public:
         {
             node.setProperty(DraggableNodeIdentifiers::posY,newY, nullptr);
         }
+
+        // Replace this with call to curve manager move
     }
 
     void setParentBounds(juce::Rectangle<int> bounds)

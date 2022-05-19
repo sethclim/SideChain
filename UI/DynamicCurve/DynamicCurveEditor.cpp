@@ -18,7 +18,7 @@ DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dyn
 
     nodeTree = dynCurM.nodes;
 
-    int i = 0;
+    unsigned int i = 0;
     for(const auto& child : nodeTree)
     {
         if(i < nodeTree.getNumChildren() - 1){
@@ -38,30 +38,27 @@ DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dyn
     nodeTree.addListener(this);
 }
 
-DynamicCurveEditor::~DynamicCurveEditor(){}
+DynamicCurveEditor::~DynamicCurveEditor()= default;
 
 void DynamicCurveEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colours::black);
 
-    g.setColour (juce::Colours::grey);
+    g.setColour (juce::Colours::red);
     g.drawRect (getLocalBounds(), 1);
 
     juce::Path p;
     
-    p.startNewSubPath(0.0f, this->getHeight());
-    //p.quadraticTo(width / 2.0, ycurve, width, yright);
-      
-      
-    
+    p.startNewSubPath(0.0f, static_cast<float>(curveManager.height));
+
     int idx = 0;
     int jdx = 0;
     int numNodes = nodeTree.getNumChildren();
     
     for(const auto& child : nodeTree)
     {
-        auto x = child.getProperty(DraggableNodeIdentifiers::posX);
-        auto y = child.getProperty(DraggableNodeIdentifiers::posY);
+        const auto& x = child.getProperty(DraggableNodeIdentifiers::posX);
+        const auto& y = child.getProperty(DraggableNodeIdentifiers::posY);
         
         p.lineTo(x, y);
         
@@ -70,7 +67,7 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
             auto x2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
             auto y2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
             
-            juce::Line<float> line (juce::Point<float>((int)x + 5 ,(int)y + 5 ), juce::Point<float>((int)x2 + 5,(int)y2 + 5));
+            juce::Line<float> line (juce::Point<float>((float)x + 5 ,(float)y + 5 ), juce::Point<float>((float)x2 + 5,(float)y2 + 5));
 
             g.setColour (juce::Colours::orange);
             g.drawLine (line, 4.0f);
@@ -80,15 +77,15 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
         jdx++;
     }
     
-    p.lineTo(this->getWidth(), this->getHeight());
+    p.lineTo(static_cast<float>(curveManager.width), static_cast<float>(curveManager.height));
     
-    p.lineTo(0.0, this->getHeight());
+    p.lineTo(0.0, static_cast<float>(curveManager.height));
     p.closeSubPath();
     
     const juce::Colour c1 = juce::Colours::white.withAlpha(0.05f);
     const juce::Colour c2 = juce::Colours::white.withAlpha(0.2f);
     g.setGradientFill(juce::ColourGradient(c2, 0.0, 0.5,
-                                     c1, 0.0, this->getHeight(),
+                                     c1, 0.0, static_cast<float>(curveManager.height),
                                      false));
  
     g.fillPath(p);
@@ -96,21 +93,24 @@ void DynamicCurveEditor::paint (juce::Graphics& g)
 
 void DynamicCurveEditor::resized()
 {
+
+    //request new size from backend!
+
     auto zero = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, 0);
     auto one = nodeTree.getChildWithProperty(DraggableNodeIdentifiers::id, 1);
     
-    zero.setProperty(DraggableNodeIdentifiers::posY, this->getHeight() - 10, nullptr);
+    zero.setProperty(DraggableNodeIdentifiers::posY, static_cast<float>(curveManager.height) - 10, nullptr);
     
-    one.setProperty(DraggableNodeIdentifiers::posX, this->getWidth() - 10, nullptr);
-    one.setProperty(DraggableNodeIdentifiers::posY, this->getHeight() - 10, nullptr);
+    one.setProperty(DraggableNodeIdentifiers::posX, static_cast<float>(curveManager.width) - 10, nullptr);
+    one.setProperty(DraggableNodeIdentifiers::posY, static_cast<float>(curveManager.height) - 10, nullptr);
     
-    int idx = 0;
-    int jdx = 0;
-    
+    unsigned int idx = 0;
+    unsigned int jdx = 0;
+
     for(const auto& child : nodeTree)
     {
-        auto x = child.getProperty(DraggableNodeIdentifiers::posX);
-        auto y = child.getProperty(DraggableNodeIdentifiers::posY);
+        const auto& x = child.getProperty(DraggableNodeIdentifiers::posX);
+        const auto& y = child.getProperty(DraggableNodeIdentifiers::posY);
         
         draggableNodes[idx]->setBounds(x ,y, 10, 10);
         draggableNodes[idx]->setParentBounds(this->getBounds());
@@ -126,8 +126,8 @@ void DynamicCurveEditor::mouseDown (const juce::MouseEvent& event)
     
     if (modifiers.isRightButtonDown())
     {
-        float x = event.getMouseDownX();
-        float y = event.getMouseDownY();
+        int x = event.getMouseDownX();
+        int y = event.getMouseDownY();
     
         curveManager.addNewNode(x, y);
     }
@@ -136,9 +136,9 @@ void DynamicCurveEditor::mouseDown (const juce::MouseEvent& event)
 
 void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged, const juce::Identifier& property)
 {
-    auto id = nodeChanged.getProperty(DraggableNodeIdentifiers::id);
-    auto x = nodeChanged.getProperty(DraggableNodeIdentifiers::posX);
-    auto y = nodeChanged.getProperty(DraggableNodeIdentifiers::posY);
+    const auto& id = nodeChanged.getProperty(DraggableNodeIdentifiers::id);
+    const auto& x = nodeChanged.getProperty(DraggableNodeIdentifiers::posX);
+    const auto& y = nodeChanged.getProperty(DraggableNodeIdentifiers::posY);
     
     int minWidth = 0;
     int maxWidth = this->getWidth();
@@ -158,22 +158,20 @@ void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged,
     }
     
     //std::cout<< "X " << (int)x <<" Y "<< (int)y << " MinWidth " << (int)minWidth << " MaxWidth " << (int)maxWidth << std::endl;
-    
+
+    //shouldn't need these checks above, just draw them
     if(minWidth <= (int) x && (int) x <= maxWidth  && minHeight <= (int) y && (int) y <= maxHeight )
     {
         draggableNodes[(int)id]->setBounds(x, y, 10, 10);
     }
     
     repaint();
-
-    //curveManager.calculateDataPointsFromTree((float) this->getWidth(), (float) this->getHeight());
-    //Will do it on its own
 }
 
 void DynamicCurveEditor::valueTreeChildAdded (juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded)
 {
-    float posX = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posX);
-    float posY = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posY);
+    int posX = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posX);
+    int posY = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posY);
     
     auto node = new DraggableNodeEditor(getLocalBounds(), nodeTree,childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::id));
     node->setParentBounds(this->getBounds());
@@ -197,10 +195,10 @@ void DynamicCurveEditor::valueTreeParentChanged (juce::ValueTree& treeWhoseParen
     jassertfalse;
 }
 
-juce::Point<float> DynamicCurveEditor::getPointFromNode(juce::ValueTree vt){
+juce::Point<float> DynamicCurveEditor::getPointFromNode(const juce::ValueTree& vt){
     
-    auto x = vt.getProperty(DraggableNodeIdentifiers::posX);
-    auto y = vt.getProperty(DraggableNodeIdentifiers::posY);
+    const auto& x = vt.getProperty(DraggableNodeIdentifiers::posX);
+    const auto& y = vt.getProperty(DraggableNodeIdentifiers::posY);
     
     return juce::Point<float>(x,y);
 }

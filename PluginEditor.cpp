@@ -21,8 +21,8 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProc
     // editor's size to whatever you need it to be.
 
     setResizable(true, true);
-    setResizeLimits(400, 360, 1000, 600);
-    setSize (400, 300);
+    setResizeLimits(audioProcessor.curveManager.width, 360, 1000, 600);
+    setSize (audioProcessor.curveManager.width, 360);
     
     addAndMakeVisible(&volLabel, -1);
     addAndMakeVisible(&relLabel, -1);
@@ -45,7 +45,6 @@ void SideChainAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    
     juce::Grid grid;
     
     using Track = juce::Grid::TrackInfo;
@@ -55,10 +54,13 @@ void SideChainAudioProcessorEditor::resized()
     grid.templateColumns = { Track (Fr (2)), Track (Fr (4)), Track (Fr (1)) };
 
     grid.items.addArray({
-        juce::GridItem (DynamicCurveEditor).withArea(1, 1, 3, 4),
         juce::GridItem (volLabel).withArea(3, 1, 4, 3),
         juce::GridItem (relLabel).withArea(3, 2, 4, 3),
     });
+
+    auto cM = audioProcessor.curveManager;
+
+    DynamicCurveEditor.setBounds(0,0,cM.width, cM.height);
 
     grid.performLayout (getLocalBounds());
 }

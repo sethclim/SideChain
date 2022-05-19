@@ -12,11 +12,12 @@
 
 // Set the width and height from the backend too.
 typedef std::function<void (std::vector<DataPoint> )> EventCallback;
+
 class CurveManager  : public juce::ValueTree::Listener
 {
 public:
 
-    CurveManager(float initWidth, float initHeight){
+    CurveManager(int initWidth, int initHeight){
         nodes = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
         width = initWidth;
         height = initHeight;
@@ -27,7 +28,6 @@ public:
         addNewNode(0,0);
         addNewNode(width, height);
     }
-
 
     void addCallback(EventCallback cb){ eventCallback = std::move(cb); }
 
@@ -40,7 +40,7 @@ public:
         return segments;
     }
 
-    void addNewNode(float x, float y){
+    void addNewNode(int x, int y){
 
         if (nodes.isValid())
         {
@@ -61,7 +61,7 @@ public:
                 const auto& child_X = child.getProperty(DraggableNodeIdentifiers::posX);
                 auto childNext_X = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
 
-                if((float)child_X < x && x < (float)childNext_X)
+                if((int)child_X < x && x < (int)childNext_X)
                 {
                     auto childIdx =  nodes.indexOf(child);
 
@@ -85,8 +85,6 @@ public:
 private:
 
     void calculateDataPointsFromTree(){
-        DBG("calculateDataPointsFromTree");
-
         std::vector<DataPoint> newSegments = std::vector<DataPoint>();
 
         for(const auto& child : nodes)
@@ -94,24 +92,24 @@ private:
             if(child.getSibling(1).isValid())
             {
                 int id = (int)child.getProperty(DraggableNodeIdentifiers::id);
-                auto x1 = (float)child.getProperty(DraggableNodeIdentifiers::posX);
-                auto y1 = (float)child.getProperty(DraggableNodeIdentifiers::posY);
+                int x1 = child.getProperty(DraggableNodeIdentifiers::posX);
+                int y1 = child.getProperty(DraggableNodeIdentifiers::posY);
 
-                float x2 = (float)child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
-                float y2 = (float)child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
+                int x2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
+                int y2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
 
-                float x1Pos = x1  / (width - 10);
-                float x2Pos = x2  / (width - 10);
+                int x1Pos = x1  / (width - 10);
+                int x2Pos = x2  / (width - 10);
 
-                auto y1Pos = juce::jmap<float>(y1  / (height  - 10) , 1.0, 0.0, 0.0, 1.0);
-                auto y2Pos = juce::jmap<float>(y2 / (height - 10), 1.0, 0.0, 0.0, 1.0);
+                auto y1Pos = juce::jmap<int>(y1  / (height  - 10) , 1.0, 0.0, 0.0, 1.0);
+                auto y2Pos = juce::jmap<int>(y2 / (height - 10), 1.0, 0.0, 0.0, 1.0);
 
-                float slope = (y2Pos - y1Pos) / (x2Pos - x1Pos);
+                float slope = (float)(y2Pos - y1Pos) / (float)(x2Pos - x1Pos);
 
                 std::cout << "---------------------\n(x1,y1) (" << x1Pos <<","<< y1Pos << ")" << "(x2,y2) (" << x2Pos <<","<< y2Pos << ")" << std::endl;
                 std::cout << "slope " << slope << std::endl;
 
-                float yIntercept =  y2Pos - (slope * x2Pos);
+                float yIntercept = static_cast<float>(y2Pos) - (slope * static_cast<float>(x2Pos));
 
                 std::cout << "yIntercept " << yIntercept << " = " << y2Pos << "- (" << slope <<" * " << x2Pos << ")" << std::endl;
                 // start %, end %, slope, y-intercept
@@ -119,11 +117,7 @@ private:
 
                 newSegments.push_back(segment);
 
-                std::cout<<"Segment id: " << id << " start " << segment.start << " end " <<segment.end << " slope " <<segment.slope << " YInercept " <<segment.yintercept<<std::endl;
-            }
-            else
-            {
-                //DBG("Bad Child");
+                std::cout << "Segment id: " << id << " start " << segment.start << " end " << segment.end << " slope " << segment.slope << " YInercept " << segment.y_intercept << std::endl;
             }
         }
 
@@ -132,14 +126,13 @@ private:
         segments = newSegments;
     }
 
-    float width;
-    float height;
-
 
     std::vector<DataPoint> segments;
     int numberOfNodes;
     EventCallback eventCallback;
 
 public:
+    int width;
+    int height;
     juce::ValueTree nodes;
 };

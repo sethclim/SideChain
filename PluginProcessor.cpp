@@ -7,11 +7,8 @@
 */
 
 #include "PluginProcessor.h"
-
 #include <utility>
 #include "PluginEditor.h"
-
-
 
 //==============================================================================
 SideChainAudioProcessor::SideChainAudioProcessor()
@@ -23,7 +20,7 @@ SideChainAudioProcessor::SideChainAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), envelopeProcessor(transport), curveManager(300,100)
+                       ), envelopeProcessor(transport), curveManager(400,200)
 #endif
 {
     curveManager.addCallback([this](std::vector<DataPoint> dataPoints){
@@ -153,7 +150,6 @@ void SideChainAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     
     
     transport.process(getPlayHead(), buffer.getNumSamples());
-
     envelopeProcessor.ApplySideChainToBuffer(buffer, 0,buffer.getNumSamples());
 }
 

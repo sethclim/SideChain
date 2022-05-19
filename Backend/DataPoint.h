@@ -11,13 +11,14 @@
 #pragma once
 
 struct DataPoint {
-    float start, end, slope, yintercept;
+    int start, end;
+    float slope, y_intercept;
     
-    DataPoint(float start, float end, float slope, float yintercept)
+    DataPoint(int start, int end, float slope, float y_intercept)
     {
         this->start = start;
         this->end = end;
         this->slope = slope;
-        this->yintercept = yintercept;
+        this->y_intercept = y_intercept;
     }
 };
