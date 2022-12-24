@@ -5,30 +5,34 @@
               companyName="Wraith Audio" pluginCharacteristicsValue="pluginProducesMidiOut,pluginWantsMidiIn">
   <MAINGROUP id="vDGc3Y" name="SideChain">
     <GROUP id="{28B5086D-2049-76A0-4C2B-9DB0E2BB5807}" name="Source">
-      <GROUP id="{1011B283-BB60-1C43-0C09-95991B4CD250}" name="UI">
-        <FILE id="c8opQx" name="LineEditor.h" compile="0" resource="0" file="Source/LineEditor.h"/>
+      <GROUP id="{346FD4E1-64EC-EF86-B6BF-2327F1C5EF78}" name="Backend">
+        <FILE id="YMM5yn" name="CurveManager.h" compile="0" resource="0" file="Source/Backend/CurveManager.h"/>
+        <FILE id="NMpqRn" name="DataPoint.h" compile="0" resource="0" file="Source/Backend/DataPoint.h"/>
+        <FILE id="a5xbgw" name="EnvelopeProcessor.h" compile="0" resource="0"
+              file="Source/Backend/EnvelopeProcessor.h"/>
+        <FILE id="hRT21X" name="Transport.h" compile="0" resource="0" file="Source/Backend/Transport.h"/>
       </GROUP>
-      <GROUP id="{08139FD0-66EC-DFDF-9858-A524C9E701F0}" name="EnvelopeProcessor">
-        <FILE id="jhP0Ds" name="DataPoint.h" compile="0" resource="0" file="Source/DataPoint.h"/>
-        <GROUP id="{63318571-CD27-EF77-FF4E-13E0D1633901}" name="DraggableNode">
-          <FILE id="Fqw20u" name="DraggableNode.cpp" compile="1" resource="0"
-                file="Source/DraggableNode.cpp"/>
-          <FILE id="aVLLt7" name="DraggableNode.h" compile="0" resource="0" file="Source/DraggableNode.h"/>
-          <FILE id="R9XBEU" name="DraggableNodeEditor.cpp" compile="1" resource="0"
-                file="Source/DraggableNodeEditor.cpp"/>
-          <FILE id="vUZpR9" name="DraggableNodeEditor.h" compile="0" resource="0"
-                file="Source/DraggableNodeEditor.h"/>
+      <GROUP id="{D6F0948C-09B2-1637-268A-6369694A96EB}" name="UI">
+        <GROUP id="{29122938-91BF-6502-CDE7-8C810E556C70}" name="DragArea">
+          <FILE id="CottCr" name="DragArea.cpp" compile="1" resource="0" file="Source/UI/DragArea/DragArea.cpp"/>
+          <FILE id="afzRc9" name="DragArea.h" compile="0" resource="0" file="Source/UI/DragArea/DragArea.h"/>
         </GROUP>
-        <FILE id="dxjDzF" name="DraggableNodeIdentifiers.h" compile="0" resource="0"
-              file="Source/DraggableNodeIdentifiers.h"/>
-        <FILE id="ug6AvQ" name="EnvelopeProcessor.cpp" compile="1" resource="0"
-              file="Source/EnvelopeProcessor.cpp"/>
-        <FILE id="Ja3R1e" name="EnvelopeProcessor.h" compile="0" resource="0" file="Source/EnvelopeProcessor.h"/>
-        <FILE id="GFjNSh" name="DynamicCurveEditor.cpp" compile="1" resource="0"
-              file="Source/DynamicCurveEditor.cpp"/>
-        <FILE id="fn3cOW" name="DynamicCurveEditor.h" compile="0" resource="0"
-              file="Source/DynamicCurveEditor.h"/>
+        <GROUP id="{CC23E6AF-AA61-9E18-ED54-61D8C259F640}" name="DraggableNode">
+          <FILE id="EIRdDq" name="DraggableNodeEditor.cpp" compile="1" resource="0"
+                file="Source/UI/DraggableNode/DraggableNodeEditor.cpp"/>
+          <FILE id="AEz5nu" name="DraggableNodeEditor.h" compile="0" resource="0"
+                file="Source/UI/DraggableNode/DraggableNodeEditor.h"/>
+        </GROUP>
+        <GROUP id="{D9FD4E13-2765-6B97-44AC-615E786243A9}" name="DynamicCurve">
+          <FILE id="wMu62U" name="DynamicCurveEditor.cpp" compile="1" resource="0"
+                file="Source/UI/DynamicCurve/DynamicCurveEditor.cpp"/>
+          <FILE id="CSpoEd" name="DynamicCurveEditor.h" compile="0" resource="0"
+                file="Source/UI/DynamicCurve/DynamicCurveEditor.h"/>
+        </GROUP>
+        <FILE id="ctb61y" name="LineEditor.h" compile="0" resource="0" file="Source/UI/LineEditor.h"/>
       </GROUP>
+      <FILE id="My6lcu" name="DraggableNodeIdentifiers.h" compile="0" resource="0"
+            file="Source/DraggableNodeIdentifiers.h"/>
       <FILE id="i3l6uh" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="IskC9d" name="PluginProcessor.h" compile="0" resource="0"
@@ -36,7 +40,6 @@
       <FILE id="DwKO6b" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="XAZ2kF" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="XuJnWc" name="Transport.h" compile="0" resource="0" file="Source/Transport.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
