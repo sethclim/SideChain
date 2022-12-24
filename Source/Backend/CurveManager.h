@@ -12,6 +12,7 @@
 
 // Set the width and height from the backend too.
 typedef std::function<void (std::vector<DataPoint> )> EventCallback;
+typedef std::function<void (unsigned int id, int x, int y)> RedrawEvent;
 
 class CurveManager  : public juce::ValueTree::Listener
 {
@@ -22,14 +23,14 @@ public:
         width = initWidth;
         height = initHeight;
         numberOfNodes = 0;
-
         nodes.addListener(this);
-
         addNewNode(0,0);
         addNewNode(width, height);
     }
 
-    void addCallback(EventCallback cb){ eventCallback = std::move(cb); }
+    void registerOnCalculateDataPointsCallback(EventCallback cb){ eventCallback = std::move(cb); }
+
+    void registerOnMoveNodeCallback(RedrawEvent redrawEvent){ redrawCallback = std::move(redrawEvent); }
 
     void valueTreePropertyChanged (juce::ValueTree& nodeChanged, const juce::Identifier& property) override
     {
@@ -80,9 +81,8 @@ public:
         }
     }
 
-    void moveNode(int id,float x,float y) const{
+    void moveNode(int id,int s_x,int s_y, float x,float y) const{
         auto node = nodes.getChildWithProperty(DraggableNodeIdentifiers::id, id);
-
         int minWidth = 0;
         int maxWidth = width;
         int minHeight = 0;
@@ -110,21 +110,21 @@ public:
             }
         }
 
-        auto newX = x;
-        auto newY = y;
+        //std::cout<< " X  " << (int)x <<" y " << (int)y << std::endl;
 
-        newX += x - 5;
-        newY += y - 5;
+//        int final_x = s_x, final_y = s_y;
 
-        if(static_cast<float>(minWidth) <= newX && newX <= static_cast<float>(maxWidth))
-        {
-            node.setProperty(DraggableNodeIdentifiers::posX,newX, nullptr);
-        }
+//        if(static_cast<float>(minWidth) <= x && x <= static_cast<float>(maxWidth))
+//        {
+//            final_x = static_cast<int>(x);
+//        }
+//
+//        if(static_cast<float>(minHeight) <= y && y <= static_cast<float>(maxHeight))
+//        {
+//            final_y = static_cast<int>(y);
+//        }
 
-        if(static_cast<float>(minHeight) <= newY && newY <= static_cast<float>(maxHeight))
-        {
-            node.setProperty(DraggableNodeIdentifiers::posY,newY, nullptr);
-        }
+        if (redrawCallback)(redrawCallback)(static_cast<unsigned int>(id), x, y);
     }
 
 
@@ -153,18 +153,18 @@ private:
 
                 float slope = (float)(y2Pos - y1Pos) / (float)(x2Pos - x1Pos);
 
-                std::cout << "---------------------\n(x1,y1) (" << x1Pos <<","<< y1Pos << ")" << "(x2,y2) (" << x2Pos <<","<< y2Pos << ")" << std::endl;
-                std::cout << "slope " << slope << std::endl;
+                //std::cout << "---------------------\n(x1,y1) (" << x1Pos <<","<< y1Pos << ")" << "(x2,y2) (" << x2Pos <<","<< y2Pos << ")" << std::endl;
+               // std::cout << "slope " << slope << std::endl;
 
                 float yIntercept = static_cast<float>(y2Pos) - (slope * static_cast<float>(x2Pos));
 
-                std::cout << "yIntercept " << yIntercept << " = " << y2Pos << "- (" << slope <<" * " << x2Pos << ")" << std::endl;
+                //std::cout << "yIntercept " << yIntercept << " = " << y2Pos << "- (" << slope <<" * " << x2Pos << ")" << std::endl;
                 // start %, end %, slope, y-intercept
                 auto segment = DataPoint(x1Pos, x2Pos, slope, yIntercept);
 
                 newSegments.push_back(segment);
 
-                std::cout << "Segment id: " << id << " start " << segment.start << " end " << segment.end << " slope " << segment.slope << " YInercept " << segment.y_intercept << std::endl;
+                //std::cout << "Segment id: " << id << " start " << segment.start << " end " << segment.end << " slope " << segment.slope << " YInercept " << segment.y_intercept << std::endl;
             }
         }
 
@@ -177,6 +177,7 @@ private:
     std::vector<DataPoint> segments;
     int numberOfNodes;
     EventCallback eventCallback;
+    RedrawEvent redrawCallback;
 
 public:
     int width;

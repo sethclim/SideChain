@@ -78,6 +78,11 @@ DerivedData/
 
 build/
 
+**/JuceLibraryCode
+**/JUCE
+**/cmake-build-debug
+**/.idea
+
 
 #####
 # Xcode private settings (window sizes, bookmarks, breakpoints, custom executables, smart groups)

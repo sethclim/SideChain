@@ -23,8 +23,8 @@ SideChainAudioProcessor::SideChainAudioProcessor()
                        ), envelopeProcessor(transport), curveManager(400,200)
 #endif
 {
-    curveManager.addCallback([this](std::vector<DataPoint> dataPoints){
-       envelopeProcessor.setSideChainEnv(std::move(dataPoints));
+    curveManager.registerOnCalculateDataPointsCallback([this](std::vector<DataPoint> dataPoints) {
+        envelopeProcessor.setSideChainEnv(std::move(dataPoints));
     });
 }
 

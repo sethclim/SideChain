@@ -37,8 +37,8 @@ void SideChainAudioProcessorEditor::paint (juce::Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
+    g.setColour(juce::Colours::white);
+    g.setFont(15.0f);
 }
 
 void SideChainAudioProcessorEditor::resized()
@@ -59,7 +59,6 @@ void SideChainAudioProcessorEditor::resized()
     });
 
     auto cM = audioProcessor.curveManager;
-
     DynamicCurveEditor.setBounds(0,0,cM.width, cM.height);
 
     grid.performLayout (getLocalBounds());

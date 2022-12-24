@@ -11,11 +11,10 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "../DraggableNodeEditor.h"
-#include "../../Backend/EnvelopeProcessor.h"
-#include "../../DraggableNodeIdentifiers.h"
-#include "../LineEditor.h"
-#include "../../Backend/CurveManager.h"
+
+class CurveManager;
+class DraggableNodeEditor;
+class DragArea;
 
 //==============================================================================
 class DynamicCurveEditor  : public juce::Component ,public juce::ValueTree::Listener
@@ -49,13 +48,17 @@ public:
     void valueTreeParentChanged (juce::ValueTree& treeWhoseParentHasChanged) override;
     
     //=============================================================================================
+    void reDrawNode(unsigned int id,int x,int y);
+
+    void mouseDrag (const juce::MouseEvent& e);
 
 private:
     CurveManager& curveManager;
     juce::ValueTree nodeTree;
-    std::vector<std::unique_ptr<LineEditor>> lines;
+//    std::vector<std::unique_ptr<LineEditor>> lines;
     std::vector<std::unique_ptr<DraggableNodeEditor>> draggableNodes;
     static juce::Point<float> getPointFromNode(const juce::ValueTree&);
+    DragArea* dragArea;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DynamicCurveEditor)
 };

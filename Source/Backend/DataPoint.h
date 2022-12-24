@@ -14,11 +14,11 @@ struct DataPoint {
     int start, end;
     float slope, y_intercept;
     
-    DataPoint(int start, int end, float slope, float y_intercept)
+    DataPoint(int _start, int _end, float _slope, float _yIntercept)
     {
-        this->start = start;
-        this->end = end;
-        this->slope = slope;
-        this->y_intercept = y_intercept;
+        this->start = _start;
+        this->end = _end;
+        this->slope = _slope;
+        this->y_intercept = _yIntercept;
     }
 };
