@@ -14,7 +14,7 @@ DraggableNodeEditor::DraggableNodeEditor(int identifier,int x, int y, CurveManag
     this->startY = y;
 }
 
-DraggableNodeEditor::~DraggableNodeEditor()= default;
+DraggableNodeEditor::~DraggableNodeEditor() = default;
 
 void DraggableNodeEditor::paint(juce::Graphics& g)
 {

@@ -18,7 +18,8 @@ class CurveManager  : public juce::ValueTree::Listener
 {
 public:
 
-    CurveManager(int initWidth, int initHeight){
+    CurveManager(int initWidth, int initHeight)
+    {
         nodes = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
         width = initWidth;
         height = initHeight;

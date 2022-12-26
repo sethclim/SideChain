@@ -21,8 +21,8 @@ public:
     DraggableNodeEditor(int identifier, int x, int y, CurveManager& cM, DragArea& dA );
    ~DraggableNodeEditor() override;
 
-    void paint (juce::Graphics& g);
-    void mouseDown(const juce::MouseEvent& event);
+    void paint (juce::Graphics& g) override;
+    void mouseDown(const juce::MouseEvent& event) override;
     void mouseDrag (const juce::MouseEvent& e) override;
 
     int id, startX, startY;
