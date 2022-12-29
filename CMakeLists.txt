@@ -72,7 +72,6 @@ target_sources(SideChain
         PRIVATE
         Source/UI/DragArea/DragArea.cpp
         Source/UI/DynamicCurve/DynamicCurveEditor.cpp
-        Source/UI/DraggableNode/DraggableNodeEditor.cpp
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp)
 

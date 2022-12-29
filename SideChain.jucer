@@ -17,12 +17,6 @@
           <FILE id="CottCr" name="DragArea.cpp" compile="1" resource="0" file="Source/UI/DragArea/DragArea.cpp"/>
           <FILE id="afzRc9" name="DragArea.h" compile="0" resource="0" file="Source/UI/DragArea/DragArea.h"/>
         </GROUP>
-        <GROUP id="{CC23E6AF-AA61-9E18-ED54-61D8C259F640}" name="DraggableNode">
-          <FILE id="EIRdDq" name="DraggableNodeEditor.cpp" compile="1" resource="0"
-                file="Source/UI/DraggableNode/DraggableNodeEditor.cpp"/>
-          <FILE id="AEz5nu" name="DraggableNodeEditor.h" compile="0" resource="0"
-                file="Source/UI/DraggableNode/DraggableNodeEditor.h"/>
-        </GROUP>
         <GROUP id="{D9FD4E13-2765-6B97-44AC-615E786243A9}" name="DynamicCurve">
           <FILE id="wMu62U" name="DynamicCurveEditor.cpp" compile="1" resource="0"
                 file="Source/UI/DynamicCurve/DynamicCurveEditor.cpp"/>

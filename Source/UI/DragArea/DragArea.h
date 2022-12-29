@@ -12,7 +12,7 @@ class DraggableNodeEditor;
 class DragArea : public juce::Component{
 
 public:
-    DragArea(juce::ValueTree tree, CurveManager& dynCurM);
+    DragArea(const juce::ValueTree& tree, CurveManager& dynCurM);
     ~DragArea() override;
 
     void paint (juce::Graphics& g) override;

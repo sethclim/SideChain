@@ -11,7 +11,6 @@
 #include "DynamicCurveEditor.h"
 #include "../../Backend/EnvelopeProcessor.h"
 #include "../../Backend/CurveManager.h"
-#include "../DraggableNode/DraggableNodeEditor.h"
 #include "../DragArea/DragArea.h"
 
 //==============================================================================

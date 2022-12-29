@@ -2,12 +2,9 @@
 // Created by Seth Climenhaga on 2022-05-21.
 //
 #include "DragArea.h"
-
 #include <utility>
-#include "../DraggableNode/DraggableNodeEditor.h"
 
-DragArea::DragArea(juce::ValueTree tree, CurveManager& dynCurM) : nodes(std::move(tree)), curveManager(dynCurM) { }
-
+DragArea::DragArea(const juce::ValueTree& tree, CurveManager& dynCurM) : nodes(std::move(tree)), curveManager(dynCurM) { }
 DragArea::~DragArea() = default;
 
 void DragArea::paint (juce::Graphics& g)
@@ -32,10 +29,6 @@ void DragArea::addNode(int identifier, int x, int y){
 }
 
 void DragArea::reDrawNode(unsigned int id, juce::Point<float> position){
-    //std::cout<< "Edit: "<< id << " X  " << (int)x <<" y " << (int)y << std::endl;
-//    draggableNodes[id]->setBounds((int)position.getX(), (int)position.getY(), 10, 10);
-
-    DBG("Should repaint");
     repaint();
 }
 
@@ -52,23 +45,17 @@ void DragArea::resized(){
 void DragArea::mouseDown(const juce::MouseEvent &event) {
     juce::Point<float> pos = event.position;
 
+    //Check for a selected node and set it
     for(const auto& child : nodes)
     {
         const auto& x = child.getProperty(DraggableNodeIdentifiers::posX);
         const auto& y = child.getProperty(DraggableNodeIdentifiers::posY);
 
-
-
-
-
-        float radius = 5.0f;
         juce::Point<float> nodePos = juce::Point<float>((float) x, (float) y);
-        std::cout << "Dist " << nodePos.getDistanceFrom(pos)  << std::endl;
         //Check the distance between the point and where I click if its less than the radius// will work if move the center
         //Currently just a box check
         if(pos.x > nodePos.x && pos.x < nodePos.x + 10 && pos.y > nodePos.y && pos.y < nodePos.y + 10)
         {
-            DBG("Passed");
             selectedNodeId = child.getProperty(DraggableNodeIdentifiers::id);
             break;
         }
@@ -77,18 +64,15 @@ void DragArea::mouseDown(const juce::MouseEvent &event) {
             selectedNodeId = -1;
         }
     }
-}
 
+    if(selectedNodeId == -1)
+    {
+        curveManager.addNewNode(static_cast<int>(pos.x), static_cast<int>(pos.y));
+    }
+}
 
 void DragArea::mouseDrag(const juce::MouseEvent& e)
 {
-
-    DBG(typeid(e.eventComponent).name());
-
     if(selectedNodeId != -1)
-    {
         curveManager.moveNode(selectedNodeId, e.position);
-        DBG("Node Selected");
-    }
-
 }

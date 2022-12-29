@@ -78,6 +78,11 @@ public:
                 nodes.addChild(newNode, -1, nullptr);
                 numberOfNodes++;
             }
+
+            if (redrawCallback)
+            {
+                (redrawCallback)(static_cast<unsigned int>(0), juce::Point<float>(0,0));
+            }
         }
     }
 
