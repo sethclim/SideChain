@@ -10,8 +10,6 @@
 
 #include "DynamicCurveEditor.h"
 #include "../../Backend/EnvelopeProcessor.h"
-#include "../../DraggableNodeIdentifiers.h"
-#include "../LineEditor.h"
 #include "../../Backend/CurveManager.h"
 #include "../DraggableNode/DraggableNodeEditor.h"
 #include "../DragArea/DragArea.h"
@@ -20,10 +18,10 @@
 DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dynCurM)
 {
     nodeTree = dynCurM.nodes;
-    dragArea = std::make_unique<DragArea>();
+    dragArea = std::make_unique<DragArea>(nodeTree);
 
-    curveManager.registerOnMoveNodeCallback([this](unsigned int id, int x, int y) {
-        dragArea->reDrawNode(id, x, y);
+    curveManager.registerOnMoveNodeCallback([this](unsigned int id, juce::Point<float> position) {
+        dragArea->reDrawNode(id, position);
     });
 
     addAndMakeVisible(*dragArea);
@@ -128,12 +126,12 @@ void DynamicCurveEditor::mouseDown(const juce::MouseEvent& event)
     }
 }
 
-//void DynamicCurveEditor::reDrawNode(unsigned int id,int x,int y){
-//    std::cout<< "Edit: "<< id << " X  " << (int)x <<" y " << (int)y << std::endl;
+void DynamicCurveEditor::reDrawNode(unsigned int id, juce::Point<float> position){
+  //  std::cout<< "reDrawNode: "<< id << " X  " << (int)x <<" y " << (int)y << std::endl;
 //    if(draggableNodes[id] != nullptr)
 //        draggableNodes[id]->setBounds(x, y, 10, 10);
-//    repaint();
-//}
+    repaint();
+}
 
 void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged, const juce::Identifier& property)
 {
@@ -147,6 +145,7 @@ void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged,
 //    draggableNodes[identifier]->setBounds(x, y, 10, 10);
 //
 //    repaint();
+
 }
 
 //TODO Do I need this in the Dynamic curve editor?????
@@ -184,15 +183,15 @@ juce::Point<float> DynamicCurveEditor::getPointFromNode(const juce::ValueTree& v
     return juce::Point<float>(x,y);
 }
 
-void DynamicCurveEditor::mouseDrag (const juce::MouseEvent& e)
-{
-    if(strcmp( typeid(e.eventComponent).name(), "DraggableNodeEditor") == 0){
-        float x = static_cast<float>(e.getPosition().getX());
-        float y = static_cast<float>(e.getPosition().getY());
-
-        std::cout << "mouseDrag: X " << x << " Y " << y <<std::endl;
-//        DraggableNodeEditor d = e.eventComponent.
-//        curveManager.moveNode( , x_start, y_start, x, y);
-    }
-
-}
+//void DynamicCurveEditor::mouseDrag(const juce::MouseEvent& e)
+//{
+//    std::cout << "THE mouseDrag: X " << e.getPosition().getX() << " Y " << e.getPosition().getY() <<std::endl;
+//    if(strcmp(typeid(e.eventComponent).name(), "DraggableNodeEditor") == 0){
+//        float x = static_cast<float>(e.getPosition().getX());
+//        float y = static_cast<float>(e.getPosition().getY());
+//
+//
+//        //auto d = dynamic_cast<DraggableNodeEditor*>(e.eventComponent);
+//        //curveManager.moveNode(d->id, x, y);
+//    }
+//}

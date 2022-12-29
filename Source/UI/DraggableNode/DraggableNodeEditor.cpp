@@ -34,14 +34,14 @@ void DraggableNodeEditor::mouseDown(const juce::MouseEvent& event)
     }
 }
 
-void DraggableNodeEditor::mouseDrag (const juce::MouseEvent& e)
-{
-    e.getEventRelativeTo(&dragArea);
-
-    float x = static_cast<float>(e.getPosition().getX());
-    float y = static_cast<float>(e.getPosition().getY());
-
-    std::cout << "mouseDrag: X " << x << " Y " << y << std::endl;
-
-    //curveManager.moveNode(id, startX, startY, x, y);
-}
+//void DraggableNodeEditor::mouseDrag(const juce::MouseEvent& e)
+//{
+//    e.getEventRelativeTo(&dragArea);
+//
+//    Point<float> pos = e.position;
+//    //float y = static_cast<float>(e.getPosition().getY());
+//
+//    std::cout << "MouseDrag: X " << pos.getX() << " Y " << pos.getY() << std::endl;
+//
+//    curveManager.moveNode(id, pos);
+//}

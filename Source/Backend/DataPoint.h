@@ -17,7 +17,7 @@ struct DataPoint {
     DataPoint(int _start, int _end, float _slope, float _yIntercept)
     {
         this->start = _start;
-        this->end = _end;
+        this->end   = _end;
         this->slope = _slope;
         this->y_intercept = _yIntercept;
     }

@@ -17,7 +17,7 @@ class DraggableNodeEditor;
 class DragArea;
 
 //==============================================================================
-class DynamicCurveEditor  : public juce::Component ,public juce::ValueTree::Listener
+class DynamicCurveEditor  : public juce::Component, public juce::ValueTree::Listener
 {
 public:
     explicit DynamicCurveEditor(CurveManager&);
@@ -30,7 +30,6 @@ public:
     //=============================================================================================
     
     // All the listeners for the ValueTree class. Most of these aren't being used at the moment.
-    
     void valueTreePropertyChanged (juce::ValueTree& treeWhosePropertyHasChanged,
                                    const juce::Identifier& property) override;
 
@@ -48,9 +47,9 @@ public:
     void valueTreeParentChanged (juce::ValueTree& treeWhoseParentHasChanged) override;
     
     //=============================================================================================
-    void reDrawNode(unsigned int id,int x,int y);
+    void reDrawNode(unsigned int id, juce::Point<float> position);
 
-    void mouseDrag (const juce::MouseEvent& e);
+    //void mouseDrag (const juce::MouseEvent& e);
 
 private:
     CurveManager& curveManager;

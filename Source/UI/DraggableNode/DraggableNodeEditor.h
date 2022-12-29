@@ -23,7 +23,7 @@ public:
 
     void paint (juce::Graphics& g) override;
     void mouseDown(const juce::MouseEvent& event) override;
-    void mouseDrag (const juce::MouseEvent& e) override;
+    //void mouseDrag (const juce::MouseEvent& e) override;
 
     int id, startX, startY;
 private:

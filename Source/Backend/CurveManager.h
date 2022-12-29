@@ -12,7 +12,7 @@
 
 // Set the width and height from the backend too.
 typedef std::function<void (std::vector<DataPoint> )> EventCallback;
-typedef std::function<void (unsigned int id, int x, int y)> RedrawEvent;
+typedef std::function<void (unsigned int id, juce::Point<float> position)> RedrawEvent;
 
 class CurveManager  : public juce::ValueTree::Listener
 {
@@ -48,7 +48,6 @@ public:
         {
             juce::ValueTree newNode (DraggableNodeIdentifiers::myNodeType);
 
-
             newNode.setProperty(DraggableNodeIdentifiers::posX, x, nullptr);
             newNode.setProperty(DraggableNodeIdentifiers::posY, y, nullptr);
             newNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
@@ -82,7 +81,7 @@ public:
         }
     }
 
-    void moveNode(int id,int s_x,int s_y, float x,float y) const{
+    void moveNode(int id, juce::Point<float> position) const{
         auto node = nodes.getChildWithProperty(DraggableNodeIdentifiers::id, id);
         int minWidth = 0;
         int maxWidth = width;
@@ -124,8 +123,10 @@ public:
 //        {
 //            final_y = static_cast<int>(y);
 //        }
-
-        if (redrawCallback)(redrawCallback)(static_cast<unsigned int>(id), x, y);
+        if (redrawCallback)
+        {
+            (redrawCallback)(static_cast<unsigned int>(id), position);
+        }
     }
 
 
@@ -173,7 +174,6 @@ private:
 
         segments = newSegments;
     }
-
 
     std::vector<DataPoint> segments;
     int numberOfNodes;
