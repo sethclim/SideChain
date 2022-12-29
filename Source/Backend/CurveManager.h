@@ -110,21 +110,21 @@ public:
             }
         }
 
-        node.setProperty(DraggableNodeIdentifiers::posX, position.x, nullptr);
-        node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
+        //node.setProperty(DraggableNodeIdentifiers::posX, position.x, nullptr);
+        //node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
         //std::cout<< " X  " << (int)x <<" y " << (int)y << std::endl;
 
-//        int final_x = s_x, final_y = s_y;
+        //int final_x = s_x, final_y = s_y;
 
-//        if(static_cast<float>(minWidth) <= x && x <= static_cast<float>(maxWidth))
-//        {
-//            final_x = static_cast<int>(x);
-//        }
-//
-//        if(static_cast<float>(minHeight) <= y && y <= static_cast<float>(maxHeight))
-//        {
-//            final_y = static_cast<int>(y);
-//        }
+        if(static_cast<float>(minWidth) <= position.x && position.x <= static_cast<float>(maxWidth))
+        {
+            node.setProperty(DraggableNodeIdentifiers::posX, position.x, nullptr);
+        }
+
+        if(static_cast<float>(minHeight) <= position.y && position.y <= static_cast<float>(maxHeight))
+        {
+            node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
+        }
         if (redrawCallback)
         {
             (redrawCallback)(static_cast<unsigned int>(id), position);

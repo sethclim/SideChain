@@ -64,8 +64,9 @@ void DragArea::mouseDown(const juce::MouseEvent &event) {
         float radius = 5.0f;
         juce::Point<float> nodePos = juce::Point<float>((float) x, (float) y);
         std::cout << "Dist " << nodePos.getDistanceFrom(pos)  << std::endl;
-        //Check the distance between the point and where I click if its less than the radius
-        if(nodePos.getDistanceFrom(pos)  < radius)
+        //Check the distance between the point and where I click if its less than the radius// will work if move the center
+        //Currently just a box check
+        if(pos.x > nodePos.x && pos.x < nodePos.x + 10 && pos.y > nodePos.y && pos.y < nodePos.y + 10)
         {
             DBG("Passed");
             selectedNodeId = child.getProperty(DraggableNodeIdentifiers::id);
