@@ -19,7 +19,6 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProc
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-
     setResizable(true, true);
     setResizeLimits(audioProcessor.curveManager.width, 360, 1000, 600);
     setSize (audioProcessor.curveManager.width, 360);

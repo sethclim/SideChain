@@ -9,20 +9,21 @@ DragArea::~DragArea() = default;
 
 void DragArea::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colours::black);
-    g.setColour (juce::Colours::red);
-    g.drawRect (getLocalBounds(), 1);
+    //g.fillAll (juce::Colours::black);
+    //g.setColour (juce::Colours::red);
+    //g.drawRect (getLocalBounds(), 1);
+
+
 }
 
 void DragArea::addNode(int identifier, int x, int y, CurveManager& curveManager){
 
-
+    std::cout<< "addNode: "<< identifier << " X  " << (int)x <<" y " << (int)y << std::endl;
     auto node = std::make_unique<DraggableNodeEditor>(identifier, x, y, curveManager, *this);
 
     addAndMakeVisible(*node);
-    node->setBounds(node->startX ,node->startY, 10, 10);
+    node->setBounds(node->startX, node->startY, 10, 10);
     draggableNodes.emplace_back(std::move(node));
-
 }
 
 void DragArea::reDrawNode(unsigned int id,int x,int y){

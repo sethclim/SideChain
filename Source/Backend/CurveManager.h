@@ -26,7 +26,7 @@ public:
         numberOfNodes = 0;
         nodes.addListener(this);
         addNewNode(0,0);
-        addNewNode(width, height);
+        addNewNode(width - 10, height - 10);
     }
 
     void registerOnCalculateDataPointsCallback(EventCallback cb){ eventCallback = std::move(cb); }
