@@ -25,15 +25,6 @@ DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dyn
 
     addAndMakeVisible(*dragArea);
     dragArea->setBounds(0,0,curveManager.width, curveManager.height);
-
-    std::cout<< "DYN CON " << nodeTree.toXmlString() <<std::endl;
-
-    for(const auto& child : nodeTree)
-    {
-        dragArea->addNode(child.getProperty(DraggableNodeIdentifiers::id),
-                          child.getProperty(DraggableNodeIdentifiers::posX),
-                          child.getProperty(DraggableNodeIdentifiers::posY));
-    }
 }
 
 DynamicCurveEditor::~DynamicCurveEditor() = default;
@@ -180,16 +171,3 @@ juce::Point<float> DynamicCurveEditor::getPointFromNode(const juce::ValueTree& v
 
     return juce::Point<float>(x,y);
 }
-
-//void DynamicCurveEditor::mouseDrag(const juce::MouseEvent& e)
-//{
-//    std::cout << "THE mouseDrag: X " << e.getPosition().getX() << " Y " << e.getPosition().getY() <<std::endl;
-//    if(strcmp(typeid(e.eventComponent).name(), "DraggableNodeEditor") == 0){
-//        float x = static_cast<float>(e.getPosition().getX());
-//        float y = static_cast<float>(e.getPosition().getY());
-//
-//
-//        //auto d = dynamic_cast<DraggableNodeEditor*>(e.eventComponent);
-//        //curveManager.moveNode(d->id, x, y);
-//    }
-//}

@@ -9,7 +9,6 @@
 #include "../DraggableNodeIdentifiers.h"
 #include "./DataPoint.h"
 
-
 // Set the width and height from the backend too.
 typedef std::function<void (std::vector<DataPoint> )> EventCallback;
 typedef std::function<void (unsigned int id, juce::Point<float> position)> RedrawEvent;
@@ -115,12 +114,6 @@ public:
             }
         }
 
-        //node.setProperty(DraggableNodeIdentifiers::posX, position.x, nullptr);
-        //node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
-        //std::cout<< " X  " << (int)x <<" y " << (int)y << std::endl;
-
-        //int final_x = s_x, final_y = s_y;
-
         if(static_cast<float>(minWidth) <= position.x && position.x <= static_cast<float>(maxWidth))
         {
             node.setProperty(DraggableNodeIdentifiers::posX, position.x, nullptr);
@@ -163,7 +156,7 @@ private:
                 float slope = (float)(y2Pos - y1Pos) / (float)(x2Pos - x1Pos);
 
                 //std::cout << "---------------------\n(x1,y1) (" << x1Pos <<","<< y1Pos << ")" << "(x2,y2) (" << x2Pos <<","<< y2Pos << ")" << std::endl;
-               // std::cout << "slope " << slope << std::endl;
+                // std::cout << "slope " << slope << std::endl;
 
                 float yIntercept = static_cast<float>(y2Pos) - (slope * static_cast<float>(x2Pos));
 

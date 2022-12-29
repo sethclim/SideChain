@@ -16,15 +16,12 @@ public:
     ~DragArea() override;
 
     void paint (juce::Graphics& g) override;
-    void addNode(int identifier,int x, int y);
     void resized() override;
 
     void reDrawNode(unsigned int id, juce::Point<float> position);
 
     void mouseDown(const juce::MouseEvent& event) override;
     void mouseDrag (const juce::MouseEvent& e) override;
-
-    //std::vector<std::unique_ptr<DraggableNodeEditor>> draggableNodes;
 
 private:
     juce::ValueTree nodes;

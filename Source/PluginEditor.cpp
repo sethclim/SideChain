@@ -17,8 +17,6 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor (SideChainAudioProc
       volLabel(p.envelopeProcessor.currentVol),
       relLabel(p.envelopeProcessor.relPosition)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
     setResizable(true, true);
     setResizeLimits(audioProcessor.curveManager.width, 360, 1000, 600);
     setSize (audioProcessor.curveManager.width, 360);
@@ -42,8 +40,6 @@ void SideChainAudioProcessorEditor::paint (juce::Graphics& g)
 
 void SideChainAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
     juce::Grid grid;
     
     using Track = juce::Grid::TrackInfo;

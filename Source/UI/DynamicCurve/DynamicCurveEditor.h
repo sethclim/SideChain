@@ -49,13 +49,10 @@ public:
     //=============================================================================================
     void reDrawNode(unsigned int id, juce::Point<float> position);
 
-    //void mouseDrag (const juce::MouseEvent& e);
 
 private:
     CurveManager& curveManager;
     juce::ValueTree nodeTree;
-    //std::vector<std::unique_ptr<LineEditor>> lines;
-    //std::vector<std::unique_ptr<DraggableNodeEditor>> draggableNodes;  //TODO remove (should be in drag area now)
     static juce::Point<float> getPointFromNode(const juce::ValueTree&);
     std::unique_ptr<DragArea> dragArea;
     

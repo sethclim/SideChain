@@ -4,7 +4,7 @@
 #include "DragArea.h"
 #include <utility>
 
-DragArea::DragArea(const juce::ValueTree& tree, CurveManager& dynCurM) : nodes(std::move(tree)), curveManager(dynCurM) { }
+DragArea::DragArea(const juce::ValueTree& tree, CurveManager& dynCurM) : nodes(tree), curveManager(dynCurM) { }
 DragArea::~DragArea() = default;
 
 void DragArea::paint (juce::Graphics& g)
@@ -20,27 +20,11 @@ void DragArea::paint (juce::Graphics& g)
     }
 }
 
-void DragArea::addNode(int identifier, int x, int y){
-    //std::cout<< "addNode: "<< identifier << " X  " << (int)x <<" y " << (int)y << std::endl;
-//    auto node = std::make_unique<DraggableNodeEditor>(identifier, x, y, curveManager, *this);
-//    addAndMakeVisible(*node);
-//    node->setBounds(node->startX, node->startY, 10, 10);
-//    draggableNodes.emplace_back(std::move(node));
-}
-
 void DragArea::reDrawNode(unsigned int id, juce::Point<float> position){
     repaint();
 }
 
-void DragArea::resized(){
-//    for(const auto& child : draggableNodes)
-//    {
-//        int x = child->startX;
-//        int y = child->startY;
-//
-//        child->setBounds(x ,y, 10, 10);
-//    }
-}
+void DragArea::resized(){ }
 
 void DragArea::mouseDown(const juce::MouseEvent &event) {
     juce::Point<float> pos = event.position;
