@@ -18,7 +18,7 @@
 DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dynCurM)
 {
     nodeTree = dynCurM.nodes;
-    dragArea = std::make_unique<DragArea>(nodeTree);
+    dragArea = std::make_unique<DragArea>(nodeTree, dynCurM);
 
     curveManager.registerOnMoveNodeCallback([this](unsigned int id, juce::Point<float> position) {
         dragArea->reDrawNode(id, position);
@@ -33,8 +33,7 @@ DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dyn
     {
         dragArea->addNode(child.getProperty(DraggableNodeIdentifiers::id),
                           child.getProperty(DraggableNodeIdentifiers::posX),
-                          child.getProperty(DraggableNodeIdentifiers::posY),
-                          curveManager);
+                          child.getProperty(DraggableNodeIdentifiers::posY));
     }
 }
 

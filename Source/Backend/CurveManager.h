@@ -110,6 +110,8 @@ public:
             }
         }
 
+        node.setProperty(DraggableNodeIdentifiers::posX, position.x, nullptr);
+        node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
         //std::cout<< " X  " << (int)x <<" y " << (int)y << std::endl;
 
 //        int final_x = s_x, final_y = s_y;
