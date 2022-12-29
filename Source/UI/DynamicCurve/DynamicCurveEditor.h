@@ -55,10 +55,10 @@ public:
 private:
     CurveManager& curveManager;
     juce::ValueTree nodeTree;
-//    std::vector<std::unique_ptr<LineEditor>> lines;
-    std::vector<std::unique_ptr<DraggableNodeEditor>> draggableNodes;
+    //std::vector<std::unique_ptr<LineEditor>> lines;
+    //std::vector<std::unique_ptr<DraggableNodeEditor>> draggableNodes;  //TODO remove (should be in drag area now)
     static juce::Point<float> getPointFromNode(const juce::ValueTree&);
-    DragArea* dragArea;
+    std::unique_ptr<DragArea> dragArea;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DynamicCurveEditor)
 };

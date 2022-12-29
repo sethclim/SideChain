@@ -4,8 +4,8 @@
 #include "DragArea.h"
 #include "../DraggableNode/DraggableNodeEditor.h"
 
-DragArea::DragArea()= default;
-DragArea::~DragArea()= default;
+DragArea::DragArea() = default;
+DragArea::~DragArea() = default;
 
 void DragArea::paint (juce::Graphics& g)
 {
@@ -14,10 +14,15 @@ void DragArea::paint (juce::Graphics& g)
     g.drawRect (getLocalBounds(), 1);
 }
 
-void DragArea::addNode(DraggableNodeEditor* node){
+void DragArea::addNode(int identifier, int x, int y, CurveManager& curveManager){
+
+
+    auto node = std::make_unique<DraggableNodeEditor>(identifier, x, y, curveManager, *this);
+
     addAndMakeVisible(*node);
-    draggableNodes.emplace_back(node);
     node->setBounds(node->startX ,node->startY, 10, 10);
+    draggableNodes.emplace_back(std::move(node));
+
 }
 
 void DragArea::reDrawNode(unsigned int id,int x,int y){

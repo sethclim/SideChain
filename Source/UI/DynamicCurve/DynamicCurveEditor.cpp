@@ -20,13 +20,13 @@
 DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dynCurM)
 {
     nodeTree = dynCurM.nodes;
-    dragArea = new DragArea();
+    dragArea = std::make_unique<DragArea>();
 
     curveManager.registerOnMoveNodeCallback([this](unsigned int id, int x, int y) {
         dragArea->reDrawNode(id, x, y);
     });
 
-    addAndMakeVisible(dragArea);
+    addAndMakeVisible(*dragArea);
     dragArea->setBounds(0,0,curveManager.width, curveManager.height);
 
     unsigned int i = 0;
@@ -39,14 +39,17 @@ DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dyn
 //            addAndMakeVisible(*lines[i]);
 //        }
         DBG("RAV");
-        auto node = new DraggableNodeEditor(
-                child.getProperty(DraggableNodeIdentifiers::id),
-                child.getProperty(DraggableNodeIdentifiers::posX),
-                child.getProperty(DraggableNodeIdentifiers::posY),
-                curveManager,
-                *dragArea);
+//        auto node = std::make_unique<DraggableNodeEditor>(
+//                child.getProperty(DraggableNodeIdentifiers::id),
+//                child.getProperty(DraggableNodeIdentifiers::posX),
+//                child.getProperty(DraggableNodeIdentifiers::posY),
+//                curveManager,
+//                *dragArea);
 
-        dragArea->addNode(node);
+        dragArea->addNode(child.getProperty(DraggableNodeIdentifiers::id),
+                          child.getProperty(DraggableNodeIdentifiers::posX),
+                          child.getProperty(DraggableNodeIdentifiers::posY),
+                          curveManager);
 
 //        draggableNodes.emplace_back(node);
 //        addAndMakeVisible(*draggableNodes[i]);
@@ -55,7 +58,10 @@ DynamicCurveEditor::DynamicCurveEditor(CurveManager& dynCurM) : curveManager(dyn
 //    nodeTree.addListener(this);
 }
 
-DynamicCurveEditor::~DynamicCurveEditor()= default;
+DynamicCurveEditor::~DynamicCurveEditor()
+{
+    //delete dragArea;
+}
 
 void DynamicCurveEditor::paint (juce::Graphics& g)
 {
@@ -164,15 +170,16 @@ void DynamicCurveEditor::valueTreePropertyChanged (juce::ValueTree& nodeChanged,
 //    repaint();
 }
 
+//TODO Do I need this in the Dynamic curve editor?????
 void DynamicCurveEditor::valueTreeChildAdded (juce::ValueTree& parentTree, juce::ValueTree& childWhichHasBeenAdded)
 {
-    int posX = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posX);
-    int posY = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posY);
-    
-    auto node = new DraggableNodeEditor( childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::id),posX,posY,curveManager, *dragArea);
-    draggableNodes.emplace_back(node);
-    addAndMakeVisible(node);
-    node->setBounds(posX, posY, 10, 10);
+//    int posX = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posX);
+//    int posY = childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::posY);
+//
+//    auto node = new DraggableNodeEditor( childWhichHasBeenAdded.getProperty(DraggableNodeIdentifiers::id),posX,posY,curveManager, *dragArea);
+//    draggableNodes.emplace_back(node);
+//    addAndMakeVisible(node);
+//    node->setBounds(posX, posY, 10, 10);
 }
 
 void DynamicCurveEditor::valueTreeChildRemoved (juce::ValueTree& parentTree,juce::ValueTree& childWhichHasBeenRemoved,int indexFromWhichChildWasRemoved)

@@ -4,6 +4,7 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "../../Backend/CurveManager.h"
 
 
 class DraggableNodeEditor;
@@ -15,7 +16,7 @@ public:
     ~DragArea() override;
 
     void paint (juce::Graphics& g) override;
-    void addNode(DraggableNodeEditor* node);
+    void addNode(int identifier,int x, int y, CurveManager& curveManager);
     void resized() override;
 
     void reDrawNode(unsigned int id,int x,int y);
