@@ -18,68 +18,79 @@
 class EnvelopeProcessor
 {
 public:
-
-    explicit EnvelopeProcessor(Transport& t) : transport(t)
+    explicit EnvelopeProcessor(Transport &t) : transport(t)
     {
-        juce::ValueTree myNodes (DraggableNodeIdentifiers::myRootDraggableTreeType);
+        juce::ValueTree myNodes(DraggableNodeIdentifiers::myRootDraggableTreeType);
     }
 
     ~EnvelopeProcessor() = default;
 
-    void setSideChainEnv(std::vector<DataPoint> dataPoints){
+    void setSideChainEnv(std::vector<juce::Point<float>> dataPoints)
+    {
         segments = std::move(dataPoints);
     }
 
-    double getNextSample() noexcept
+    double getNextSample(double relativePosition, std::vector<juce::Point<float>> points) noexcept
     {
-        if(relativePosition == 0.0){
+        if (relativePosition == 0.0)
+        {
             idx = 0;
         }
 
-        if(!segments.empty())
+        if (!points.empty())
         {
-            if(relativePosition > segments[idx].end )
+            if (relativePosition >= points[idx + 1].x)
                 idx++;
 
-            double vol = (segments[idx].slope * (relativePosition - segments[idx].start)) + segments[idx].y_intercept;
+            // double vol = (segments[idx].slope * (relativePosition - segments[idx].start)) + segments[idx].y_intercept;
 
-            if(vol > 1.0){
+            double slope = (points[idx + 1].y - points[idx].y) / (points[idx + 1].x - points[idx].x);
+            float yIntercept = points[idx].y - (slope * points[idx].x);
+
+            double vol = (slope * relativePosition) + yIntercept;
+
+            if (vol > 1.0)
+            {
                 vol = 1.0;
             }
 
             return vol;
         }
-        else{
+        else
+        {
             return 0.0;
         }
     }
 
-    void ApplySideChainToBuffer(juce::AudioBuffer<float>& buffer, int startSample, int numSamples){
-        
+    void ApplySideChainToBuffer(juce::AudioBuffer<float> &buffer, int startSample, int numSamples)
+    {
+
         auto numChannels = buffer.getNumChannels();
-        
+
         while (--numSamples >= 0)
         {
-            auto vol = getNextSample();
+            double relativePosition = fmod(transport.ppqPositions[static_cast<unsigned long>(startSample)], 1.0);
+            auto vol = getNextSample(relativePosition, segments);
             currentVol.store(vol);
-            relativePosition = fmod(transport.ppqPositions[static_cast<unsigned long>(startSample)], 1.0);
             relPosition.store(relativePosition);
-            
+
             for (int i = 0; i < numChannels; ++i)
-                buffer.getWritePointer (i)[startSample] *= (float) vol;
+            {
+                buffer.getWritePointer(i)[startSample] *= (float)vol;
+            }
 
             ++startSample;
         }
     }
 
-    std::vector<DataPoint> segments;
-    std::atomic<double> currentVol {0};
-    std::atomic<double> relPosition {0};
-    
+    std::vector<juce::Point<float>> segments;
+    std::atomic<double> currentVol{0};
+    std::atomic<double> relPosition{0};
+
 private:
-    Transport& transport;
-    double relativePosition  = 0.0;
+    Transport &transport;
+    // double relativePosition = 0.0;
     unsigned int idx = 0;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopeProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EnvelopeProcessor)
 };

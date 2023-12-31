@@ -9,23 +9,24 @@
 #include "PluginProcessor.h"
 #include <utility>
 #include "PluginEditor.h"
+// #include "JucePluginDefines.h"
 
 //==============================================================================
 SideChainAudioProcessor::SideChainAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       ), envelopeProcessor(transport), curveManager(400,200)
+    : AudioProcessor(BusesProperties()
+#if !JucePlugin_IsMidiEffect
+#if !JucePlugin_IsSynth
+                         .withInput("Input", juce::AudioChannelSet::stereo(), true)
+#endif
+                         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+                         ),
+      envelopeProcessor(transport), curveManager(400, 200)
 #endif
 {
-    curveManager.registerOnCalculateDataPointsCallback([this](std::vector<DataPoint> dataPoints) {
-        envelopeProcessor.setSideChainEnv(std::move(dataPoints));
-    });
+    curveManager.registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> dataPoints)
+                                                       { envelopeProcessor.setSideChainEnv(std::move(dataPoints)); });
 }
 
 SideChainAudioProcessor::~SideChainAudioProcessor() = default;
@@ -33,34 +34,35 @@ SideChainAudioProcessor::~SideChainAudioProcessor() = default;
 //==============================================================================
 const juce::String SideChainAudioProcessor::getName() const
 {
-    return JucePlugin_Name;
+    // return JucePlugin_Name;
+    return "SIDECHAIN";
 }
 
 bool SideChainAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool SideChainAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool SideChainAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 double SideChainAudioProcessor::getTailLengthSeconds() const
@@ -73,7 +75,6 @@ int SideChainAudioProcessor::getNumPrograms()
     // NB: some hosts don't cope very well with 0 programs,
     // so this should be at least 1;
     return 1;
-               
 }
 
 int SideChainAudioProcessor::getCurrentProgram()
@@ -81,21 +82,21 @@ int SideChainAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void SideChainAudioProcessor::setCurrentProgram (int index)
+void SideChainAudioProcessor::setCurrentProgram(int index)
 {
 }
 
-const juce::String SideChainAudioProcessor::getProgramName (int index)
+const juce::String SideChainAudioProcessor::getProgramName(int index)
 {
     return {};
 }
 
-void SideChainAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void SideChainAudioProcessor::changeProgramName(int index, const juce::String &newName)
 {
 }
 
 //==============================================================================
-void SideChainAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void SideChainAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
@@ -109,50 +110,47 @@ void SideChainAudioProcessor::releaseResources()
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool SideChainAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool SideChainAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
+#if JucePlugin_IsMidiEffect
+    juce::ignoreUnused(layouts);
     return true;
-  #else
+#else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
+        // This checks if the input layout matches the output layout
+#if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-   #endif
+#endif
 
     return true;
-  #endif
+#endif
 }
 #endif
 
-
- void SideChainAudioProcessor::callBack(std::vector<DataPoint> d){
+void SideChainAudioProcessor::callBack(std::vector<juce::Point<float>> d)
+{
     DBG("Callback triggered");
 
     envelopeProcessor.setSideChainEnv(d);
 }
 
-void SideChainAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void SideChainAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-    
-    
-    transport.process(getPlayHead(), buffer.getNumSamples());
-    envelopeProcessor.ApplySideChainToBuffer(buffer, 0,buffer.getNumSamples());
-}
+        buffer.clear(i, 0, buffer.getNumSamples());
 
+    transport.process(getPlayHead(), buffer.getNumSamples());
+    envelopeProcessor.ApplySideChainToBuffer(buffer, 0, buffer.getNumSamples());
+}
 
 //==============================================================================
 bool SideChainAudioProcessor::hasEditor() const
@@ -160,20 +158,20 @@ bool SideChainAudioProcessor::hasEditor() const
     return true;
 }
 
-juce::AudioProcessorEditor* SideChainAudioProcessor::createEditor()
+juce::AudioProcessorEditor *SideChainAudioProcessor::createEditor()
 {
-    return new SideChainAudioProcessorEditor (*this);
+    return new SideChainAudioProcessorEditor(*this);
 }
 
 //==============================================================================
-void SideChainAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void SideChainAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void SideChainAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void SideChainAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -181,7 +179,7 @@ void SideChainAudioProcessor::setStateInformation (const void* data, int sizeInB
 
 //==============================================================================
 // This creates new instances of the plugin..
-juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
     return new SideChainAudioProcessor();
 }
