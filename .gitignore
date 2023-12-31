@@ -81,6 +81,7 @@ Builds/
 **/JuceLibraryCode
 **/JUCE
 **/cmake-build-debug
+**/cmake-xcode-build
 **/.idea
 
 
