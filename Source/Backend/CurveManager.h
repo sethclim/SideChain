@@ -49,45 +49,34 @@ public:
 
     void insertNewNodeBetween(int x, int y)
     {
-        if (nodes.isValid())
+        if (!nodes.isValid())
+            return;
+
+        juce::ValueTree newNode(DraggableNodeIdentifiers::myNodeType);
+
+        newNode.setProperty(DraggableNodeIdentifiers::posX, x, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::posY, y, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
+
+        // get the right index to land the node between two other nodes
+        // X ----- here ----- X //
+        for (const auto &child : nodes)
         {
-            juce::ValueTree newNode(DraggableNodeIdentifiers::myNodeType);
+            const auto &child_X = child.getProperty(DraggableNodeIdentifiers::posX);
+            auto childNext_X = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
 
-            newNode.setProperty(DraggableNodeIdentifiers::posX, x, nullptr);
-            newNode.setProperty(DraggableNodeIdentifiers::posY, y, nullptr);
-            newNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
-
-            // get the right index to land the node between two other nodes
-
-            bool slotFound = false;
-
-            // X ----- here ----- X //
-            for (const auto &child : nodes)
+            if ((int)child_X < x && x < (int)childNext_X)
             {
-                const auto &child_X = child.getProperty(DraggableNodeIdentifiers::posX);
-                auto childNext_X = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
+                auto childIdx = nodes.indexOf(child);
 
-                if ((int)child_X < x && x < (int)childNext_X)
-                {
-                    auto childIdx = nodes.indexOf(child);
-
-                    nodes.addChild(newNode, childIdx + 1, nullptr);
-                    numberOfNodes++;
-                    slotFound = true;
-                    break;
-                }
-            }
-
-            // if (!slotFound)
-            // {
-
-            // }
-
-            if (redrawCallback)
-            {
-                (redrawCallback)(static_cast<unsigned int>(0), juce::Point<float>(0, 0));
+                nodes.addChild(newNode, childIdx + 1, nullptr);
+                numberOfNodes++;
+                break;
             }
         }
+
+        if (redrawCallback)
+            (redrawCallback)(static_cast<unsigned int>(0), juce::Point<float>(0, 0));
     }
 
     void addInitialNode(int x, int y)
@@ -105,9 +94,7 @@ public:
         numberOfNodes++;
 
         if (redrawCallback)
-        {
             (redrawCallback)(static_cast<unsigned int>(0), juce::Point<float>(0, 0));
-        }
     }
 
     void moveNode(int id, juce::Point<float> position) const
@@ -124,7 +111,7 @@ public:
 
             auto endNode = nodes.getChildWithProperty(DraggableNodeIdentifiers::id, 1);
 
-            if (static_cast<float>(minHeight) <= position.y && position.y <= static_cast<float>(maxHeight))
+            if (checkBetweenMinMax(position.y, minHeight, maxHeight))
             {
                 node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
                 endNode.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
@@ -134,7 +121,7 @@ public:
         {
             minWidth = innerWidth;
             auto startNode = nodes.getChildWithProperty(DraggableNodeIdentifiers::id, 0);
-            if (static_cast<float>(minHeight) <= position.y && position.y <= static_cast<float>(maxHeight))
+            if (checkBetweenMinMax(position.y, minHeight, maxHeight))
             {
                 node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
                 startNode.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
@@ -150,27 +137,21 @@ public:
                 minWidth = prevSib.getProperty(DraggableNodeIdentifiers::posX);
                 maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
 
-                if (static_cast<float>(minWidth) <= position.x && position.x <= static_cast<float>(maxWidth))
+                if (checkBetweenMinMax(position.x, minWidth, maxWidth))
                 {
                     node.setProperty(DraggableNodeIdentifiers::posX, position.x, nullptr);
                 }
 
-                if (static_cast<float>(minHeight) <= position.y && position.y <= static_cast<float>(maxHeight))
+                // if (static_cast<float>(minHeight) <= position.y && position.y <= static_cast<float>(maxHeight))
+                if (checkBetweenMinMax(position.y, minHeight, maxHeight))
                 {
                     node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
                 }
             }
-
-            // if (nextSib.isValid())
-            // {
-            //     maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
-            // }
         }
 
         if (redrawCallback)
-        {
             (redrawCallback)(static_cast<unsigned int>(id), position);
-        }
     }
 
 private:
@@ -187,23 +168,8 @@ private:
             float x_norm = x / innerWidth;
             float y_norm = juce::jmap<float>(y / innerHeight, 1.0, 0.0, 0.0, 1.0);
 
-            if (x_norm > 1.0)
-            {
-                x_norm = 1.0;
-            }
-            else if (x_norm < 0.0)
-            {
-                x_norm = 0.0;
-            }
-
-            if (y_norm > 1.0)
-            {
-                y_norm = 1.0;
-            }
-            else if (y_norm < 0.0)
-            {
-                y_norm = 0.0;
-            }
+            x_norm = limitValue(x_norm);
+            y_norm = limitValue(y_norm);
 
             auto point = juce::Point<float>(x_norm, y_norm);
 
@@ -214,6 +180,25 @@ private:
             (eventCallback)(points);
 
         segments = points;
+    }
+
+    float limitValue(float value)
+    {
+        if (value > 1.0)
+        {
+            return 1.0;
+        }
+        else if (value < 0.0)
+        {
+            return 0.0;
+        }
+
+        return value;
+    }
+
+    bool checkBetweenMinMax(float value, int min, int max) const
+    {
+        return static_cast<float>(min) <= value && value <= static_cast<float>(max);
     }
 
     std::vector<juce::Point<float>> segments;
