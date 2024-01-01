@@ -49,12 +49,12 @@ void SideChainAudioProcessorEditor::resized()
   grid.templateColumns = {Track(Fr(2)), Track(Fr(4)), Track(Fr(1))};
 
   grid.items.addArray({
+      juce::GridItem(DynamicCurveEditor).withArea(1, 1, 3, 4),
       juce::GridItem(volLabel).withArea(3, 1, 4, 3),
       juce::GridItem(relLabel).withArea(3, 2, 4, 3),
   });
 
-  auto cM = audioProcessor.curveManager;
-  DynamicCurveEditor.setBounds(0, 0, cM.width, cM.height);
-
+  // auto cM = audioProcessor.curveManager;
+  // DynamicCurveEditor.setBounds(0, 0, cM.width, cM.height);
   grid.performLayout(getLocalBounds());
 }
