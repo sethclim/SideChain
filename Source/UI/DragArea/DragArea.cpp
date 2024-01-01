@@ -8,6 +8,7 @@
 DragArea::DragArea(const juce::ValueTree &tree, CurveManager &dynCurM) : nodes(tree), curveManager(dynCurM)
 {
     setWantsKeyboardFocus(true);
+    std::cout << "CONTROL SIZE" << curveManager.controlSize << std::endl;
 }
 
 DragArea::~DragArea() = default;
@@ -20,8 +21,8 @@ void DragArea::paint(juce::Graphics &g)
         const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
 
         g.setColour(juce::Colours::orange);
-        g.fillEllipse(x, y, 10, 10);
-        g.drawEllipse(x, y, 10, 10, 1);
+        g.fillEllipse(x, y, curveManager.controlSize, curveManager.controlSize);
+        g.drawEllipse(x, y, curveManager.controlSize, curveManager.controlSize, 1);
     }
 }
 
@@ -58,7 +59,7 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
 
     if (selectedNodeId == -1 && addMode)
     {
-        curveManager.addNewNode(static_cast<int>(pos.x), static_cast<int>(pos.y));
+        curveManager.insertNewNodeBetween(static_cast<int>(pos.x), static_cast<int>(pos.y));
     }
 }
 
