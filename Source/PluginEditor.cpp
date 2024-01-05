@@ -18,8 +18,8 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
       relLabel(p.envelopeProcessor.relPosition)
 {
   setResizable(true, true);
-  setResizeLimits(audioProcessor.curveManager.width, audioProcessor.curveManager.height, 1000, 600);
-  setSize(audioProcessor.curveManager.width, audioProcessor.curveManager.height);
+  setResizeLimits(500, 300, 1000, 600);
+  setSize(500, 300);
 
   addAndMakeVisible(&volLabel, -1);
   addAndMakeVisible(&relLabel, -1);

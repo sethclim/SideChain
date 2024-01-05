@@ -22,7 +22,7 @@ SideChainAudioProcessor::SideChainAudioProcessor()
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
                          ),
-      envelopeProcessor(transport), curveManager(400, 200)
+      envelopeProcessor(transport), curveManager()
 #endif
 {
     curveManager.registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> dataPoints)
@@ -130,7 +130,7 @@ bool SideChainAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts)
     return true;
 #endif
 }
-#endif
+#endif q
 
 void SideChainAudioProcessor::callBack(std::vector<juce::Point<float>> d)
 {

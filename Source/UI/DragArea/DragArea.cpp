@@ -15,6 +15,7 @@ DragArea::~DragArea() = default;
 
 void DragArea::paint(juce::Graphics &g)
 {
+    DBG("Drag Area Paint");
     for (const auto &child : nodes)
     {
         const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
@@ -28,6 +29,7 @@ void DragArea::paint(juce::Graphics &g)
 
 void DragArea::reDrawNode(unsigned int id, juce::Point<float> position)
 {
+    DBG("REDRAW NODE RePaint");
     repaint();
 }
 

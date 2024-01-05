@@ -32,39 +32,28 @@ public:
 
     double getNextSample(double relativePosition, std::vector<juce::Point<float>> points) noexcept
     {
-        if (relativePosition == 0.0)
-        {
-            idx = 0;
-        }
-
-        if (!points.empty())
-        {
-            if (relativePosition >= points[idx + 1].x)
-                idx++;
-
-            // double vol = (segments[idx].slope * (relativePosition - segments[idx].start)) + segments[idx].y_intercept;
-
-            double slope = (points[idx + 1].y - points[idx].y) / (points[idx + 1].x - points[idx].x);
-            float yIntercept = points[idx].y - (slope * points[idx].x);
-
-            double vol = (slope * relativePosition) + yIntercept;
-
-            if (vol > 1.0)
-            {
-                vol = 1.0;
-            }
-
-            return vol;
-        }
-        else
-        {
+        if (points.empty())
             return 0.0;
-        }
+
+        if (relativePosition < points[1].x)
+            idx = 0;
+
+        if (relativePosition >= points[idx + 1].x)
+            idx++;
+
+        double slope = (points[idx + 1].y - points[idx].y) / (points[idx + 1].x - points[idx].x);
+        float yIntercept = points[idx].y - (slope * points[idx].x);
+
+        double vol = (slope * relativePosition) + yIntercept;
+
+        if (vol > 1.0)
+            vol = 1.0;
+
+        return vol;
     }
 
     void ApplySideChainToBuffer(juce::AudioBuffer<float> &buffer, int startSample, int numSamples)
     {
-
         auto numChannels = buffer.getNumChannels();
 
         while (--numSamples >= 0)
@@ -89,7 +78,6 @@ public:
 
 private:
     Transport &transport;
-    // double relativePosition = 0.0;
     unsigned int idx = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EnvelopeProcessor)
