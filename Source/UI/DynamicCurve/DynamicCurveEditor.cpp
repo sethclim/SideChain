@@ -86,7 +86,7 @@ void DynamicCurveEditor::paint(juce::Graphics &g)
 
 void DynamicCurveEditor::resized()
 {
-    dragArea->setBounds(0, 0, getWidth() - 50, getHeight());
+    dragArea->setBounds(0, 0, getWidth(), getHeight());
 }
 
 int x_start = 0, y_start = 0;
