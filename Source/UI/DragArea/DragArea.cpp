@@ -9,31 +9,39 @@ DragArea::DragArea(const juce::ValueTree &tree, CurveManager &dynCurM) : nodes(t
 {
     setWantsKeyboardFocus(true);
     std::cout << "CONTROL SIZE" << curveManager.controlSize << std::endl;
+    DBG(nodes.toXmlString());
 }
 
 DragArea::~DragArea() = default;
 
 void DragArea::paint(juce::Graphics &g)
 {
-    DBG("Drag Area Paint");
+    // g.fillAll(juce::Colours::purple);
+
     for (const auto &child : nodes)
     {
         const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
         const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
 
+        float xpos = (float)x * getWidth();
+        float ypos = (float)y * getHeight();
+
+        std::cout << "xpos " << xpos << " ypos " << ypos << std::endl;
         g.setColour(juce::Colours::orange);
-        g.fillEllipse(x, y, curveManager.controlSize, curveManager.controlSize);
-        g.drawEllipse(x, y, curveManager.controlSize, curveManager.controlSize, 1);
+        g.fillEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize);
+        g.drawEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize, 1);
     }
 }
 
-void DragArea::reDrawNode(unsigned int id, juce::Point<float> position)
+void DragArea::reDraw()
 {
-    DBG("REDRAW NODE RePaint");
     repaint();
 }
 
-void DragArea::resized() {}
+void DragArea::resized()
+{
+    std::cout << "width " << getWidth() << " height " << getHeight() << std::endl;
+}
 
 void DragArea::mouseDown(const juce::MouseEvent &event)
 {
@@ -42,13 +50,13 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
     // Check for a selected node and set it
     for (const auto &child : nodes)
     {
-        const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
-        const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
+        float x = (float)child.getProperty(DraggableNodeIdentifiers::posX);
+        float y = (float)child.getProperty(DraggableNodeIdentifiers::posY);
 
         juce::Point<float> nodePos = juce::Point<float>((float)x, (float)y);
         // Check the distance between the point and where I click if its less than the radius// will work if move the center
         // Currently just a box check
-        if (pos.x > nodePos.x && pos.x < nodePos.x + 10 && pos.y > nodePos.y && pos.y < nodePos.y + 10)
+        if (pos.x > (x * getWidth()) && pos.x < (x * getWidth()) + 10 && pos.y > (y * getHeight()) && pos.y < (y * getHeight()) + 10)
         {
             selectedNodeId = child.getProperty(DraggableNodeIdentifiers::id);
             break;
@@ -59,16 +67,20 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
         }
     }
 
-    if (selectedNodeId == -1 && addMode)
+    juce::ModifierKeys modifiers = juce::ModifierKeys::getCurrentModifiers();
+
+    if (selectedNodeId == -1 && addMode && modifiers.isRightButtonDown())
     {
-        curveManager.insertNewNodeBetween(static_cast<int>(pos.x), static_cast<int>(pos.y));
+        curveManager.insertNewNodeBetween(scaleToCoord(pos));
     }
 }
 
 void DragArea::mouseDrag(const juce::MouseEvent &e)
 {
     if (selectedNodeId != -1)
-        curveManager.moveNode(selectedNodeId, e.position);
+    {
+        curveManager.moveNode(selectedNodeId, scaleToCoord(e.position));
+    }
 }
 
 bool DragArea::keyPressed(const juce::KeyPress &key)
@@ -80,4 +92,12 @@ bool DragArea::keyPressed(const juce::KeyPress &key)
         return true;
     }
     return false;
+}
+
+juce::Point<float> DragArea::scaleToCoord(juce::Point<float> position)
+{
+    float scaled_x = position.x / (float)getWidth();
+    float scaled_y = position.y / (float)getHeight();
+
+    return juce::Point<float>(scaled_x, scaled_y);
 }

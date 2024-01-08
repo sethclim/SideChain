@@ -18,11 +18,13 @@ public:
     void paint(juce::Graphics &g) override;
     void resized() override;
 
-    void reDrawNode(unsigned int id, juce::Point<float> position);
+    void reDraw();
 
     void mouseDown(const juce::MouseEvent &event) override;
     void mouseDrag(const juce::MouseEvent &e) override;
     bool keyPressed(const KeyPress &key) override;
+
+    juce::Point<float> scaleToCoord(juce::Point<float> position);
 
 private:
     juce::ValueTree nodes;

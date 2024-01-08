@@ -11,7 +11,7 @@
 
 // Set the width and height from the backend too.
 typedef std::function<void(std::vector<juce::Point<float>>)> EventCallback;
-typedef std::function<void(unsigned int id, juce::Point<float> position)> RedrawEvent;
+typedef std::function<void()> RedrawEvent;
 
 class CurveManager : public juce::ValueTree::Listener
 {
@@ -21,25 +21,19 @@ public:
         nodes = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
     }
 
-    void initializeCurveManager(int initWidth, int initHeight)
+    void initializeCurveManager()
     {
         if (initialized)
             return;
 
-        std::cout << "SETTING UP CURVE"
-                  << "initWidth " << initWidth << "initHeight " << initHeight << std::endl;
-
-        width = initWidth;
-        height = initHeight;
-        innerWidth = width - controlSize;
-        innerHeight = height - controlSize;
+        // innerWidth = width - controlSize;
+        // innerHeight = height - controlSize;
         numberOfNodes = 0;
         nodes.addListener(this);
-        addInitialNode(0, innerHeight / 2);
-        addInitialNode(innerWidth, innerHeight / 2);
+        addInitialNode(0, 0.5);
+        addInitialNode(1, 0.5);
         calculateDataPointsFromTree();
 
-        std::cout << "inner " << innerWidth << " " << innerHeight << std::endl;
         DBG(nodes.toXmlString());
 
         initialized = true;
@@ -59,15 +53,17 @@ public:
         return segments;
     }
 
-    void insertNewNodeBetween(int x, int y)
+    void insertNewNodeBetween(juce::Point<float> coord)
     {
+        jassert(coord.x <= 1.0 && coord.y <= 1.0);
+
         if (!nodes.isValid())
             return;
 
         juce::ValueTree newNode(DraggableNodeIdentifiers::myNodeType);
 
-        newNode.setProperty(DraggableNodeIdentifiers::posX, x, nullptr);
-        newNode.setProperty(DraggableNodeIdentifiers::posY, y, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::posX, coord.x, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
         newNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
 
         // get the right index to land the node between two other nodes
@@ -77,7 +73,7 @@ public:
             const auto &child_X = child.getProperty(DraggableNodeIdentifiers::posX);
             auto childNext_X = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
 
-            if ((int)child_X < x && x < (int)childNext_X)
+            if ((int)child_X < coord.x && coord.x < (int)childNext_X)
             {
                 auto childIdx = nodes.indexOf(child);
 
@@ -87,38 +83,31 @@ public:
             }
         }
 
-        // if (redrawCallback)
-        //     (redrawCallback)(static_cast<unsigned int>(0), juce::Point<float>(0, 0));
+        if (redrawCallback)
+            (redrawCallback)();
     }
 
-    void moveNode(int id, juce::Point<float> position) const
+    void moveNode(int id, juce::Point<float> coord) const
     {
         auto node = nodes.getChildWithProperty(DraggableNodeIdentifiers::id, id);
-        int minWidth = 0;
-        int maxWidth = innerWidth;
-        int minHeight = 0;
-        int maxHeight = innerHeight;
 
         if ((int)node.getProperty(DraggableNodeIdentifiers::id) == 0)
         {
-            maxWidth = controlSize;
-
             auto endNode = nodes.getChildWithProperty(DraggableNodeIdentifiers::id, 1);
 
-            if (checkBetweenMinMax(position.y, minHeight, maxHeight))
+            if (checkBetweenMinMax(coord.y, 0, 1))
             {
-                node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
-                endNode.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
+                node.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
+                endNode.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
             }
         }
         else if ((int)node.getProperty(DraggableNodeIdentifiers::id) == 1)
         {
-            minWidth = innerWidth;
             auto startNode = nodes.getChildWithProperty(DraggableNodeIdentifiers::id, 0);
-            if (checkBetweenMinMax(position.y, minHeight, maxHeight))
+            if (checkBetweenMinMax(coord.y, 0, 1))
             {
-                node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
-                startNode.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
+                node.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
+                startNode.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
             }
         }
         else
@@ -128,56 +117,56 @@ public:
 
             if (prevSib.isValid() && nextSib.isValid())
             {
-                minWidth = prevSib.getProperty(DraggableNodeIdentifiers::posX);
-                maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
+                float minWidth = prevSib.getProperty(DraggableNodeIdentifiers::posX);
+                float maxWidth = nextSib.getProperty(DraggableNodeIdentifiers::posX);
 
-                if (checkBetweenMinMax(position.x, minWidth, maxWidth))
+                if (checkBetweenMinMax(coord.x, minWidth, maxWidth))
                 {
-                    node.setProperty(DraggableNodeIdentifiers::posX, position.x, nullptr);
+                    node.setProperty(DraggableNodeIdentifiers::posX, coord.x, nullptr);
                 }
 
                 // if (static_cast<float>(minHeight) <= position.y && position.y <= static_cast<float>(maxHeight))
-                if (checkBetweenMinMax(position.y, minHeight, maxHeight))
+                if (checkBetweenMinMax(coord.y, 0, 1))
                 {
-                    node.setProperty(DraggableNodeIdentifiers::posY, position.y, nullptr);
+                    node.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
                 }
             }
         }
 
-        // if (redrawCallback)
-        //     (redrawCallback)(static_cast<unsigned int>(id), position);
+        if (redrawCallback)
+            (redrawCallback)();
     }
 
-    void rescaleNodesWindowResized(int newWidth, int newHeight)
-    {
-        std::cout << "width " << width << " height " << height << std::endl;
-        std::cout << "newWidth " << newWidth << " newHeight " << newHeight << std::endl;
-        float scaleWidth = (float)newWidth / (float)width;
-        float scaleHeight = (float)newHeight / (float)height;
+    // void rescaleNodesWindowResized(int newWidth, int newHeight)
+    // {
+    //     std::cout << "width " << width << " height " << height << std::endl;
+    //     std::cout << "newWidth " << newWidth << " newHeight " << newHeight << std::endl;
+    //     float scaleWidth = (float)newWidth / (float)width;
+    //     float scaleHeight = (float)newHeight / (float)height;
 
-        std::cout << "scalewidth " << scaleWidth << " scaleHeight " << scaleHeight << std::endl;
+    //     std::cout << "scalewidth " << scaleWidth << " scaleHeight " << scaleHeight << std::endl;
 
-        for (const auto &child : nodes)
-        {
-            const float child_X = (float)child.getProperty(DraggableNodeIdentifiers::posX);
-            const float child_Y = (float)child.getProperty(DraggableNodeIdentifiers::posY);
+    //     for (const auto &child : nodes)
+    //     {
+    //         const float child_X = (float)child.getProperty(DraggableNodeIdentifiers::posX);
+    //         const float child_Y = (float)child.getProperty(DraggableNodeIdentifiers::posY);
 
-            float newX = child_X * scaleWidth;
-            float newY = (float)newHeight - (child_Y * scaleHeight);
+    //         float newX = child_X * scaleWidth;
+    //         float newY = (float)newHeight - (child_Y * scaleHeight);
 
-            juce::ValueTree &c = const_cast<juce::ValueTree &>(child);
+    //         juce::ValueTree &c = const_cast<juce::ValueTree &>(child);
 
-            c.setProperty(DraggableNodeIdentifiers::posX, newX, nullptr);
-            c.setProperty(DraggableNodeIdentifiers::posY, newY, nullptr);
-        }
+    //         c.setProperty(DraggableNodeIdentifiers::posX, newX, nullptr);
+    //         c.setProperty(DraggableNodeIdentifiers::posY, newY, nullptr);
+    //     }
 
-        DBG(nodes.toXmlString());
+    //     DBG(nodes.toXmlString());
 
-        width = width;
-        height = height;
-        innerWidth = newWidth - controlSize;
-        innerHeight = newHeight - controlSize;
-    }
+    //     width = width;
+    //     height = height;
+    //     innerWidth = newWidth - controlSize;
+    //     innerHeight = newHeight - controlSize;
+    // }
 
 private:
     void calculateDataPointsFromTree()
@@ -190,13 +179,7 @@ private:
             float x = child.getProperty(DraggableNodeIdentifiers::posX);
             float y = child.getProperty(DraggableNodeIdentifiers::posY);
 
-            float x_norm = x / innerWidth;
-            float y_norm = juce::jmap<float>(y / innerHeight, 1.0, 0.0, 0.0, 1.0);
-
-            x_norm = limitValue(x_norm);
-            y_norm = limitValue(y_norm);
-
-            auto point = juce::Point<float>(x_norm, y_norm);
+            auto point = juce::Point<float>(x, y);
 
             points.push_back(point);
         }
@@ -207,7 +190,7 @@ private:
         segments = points;
     }
 
-    void addInitialNode(int x, int y)
+    void addInitialNode(float x, float y)
     {
         if (!nodes.isValid())
             return;
@@ -241,9 +224,9 @@ private:
         return value;
     }
 
-    bool checkBetweenMinMax(float value, int min, int max) const
+    bool checkBetweenMinMax(float value, float min, float max) const
     {
-        return static_cast<float>(min) <= value && value <= static_cast<float>(max);
+        return min <= value && value <= max;
     }
 
     std::vector<juce::Point<float>> segments;

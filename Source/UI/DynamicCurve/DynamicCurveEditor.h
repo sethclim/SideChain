@@ -47,7 +47,7 @@ public:
     void valueTreeParentChanged (juce::ValueTree& treeWhoseParentHasChanged) override;
     
     //=============================================================================================
-    void reDrawNode(unsigned int id, juce::Point<float> position);
+    void reDrawNode();
 
 
 private:
