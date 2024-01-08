@@ -28,7 +28,7 @@ DynamicCurveEditor::DynamicCurveEditor(CurveManager &dynCurM) : curveManager(dyn
     //                                         { reDrawNode(id, position);
 
     addAndMakeVisible(*dragArea);
-    dragArea->setBounds(0, 0, getWidth() - 20, getHeight() - 10);
+    dragArea->setBounds(0, 0, getWidth(), getHeight());
     // curveManager.initializeCurveManager(getWidth(), getHeight());
 }
 
@@ -40,48 +40,48 @@ void DynamicCurveEditor::paint(juce::Graphics &g)
     g.setColour(juce::Colours::red);
     g.drawRect(getLocalBounds(), 1);
 
-    juce::Path p;
-    p.startNewSubPath(0.0f, getHeight());
+    // juce::Path p;
+    // p.startNewSubPath(0.0f, getHeight());
 
-    int idx = 0;
-    int numNodes = nodeTree.getNumChildren();
+    // int idx = 0;
+    // int numNodes = nodeTree.getNumChildren();
 
-    for (const auto &child : nodeTree)
-    {
-        const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
-        const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
+    // for (const auto &child : nodeTree)
+    // {
+    //     const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
+    //     const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
 
-        float xpos = (float)x * getWidth();
-        float ypos = (float)y * getHeight();
+    //     float xpos = (float)x * getWidth();
+    //     float ypos = (float)y * getHeight();
 
-        p.lineTo(xpos, ypos);
+    // p.lineTo(xpos, ypos);
 
-        if (idx < numNodes - 1)
-        {
-            auto x2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
-            auto y2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
+    // if (idx < numNodes - 1)
+    // {
+    //     auto x2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
+    //     auto y2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
 
-            float x2pos = (float)x2 * getWidth();
-            float y2pos = (float)y2 * getHeight();
+    //     float x2pos = (float)x2 * getWidth();
+    //     float y2pos = (float)y2 * getHeight();
 
-            juce::Line<float> line(juce::Point<float>((float)xpos + 5, (float)ypos + 5), juce::Point<float>((float)x2pos + 5, (float)y2pos + 5));
+    //     juce::Line<float> line(juce::Point<float>((float)xpos + 5, (float)ypos + 5), juce::Point<float>((float)x2pos + 5, (float)y2pos + 5));
 
-            g.setColour(juce::Colours::purple);
-            g.drawLine(line, 4.0f);
-        }
+    //     g.setColour(juce::Colours::purple);
+    //     g.drawLine(line, 4.0f);
+    // }
 
-        idx++;
-    }
+    // idx++;
+    // }
 
-    p.lineTo(static_cast<float>(getWidth() - 20), static_cast<float>(getHeight() - 10));
+    // p.lineTo(static_cast<float>(getWidth() - 20), static_cast<float>(getHeight() - 10));
 
-    p.lineTo(0.0, static_cast<float>(getHeight() - 10));
-    p.closeSubPath();
+    // p.lineTo(0.0, static_cast<float>(getHeight() - 10));
+    // p.closeSubPath();
 
-    const juce::Colour c1 = juce::Colours::white.withAlpha(0.05f);
-    const juce::Colour c2 = juce::Colours::white.withAlpha(0.2f);
-    g.setGradientFill(juce::ColourGradient(c2, 0.0, 0.5, c1, 0.0, static_cast<float>(getHeight() - 2), false));
-    g.fillPath(p);
+    // const juce::Colour c1 = juce::Colours::white.withAlpha(0.05f);
+    // const juce::Colour c2 = juce::Colours::white.withAlpha(0.2f);
+    // g.setGradientFill(juce::ColourGradient(c2, 0.0, 0.5, c1, 0.0, static_cast<float>(getHeight() - 2), false));
+    // g.fillPath(p);
 }
 
 void DynamicCurveEditor::resized()
