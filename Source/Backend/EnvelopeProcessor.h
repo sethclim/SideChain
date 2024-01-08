@@ -12,7 +12,6 @@
 #include <JuceHeader.h>
 #include <utility>
 #include "../DraggableNodeIdentifiers.h"
-#include "DataPoint.h"
 #include "Transport.h"
 
 class EnvelopeProcessor

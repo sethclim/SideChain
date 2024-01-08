@@ -6,7 +6,6 @@
 #include <JuceHeader.h>
 
 #include <utility>
-#include "./DataPoint.h"
 #include "../DraggableNodeIdentifiers.h"
 
 // Set the width and height from the backend too.
@@ -26,8 +25,6 @@ public:
         if (initialized)
             return;
 
-        // innerWidth = width - controlSize;
-        // innerHeight = height - controlSize;
         numberOfNodes = 0;
         nodes.addListener(this);
         addInitialNode(0, 0.5);
@@ -125,7 +122,6 @@ public:
                     node.setProperty(DraggableNodeIdentifiers::posX, coord.x, nullptr);
                 }
 
-                // if (static_cast<float>(minHeight) <= position.y && position.y <= static_cast<float>(maxHeight))
                 if (checkBetweenMinMax(coord.y, 0, 1))
                 {
                     node.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
@@ -137,37 +133,6 @@ public:
             (redrawCallback)();
     }
 
-    // void rescaleNodesWindowResized(int newWidth, int newHeight)
-    // {
-    //     std::cout << "width " << width << " height " << height << std::endl;
-    //     std::cout << "newWidth " << newWidth << " newHeight " << newHeight << std::endl;
-    //     float scaleWidth = (float)newWidth / (float)width;
-    //     float scaleHeight = (float)newHeight / (float)height;
-
-    //     std::cout << "scalewidth " << scaleWidth << " scaleHeight " << scaleHeight << std::endl;
-
-    //     for (const auto &child : nodes)
-    //     {
-    //         const float child_X = (float)child.getProperty(DraggableNodeIdentifiers::posX);
-    //         const float child_Y = (float)child.getProperty(DraggableNodeIdentifiers::posY);
-
-    //         float newX = child_X * scaleWidth;
-    //         float newY = (float)newHeight - (child_Y * scaleHeight);
-
-    //         juce::ValueTree &c = const_cast<juce::ValueTree &>(child);
-
-    //         c.setProperty(DraggableNodeIdentifiers::posX, newX, nullptr);
-    //         c.setProperty(DraggableNodeIdentifiers::posY, newY, nullptr);
-    //     }
-
-    //     DBG(nodes.toXmlString());
-
-    //     width = width;
-    //     height = height;
-    //     innerWidth = newWidth - controlSize;
-    //     innerHeight = newHeight - controlSize;
-    // }
-
 private:
     void calculateDataPointsFromTree()
     {
@@ -175,11 +140,12 @@ private:
 
         for (const auto &child : nodes)
         {
-            int id = (int)child.getProperty(DraggableNodeIdentifiers::id);
             float x = child.getProperty(DraggableNodeIdentifiers::posX);
             float y = child.getProperty(DraggableNodeIdentifiers::posY);
 
-            auto point = juce::Point<float>(x, y);
+            float y_inv = juce::jmap<float>(y, 1.0, 0.0, 0.0, 1.0);
+
+            auto point = juce::Point<float>(x, y_inv);
 
             points.push_back(point);
         }
@@ -206,8 +172,8 @@ private:
 
         DBG(nodes.toXmlString());
 
-        // if (redrawCallback)
-        //     (redrawCallback)(static_cast<unsigned int>(0), juce::Point<float>(0, 0));
+        if (redrawCallback)
+            (redrawCallback)();
     }
 
     float limitValue(float value)

@@ -76,7 +76,6 @@ target_sources(SideChain
         Source/PluginEditor.cpp
         Source/PluginProcessor.cpp
         Source/Backend/CurveManager.h
-        Source/Backend/DataPoint.h
         Source/Backend/EnvelopeProcessor.h
         Source/Backend/Transport.h
 )
