@@ -14,10 +14,10 @@
 
 //==============================================================================
 struct AtomicLabel
-    : juce::Component
-    , juce::Timer
+    : juce::Component,
+      juce::Timer
 {
-    explicit AtomicLabel(std::atomic<double>& valueToUse) : value(valueToUse)
+    explicit AtomicLabel(std::atomic<double> &valueToUse) : value(valueToUse)
     {
         startTimerHz(60);
         addAndMakeVisible(label);
@@ -31,28 +31,29 @@ struct AtomicLabel
     }
 
     juce::Label label;
-    std::atomic<double>& value;
+    std::atomic<double> &value;
 };
 
-class SideChainAudioProcessorEditor  : public juce::AudioProcessorEditor
+class SideChainAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
-    explicit SideChainAudioProcessorEditor (SideChainAudioProcessor&);
+    explicit SideChainAudioProcessorEditor(SideChainAudioProcessor &);
+    void OnModeTextClicked();
     ~SideChainAudioProcessorEditor() override;
 
     //==============================================================================
-    void paint (juce::Graphics&) override;
+    void paint(juce::Graphics &) override;
     void resized() override;
 
 private:
-    SideChainAudioProcessor& audioProcessor;
-    
+    SideChainAudioProcessor &audioProcessor;
+
 public:
     DynamicCurveEditor DynamicCurveEditor;
-    
+
     AtomicLabel volLabel;
     AtomicLabel relLabel;
+    TextButton modeText;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SideChainAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SideChainAudioProcessorEditor);
 };
-

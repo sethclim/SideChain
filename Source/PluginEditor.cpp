@@ -15,7 +15,8 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
       audioProcessor(p),
       DynamicCurveEditor(p.curveManager),
       volLabel(p.envelopeProcessor.currentVol),
-      relLabel(p.envelopeProcessor.relPosition)
+      relLabel(p.envelopeProcessor.relPosition),
+      modeText("Off")
 {
   setResizable(true, true);
   setResizeLimits(500, 300, 1000, 600);
@@ -24,6 +25,17 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   addAndMakeVisible(&volLabel, -1);
   addAndMakeVisible(&relLabel, -1);
   addAndMakeVisible(&DynamicCurveEditor);
+
+  addAndMakeVisible(&modeText, -1);
+
+  modeText.onClick = [this]
+  { OnModeTextClicked(); };
+}
+
+void SideChainAudioProcessorEditor::OnModeTextClicked()
+{
+    DynamicCurveEditor.SetDragAreaMode(!DynamicCurveEditor.GetDragAreaMode());
+    repaint();
 }
 
 SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor() = default;
@@ -32,10 +44,11 @@ SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor() = default;
 void SideChainAudioProcessorEditor::paint(juce::Graphics &g)
 {
   // (Our component is opaque, so we must completely fill the background with a solid colour)
-  g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+  g.fillAll(juce::Colours::black);
 
   g.setColour(juce::Colours::white);
   g.setFont(15.0f);
+  modeText.setButtonText(DynamicCurveEditor.GetDragAreaMode() ? "ON" : "OFF");
 }
 
 void SideChainAudioProcessorEditor::resized()
@@ -45,13 +58,14 @@ void SideChainAudioProcessorEditor::resized()
   using Track = juce::Grid::TrackInfo;
   using Fr = juce::Grid::Fr;
 
-  grid.templateRows = {Track(Fr(1)), Track(Fr(1)), Track(Fr(1)), Track(Fr(1))};
-  grid.templateColumns = {Track(Fr(2)), Track(Fr(4)), Track(Fr(1))};
+  grid.templateRows = {Track(Fr(2)), Track(Fr(2)), Track(Fr(1)), Track(Fr(1))};
+  grid.templateColumns = {Track(Fr(3)), Track(Fr(3)), Track(Fr(3)), Track(Fr(1))};
 
   grid.items.addArray({
       juce::GridItem(DynamicCurveEditor).withArea(1, 1, 3, 4),
-      juce::GridItem(volLabel).withArea(3, 1, 4, 3),
-      juce::GridItem(relLabel).withArea(3, 2, 4, 3),
+      juce::GridItem(modeText).withArea(3, 1, 4, 2),
+      juce::GridItem(volLabel).withArea(3, 2, 4, 3),
+      juce::GridItem(relLabel).withArea(3, 3, 4, 4),
   });
 
   // auto cM = audioProcessor.curveManager;

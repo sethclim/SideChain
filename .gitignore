@@ -82,6 +82,7 @@ Builds/
 **/JUCE
 **/cmake-build-debug
 **/cmake-xcode-build
+**/cmake-vs-build
 **/.idea
 
 
@@ -222,3 +223,4 @@ xcuserdata/
 # UNKNOWN: recommended by others, but I can't discover what these files are
 #
 .vscode
+.vs

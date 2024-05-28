@@ -49,6 +49,8 @@ public:
     //=============================================================================================
     void reDrawNode();
 
+    bool GetDragAreaMode();
+    void SetDragAreaMode(bool mode);
 
 private:
     CurveManager& curveManager;

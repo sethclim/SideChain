@@ -26,6 +26,9 @@ public:
 
     juce::Point<float> scaleToCoord(juce::Point<float> position);
 
+    void SetAddMode(bool mode);
+    bool GetAddMode();
+
 private:
     juce::ValueTree nodes;
     CurveManager &curveManager;

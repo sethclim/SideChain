@@ -16,7 +16,7 @@ DragArea::~DragArea() = default;
 
 void DragArea::paint(juce::Graphics &g)
 {
-    // g.fillAll(juce::Colours::purple);
+     //g.fillAll(juce::Colours::purple);
 
     juce::Path p;
     p.startNewSubPath(0.0f, getHeight() - 10);
@@ -45,12 +45,12 @@ void DragArea::paint(juce::Graphics &g)
 
             juce::Line<float> line(juce::Point<float>((float)xpos + 5, (float)ypos + 5), juce::Point<float>((float)x2pos + 5, (float)y2pos + 5));
 
-            g.setColour(juce::Colours::purple);
+            g.setColour(juce::Colour::fromRGBA(255, 255, 255,255));
             g.drawLine(line, 4.0f);
         }
 
         // std::cout << "xpos " << xpos << " ypos " << ypos << std::endl;
-        g.setColour(juce::Colours::orange);
+        g.setColour(juce::Colours::white);
         g.fillEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize);
         g.drawEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize, 1);
 
@@ -137,4 +137,14 @@ juce::Point<float> DragArea::scaleToCoord(juce::Point<float> position)
     float scaled_y = position.y / ((float)getHeight() - 10);
 
     return juce::Point<float>(scaled_x, scaled_y);
+}   
+
+void DragArea::SetAddMode(bool mode)
+{
+    addMode = mode;
+}
+
+bool DragArea::GetAddMode()
+{
+    return addMode;
 }

@@ -31,7 +31,7 @@ DynamicCurveEditor::~DynamicCurveEditor() = default;
 void DynamicCurveEditor::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colours::black);
-    g.setColour(juce::Colours::red);
+    //g.setColour(juce::Colours::white);
     g.drawRect(getLocalBounds(), 1);
 }
 
@@ -84,3 +84,6 @@ juce::Point<float> DynamicCurveEditor::getPointFromNode(const juce::ValueTree &v
 
     return juce::Point<float>(x, y);
 }
+
+bool DynamicCurveEditor::GetDragAreaMode() { return dragArea->GetAddMode(); }
+void DynamicCurveEditor::SetDragAreaMode(bool mode) { dragArea->SetAddMode(mode); }
