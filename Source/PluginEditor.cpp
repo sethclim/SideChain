@@ -30,12 +30,44 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
 
   modeText.onClick = [this]
   { OnModeTextClicked(); };
+
+  addAndMakeVisible(divisionMenu);
+  divisionMenu.addItem("Eighth", Eighth);
+  divisionMenu.addItem("Quarter", Quarter);
+  divisionMenu.addItem("Half", Half);
+  divisionMenu.addItem("Whole", Whole);
+
+  divisionMenu.onChange = [this]
+  { divisionMenuChanged(); };
+  divisionMenu.setSelectedId(2);
 }
 
 void SideChainAudioProcessorEditor::OnModeTextClicked()
 {
-    DynamicCurveEditor.SetDragAreaMode(!DynamicCurveEditor.GetDragAreaMode());
-    repaint();
+  DynamicCurveEditor.SetDragAreaMode(!DynamicCurveEditor.GetDragAreaMode());
+  repaint();
+}
+
+void SideChainAudioProcessorEditor::divisionMenuChanged()
+{
+
+  switch (divisionMenu.getSelectedId())
+  {
+  case 1:
+    audioProcessor.envelopeProcessor.SetDivisions(2);
+    break;
+  case 2:
+    audioProcessor.envelopeProcessor.SetDivisions(1);
+    break;
+  case 3:
+    audioProcessor.envelopeProcessor.SetDivisions(0.5);
+    break;
+  case 4:
+    audioProcessor.envelopeProcessor.SetDivisions(0.25);
+    break;
+  default:
+    break;
+  }
 }
 
 SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor() = default;
@@ -64,7 +96,7 @@ void SideChainAudioProcessorEditor::resized()
   grid.items.addArray({
       juce::GridItem(DynamicCurveEditor).withArea(1, 1, 3, 4),
       juce::GridItem(modeText).withArea(3, 1, 4, 2),
-      juce::GridItem(volLabel).withArea(3, 2, 4, 3),
+      juce::GridItem(divisionMenu).withArea(3, 2, 4, 3),
       juce::GridItem(relLabel).withArea(3, 3, 4, 4),
   });
 

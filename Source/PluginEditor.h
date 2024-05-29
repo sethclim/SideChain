@@ -39,6 +39,7 @@ class SideChainAudioProcessorEditor : public juce::AudioProcessorEditor
 public:
     explicit SideChainAudioProcessorEditor(SideChainAudioProcessor &);
     void OnModeTextClicked();
+    void divisionMenuChanged();
     ~SideChainAudioProcessorEditor() override;
 
     //==============================================================================
@@ -48,12 +49,21 @@ public:
 private:
     SideChainAudioProcessor &audioProcessor;
 
+    enum Divisions
+    {
+        Eighth = 1,
+        Quarter = 2,
+        Half = 3,
+        Whole = 4,
+    };
+
 public:
     DynamicCurveEditor DynamicCurveEditor;
 
     AtomicLabel volLabel;
     AtomicLabel relLabel;
     TextButton modeText;
+    juce::ComboBox divisionMenu;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SideChainAudioProcessorEditor);
 };

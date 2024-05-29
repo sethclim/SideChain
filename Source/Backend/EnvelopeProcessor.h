@@ -57,7 +57,7 @@ public:
 
         while (--numSamples >= 0)
         {
-            double relativePosition = fmod(transport.ppqPositions[static_cast<unsigned long>(startSample)], 1.0);
+            double relativePosition = fmod(transport.ppqPositions[static_cast<unsigned long>(startSample)] * divisions, 1.0);
             auto vol = getNextSample(relativePosition, segments);
             currentVol.store(vol);
             relPosition.store(relativePosition);
@@ -75,9 +75,12 @@ public:
     std::atomic<double> currentVol{0};
     std::atomic<double> relPosition{0};
 
+    void SetDivisions(float newDivision) { divisions = newDivision; }
+
 private:
     Transport &transport;
     unsigned int idx = 0;
+    float divisions = 1;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EnvelopeProcessor)
 };
