@@ -18,6 +18,7 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
       relLabel(p.envelopeProcessor.relPosition),
       modeText("Off")
 {
+  setLookAndFeel(&otherLookAndFeel);
   setResizable(true, true);
   setResizeLimits(500, 300, 1000, 600);
   setSize(500, 300);
@@ -40,6 +41,11 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   divisionMenu.onChange = [this]
   { divisionMenuChanged(); };
   divisionMenu.setSelectedId(2);
+}
+
+SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor()
+{
+  setLookAndFeel(nullptr);
 }
 
 void SideChainAudioProcessorEditor::OnModeTextClicked()
@@ -69,8 +75,6 @@ void SideChainAudioProcessorEditor::divisionMenuChanged()
     break;
   }
 }
-
-SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor() = default;
 
 //==============================================================================
 void SideChainAudioProcessorEditor::paint(juce::Graphics &g)
