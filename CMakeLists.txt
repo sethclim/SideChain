@@ -78,6 +78,7 @@ target_sources(SideChain
         Source/Backend/CurveManager.h
         Source/Backend/EnvelopeProcessor.h
         Source/Backend/Transport.h
+        Source/UI/Meters/Meters.h
 )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer

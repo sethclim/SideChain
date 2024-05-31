@@ -101,6 +101,8 @@ void SideChainAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     transport.prepare(sampleRate, samplesPerBlock);
+    rmsLevelLeft.reset(sampleRate, 0.5);
+    rmsLevelRight.reset(sampleRate, 0.5);
 }
 
 void SideChainAudioProcessor::releaseResources()
@@ -142,6 +144,16 @@ void SideChainAudioProcessor::callBack(std::vector<juce::Point<float>> d)
 void SideChainAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
+    rmsLevelLeft.skip(buffer.getNumSamples());
+    rmsLevelRight.skip(buffer.getNumSamples());
+    {
+        const auto value = Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumChannels()));
+        if (value < rmsLevelLeft.getCurrentValue())
+            rmsLevelLeft.setTargetValue(value);
+        else
+            rmsLevelLeft.setCurrentAndTargetValue(value);
+    }
+
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
@@ -150,6 +162,13 @@ void SideChainAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juc
 
     transport.process(getPlayHead(), buffer.getNumSamples());
     envelopeProcessor.ApplySideChainToBuffer(buffer, 0, buffer.getNumSamples());
+    {
+        const auto value = Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumChannels()));
+        if (value < rmsLevelRight.getCurrentValue())
+            rmsLevelRight.setTargetValue(value);
+        else
+            rmsLevelRight.setCurrentAndTargetValue(value);
+    }
 }
 
 //==============================================================================
@@ -175,6 +194,17 @@ void SideChainAudioProcessor::setStateInformation(const void *data, int sizeInBy
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+float SideChainAudioProcessor::getRmsValue(const int channel) const
+{
+    jassert(channel == 0 || channel == 1);
+    if (channel == 0)
+        return rmsLevelLeft.getCurrentValue();
+    if (channel == 1)
+        return rmsLevelRight.getCurrentValue();
+
+    return 0.f;
 }
 
 //==============================================================================

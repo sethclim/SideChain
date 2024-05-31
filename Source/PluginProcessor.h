@@ -53,11 +53,14 @@ public:
   //==============================================================================
   void getStateInformation(juce::MemoryBlock &destData) override;
   void setStateInformation(const void *data, int sizeInBytes) override;
+  float SideChainAudioProcessor::getRmsValue(const int channel) const;
   void callBack(std::vector<juce::Point<float>> d);
 
   EnvelopeProcessor envelopeProcessor;
   CurveManager curveManager;
   Transport transport;
 
+private:
+  LinearSmoothedValue<float> rmsLevelLeft, rmsLevelRight;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SideChainAudioProcessor)
 };

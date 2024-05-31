@@ -11,8 +11,11 @@
 
 //==============================================================================
 SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProcessor &p)
-    : AudioProcessorEditor(&p),
-      audioProcessor(p),
+    : AudioProcessorEditor(&p), audioProcessor(p),
+      verticalMeterL([&]()
+                     { return audioProcessor.getRmsValue(0); }),
+      verticalMeterR([&]()
+                     { return audioProcessor.getRmsValue(1); }),
       DynamicCurveEditor(p.curveManager),
       volLabel(p.envelopeProcessor.currentVol),
       relLabel(p.envelopeProcessor.relPosition),
@@ -28,6 +31,8 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   addAndMakeVisible(&DynamicCurveEditor);
 
   addAndMakeVisible(&modeText, -1);
+  addAndMakeVisible(&verticalMeterL);
+  addAndMakeVisible(&verticalMeterR);
 
   modeText.onClick = [this]
   { OnModeTextClicked(); };
@@ -95,16 +100,16 @@ void SideChainAudioProcessorEditor::resized()
   using Fr = juce::Grid::Fr;
 
   grid.templateRows = {Track(Fr(2)), Track(Fr(2)), Track(Fr(1)), Track(Fr(1))};
-  grid.templateColumns = {Track(Fr(3)), Track(Fr(3)), Track(Fr(3)), Track(Fr(1))};
+  grid.templateColumns = {Track(Fr(3)), Track(Fr(3)), Track(Fr(3)), Track(Fr(1)), Track(Fr(1))};
 
   grid.items.addArray({
       juce::GridItem(DynamicCurveEditor).withArea(1, 1, 3, 4),
       juce::GridItem(modeText).withArea(3, 1, 4, 2),
       juce::GridItem(divisionMenu).withArea(3, 2, 4, 3),
       juce::GridItem(relLabel).withArea(3, 3, 4, 4),
+      juce::GridItem(verticalMeterL).withArea(1, 4, 4, 4),
+      juce::GridItem(verticalMeterR).withArea(1, 5, 4, 5),
   });
 
-  // auto cM = audioProcessor.curveManager;
-  // DynamicCurveEditor.setBounds(0, 0, cM.width, cM.height);
   grid.performLayout(getLocalBounds());
 }

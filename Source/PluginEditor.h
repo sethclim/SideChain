@@ -11,11 +11,12 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "UI/DynamicCurve/DynamicCurveEditor.h"
+#include "UI/Meters/Meters.h"
 
-class OtherLookAndFeel : public juce::LookAndFeel_V4
+class CustomLookandFeel : public juce::LookAndFeel_V4
 {
 public:
-    OtherLookAndFeel()
+    CustomLookandFeel()
     {
         setColour(juce::Slider::thumbColourId, juce::Colours::red);
         setColour(PopupMenu::backgroundColourId, juce::Colours::black);
@@ -222,13 +223,15 @@ private:
     };
 
 public:
-    OtherLookAndFeel otherLookAndFeel;
+    CustomLookandFeel otherLookAndFeel;
     DynamicCurveEditor DynamicCurveEditor;
 
     AtomicLabel volLabel;
     AtomicLabel relLabel;
     TextButton modeText;
     juce::ComboBox divisionMenu;
+
+    VerticalMeter verticalMeterL, verticalMeterR;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SideChainAudioProcessorEditor);
 };
