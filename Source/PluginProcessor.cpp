@@ -188,12 +188,20 @@ void SideChainAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+
+    std::unique_ptr<juce::XmlElement> xml(curveManager.nodes.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void SideChainAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+    if (xmlState.get() != nullptr)
+        if (xmlState->hasTagName(curveManager.nodes.getType()))
+            curveManager.nodes.copyPropertiesAndChildrenFrom(juce::ValueTree::fromXml(*xmlState), nullptr);
 }
 
 float SideChainAudioProcessor::getRmsValue(const int channel) const
