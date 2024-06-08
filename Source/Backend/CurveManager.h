@@ -70,7 +70,7 @@ public:
             const auto &child_X = child.getProperty(DraggableNodeIdentifiers::posX);
             auto childNext_X = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
 
-            if ((int)child_X < coord.x && coord.x < (int)childNext_X)
+            if ((float)child_X < coord.x && coord.x < (float)childNext_X)
             {
                 auto childIdx = nodes.indexOf(child);
 
