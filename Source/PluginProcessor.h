@@ -12,6 +12,7 @@
 #include "Backend/EnvelopeProcessor.h"
 #include "Backend/Transport.h"
 #include "Backend/CurveManager.h"
+#include "Backend/PresetManager/PresetManager.h"
 
 //==============================================================================
 class SideChainAudioProcessor : public juce::AudioProcessor
@@ -53,6 +54,8 @@ public:
   //==============================================================================
   void getStateInformation(juce::MemoryBlock &destData) override;
   void setStateInformation(const void *data, int sizeInBytes) override;
+  Service::PresetManager &getPresetManager() { return presetManager; }
+
   float SideChainAudioProcessor::getRmsValue(const int channel) const;
   void callBack(std::vector<juce::Point<float>> d);
 
@@ -62,5 +65,7 @@ public:
 
 private:
   LinearSmoothedValue<float> rmsLevelLeft, rmsLevelRight;
+  Service::PresetManager presetManager;
+  juce::AudioProcessorValueTreeState apvts;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SideChainAudioProcessor)
 };

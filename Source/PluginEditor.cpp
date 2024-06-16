@@ -8,6 +8,8 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "Backend/PresetManager/PresetManager.h"
+#include "UI/PresetManagerUI.h"
 
 //==============================================================================
 SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProcessor &p)
@@ -16,10 +18,11 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
                      { return audioProcessor.getRmsValue(0); }),
       verticalMeterR([&]()
                      { return audioProcessor.getRmsValue(1); }),
-      DynamicCurveEditor(p.curveManager),
+      DynamicCurveEditor(p.curveManager, p.curveManager.nodes),
       volLabel(p.envelopeProcessor.currentVol),
       relLabel(p.envelopeProcessor.relPosition),
-      modeText("Off")
+      modeText("Off"),
+      presetPanel(p.getPresetManager())
 {
   setLookAndFeel(&otherLookAndFeel);
   setResizable(true, true);
@@ -46,6 +49,8 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   divisionMenu.onChange = [this]
   { divisionMenuChanged(); };
   divisionMenu.setSelectedId(2);
+
+  addAndMakeVisible(&presetPanel);
 }
 
 SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor()
@@ -86,7 +91,6 @@ void SideChainAudioProcessorEditor::paint(juce::Graphics &g)
 {
   // (Our component is opaque, so we must completely fill the background with a solid colour)
   g.fillAll(juce::Colours::black);
-
   g.setColour(juce::Colours::white);
   g.setFont(15.0f);
   modeText.setButtonText(DynamicCurveEditor.GetDragAreaMode() ? "ON" : "OFF");
@@ -99,16 +103,17 @@ void SideChainAudioProcessorEditor::resized()
   using Track = juce::Grid::TrackInfo;
   using Fr = juce::Grid::Fr;
 
-  grid.templateRows = {Track(Fr(2)), Track(Fr(2)), Track(Fr(1)), Track(Fr(1))};
+  grid.templateRows = {Track(Fr(1)), Track(Fr(2)), Track(Fr(2)), Track(Fr(1)), Track(Fr(1))};
   grid.templateColumns = {Track(Fr(3)), Track(Fr(3)), Track(Fr(3)), Track(Fr(1)), Track(Fr(1))};
 
   grid.items.addArray({
-      juce::GridItem(DynamicCurveEditor).withArea(1, 1, 3, 4),
-      juce::GridItem(modeText).withArea(3, 1, 4, 2),
-      juce::GridItem(divisionMenu).withArea(3, 2, 4, 3),
-      juce::GridItem(relLabel).withArea(3, 3, 4, 4),
-      juce::GridItem(verticalMeterL).withArea(1, 4, 4, 4),
-      juce::GridItem(verticalMeterR).withArea(1, 5, 4, 5),
+      juce::GridItem(presetPanel).withArea(1, 1, 1, 5),
+      juce::GridItem(DynamicCurveEditor).withArea(2, 1, 5, 4),
+      juce::GridItem(modeText).withArea(5, 1, 5, 2),
+      juce::GridItem(divisionMenu).withArea(5, 2, 5, 3),
+      juce::GridItem(relLabel).withArea(5, 3, 5, 4),
+      juce::GridItem(verticalMeterL).withArea(2, 4, 5, 4),
+      juce::GridItem(verticalMeterR).withArea(2, 5, 5, 5),
   });
 
   grid.performLayout(getLocalBounds());

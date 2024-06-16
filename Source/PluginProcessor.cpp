@@ -11,6 +11,16 @@
 #include "PluginEditor.h"
 // #include "JucePluginDefines.h"
 
+AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
+{
+    AudioProcessorValueTreeState::ParameterLayout layout;
+
+    for (int i = 1; i < 2; ++i)
+        layout.add(std::make_unique<AudioParameterInt>(String(i), String(i), 0, i, 0));
+
+    return layout;
+}
+
 //==============================================================================
 SideChainAudioProcessor::SideChainAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -22,11 +32,16 @@ SideChainAudioProcessor::SideChainAudioProcessor()
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
                          ),
-      envelopeProcessor(transport), curveManager()
 #endif
+      apvts(*this, nullptr, "PARAMETERS", createParameterLayout()),
+      envelopeProcessor(transport),
+      curveManager(apvts),
+      presetManager(apvts)
 {
     curveManager.registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> dataPoints)
                                                        { envelopeProcessor.setSideChainEnv(std::move(dataPoints)); });
+
+    presetManager.BeginListening();
 }
 
 SideChainAudioProcessor::~SideChainAudioProcessor() = default;
@@ -189,19 +204,20 @@ void SideChainAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 
-    std::unique_ptr<juce::XmlElement> xml(curveManager.nodes.createXml());
-    copyXmlToBinary(*xml, destData);
+    //std::unique_ptr<juce::XmlElement> xml(curveManager.
+    // .createXml());
+    //copyXmlToBinary(*xml, destData);
 }
 
 void SideChainAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    //std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 
-    if (xmlState.get() != nullptr)
-        if (xmlState->hasTagName(curveManager.nodes.getType()))
-            curveManager.nodes.copyPropertiesAndChildrenFrom(juce::ValueTree::fromXml(*xmlState), nullptr);
+    //if (xmlState.get() != nullptr)
+    //    if (xmlState->hasTagName(curveManager.nodes.state.getType()))
+    //        curveManager.nodes.state.copyPropertiesAndChildrenFrom(juce::ValueTree::fromXml(*xmlState), nullptr);
 }
 
 float SideChainAudioProcessor::getRmsValue(const int channel) const

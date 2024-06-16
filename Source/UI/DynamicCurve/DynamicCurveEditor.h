@@ -20,7 +20,7 @@ class DragArea;
 class DynamicCurveEditor  : public juce::Component, public juce::ValueTree::Listener
 {
 public:
-    explicit DynamicCurveEditor(CurveManager&);
+    explicit DynamicCurveEditor(CurveManager&, juce::AudioProcessorValueTreeState&);
     ~DynamicCurveEditor() override;
 
     void paint (juce::Graphics&) override;
@@ -54,7 +54,7 @@ public:
 
 private:
     CurveManager& curveManager;
-    juce::ValueTree nodeTree;
+    //juce::AudioProcessorValueTreeState nodeTree;
     static juce::Point<float> getPointFromNode(const juce::ValueTree&);
     std::unique_ptr<DragArea> dragArea;
     

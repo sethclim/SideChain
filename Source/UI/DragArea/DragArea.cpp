@@ -5,29 +5,28 @@
 #include "DragArea.h"
 #include <utility>
 
-DragArea::DragArea(const juce::ValueTree &tree, CurveManager &dynCurM) : nodes(tree), curveManager(dynCurM)
+DragArea::DragArea(const juce::AudioProcessorValueTreeState &tree, CurveManager &dynCurM) : nodes(tree), curveManager(dynCurM)
 {
     setWantsKeyboardFocus(true);
     std::cout << "CONTROL SIZE" << curveManager.controlSize << std::endl;
-    DBG(nodes.toXmlString());
 }
 
 DragArea::~DragArea() = default;
 
 void DragArea::paint(juce::Graphics &g)
 {
-     //g.fillAll(juce::Colours::purple);
+    // g.fillAll(juce::Colours::purple);
 
     juce::Path p;
     p.startNewSubPath(0.0f, getHeight() - 10);
 
     int idx = 0;
-    int numNodes = nodes.getNumChildren();
+    int numNodes = nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getNumChildren();
 
     float adj_width = getWidth() - 10;
     float adj_height = getHeight() - 10;
 
-    for (const auto &child : nodes)
+    for (const auto &child : nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
     {
         const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
         const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
@@ -45,7 +44,7 @@ void DragArea::paint(juce::Graphics &g)
 
             juce::Line<float> line(juce::Point<float>((float)xpos + 5, (float)ypos + 5), juce::Point<float>((float)x2pos + 5, (float)y2pos + 5));
 
-            g.setColour(juce::Colour::fromRGBA(255, 255, 255,255));
+            g.setColour(juce::Colour::fromRGBA(255, 255, 255, 255));
             g.drawLine(line, 4.0f);
         }
 
@@ -83,7 +82,7 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
     juce::Point<float> pos = event.position;
 
     // Check for a selected node and set it
-    for (const auto &child : nodes)
+    for (const auto &child : nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
     {
         float x = (float)child.getProperty(DraggableNodeIdentifiers::posX);
         float y = (float)child.getProperty(DraggableNodeIdentifiers::posY);
@@ -137,7 +136,7 @@ juce::Point<float> DragArea::scaleToCoord(juce::Point<float> position)
     float scaled_y = position.y / ((float)getHeight() - 10);
 
     return juce::Point<float>(scaled_x, scaled_y);
-}   
+}
 
 void DragArea::SetAddMode(bool mode)
 {
@@ -147,4 +146,30 @@ void DragArea::SetAddMode(bool mode)
 bool DragArea::GetAddMode()
 {
     return addMode;
+}
+
+void DragArea::valueTreeChildAdded(ValueTree &parentTree, ValueTree &childWhichHasBeenAdded)
+{
+    DBG("valueTreeChildAdded");
+}
+
+void DragArea::valueTreeChildRemoved(ValueTree &parentTree, ValueTree &childWhichHasBeenRemoved, int indexFromWhichChildWasRemoved)
+{
+    DBG("valueTreeChildRemoved");
+}
+
+void DragArea::valueTreeChildOrderChanged(ValueTree &parentTreeWhoseChildrenHaveMoved, int oldIndex, int newIndex)
+{
+    DBG("valueTreeChildOrderChanged");
+}
+
+void DragArea::valueTreeParentChanged(ValueTree &treeWhoseParentHasChanged)
+{
+    DBG("valueTreeParentChanged");
+}
+
+void DragArea::valueTreeRedirected(ValueTree &treeWhichHasBeenChanged)
+{
+    DBG("valueTreeRedirected");
+    reDraw();
 }

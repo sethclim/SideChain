@@ -12,6 +12,7 @@
 #include "PluginProcessor.h"
 #include "UI/DynamicCurve/DynamicCurveEditor.h"
 #include "UI/Meters/Meters.h"
+#include "UI/PresetManagerUI.h"
 
 class CustomLookandFeel : public juce::LookAndFeel_V4
 {
@@ -232,6 +233,7 @@ public:
     juce::ComboBox divisionMenu;
 
     VerticalMeter verticalMeterL, verticalMeterR;
+    PresetPanel presetPanel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SideChainAudioProcessorEditor);
 };

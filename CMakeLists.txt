@@ -74,11 +74,16 @@ target_sources(SideChain
         Source/UI/DynamicCurve/DynamicCurveEditor.cpp
         Source/UI/DynamicCurve/DynamicCurveEditor.h
         Source/PluginEditor.cpp
+        Source/PluginEditor.h
         Source/PluginProcessor.cpp
+        Source/PluginProcessor.h
         Source/Backend/CurveManager.h
         Source/Backend/EnvelopeProcessor.h
         Source/Backend/Transport.h
         Source/UI/Meters/Meters.h
+        Source/Backend/PresetManager/PresetManager.h
+        Source/Backend/PresetManager/PresetManager.cpp
+        Source/UI/PresetManagerUI.h
 )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer

@@ -13,10 +13,9 @@
 #include "../DragArea/DragArea.h"
 
 //==============================================================================
-DynamicCurveEditor::DynamicCurveEditor(CurveManager &dynCurM) : curveManager(dynCurM)
+DynamicCurveEditor::DynamicCurveEditor(CurveManager &dynCurM, juce::AudioProcessorValueTreeState& apvts) : curveManager(dynCurM)
 {
-    nodeTree = dynCurM.nodes;
-    dragArea = std::make_unique<DragArea>(nodeTree, dynCurM);
+    dragArea = std::make_unique<DragArea>(apvts, dynCurM);
 
     curveManager.registerOnMoveNodeCallback([this]()
                                             { dragArea->reDraw(); });
@@ -49,7 +48,6 @@ void DynamicCurveEditor::mouseDown(const juce::MouseEvent &event)
 void DynamicCurveEditor::reDrawNode()
 {
     repaint();
-    DBG(nodeTree.toXmlString());
 }
 
 void DynamicCurveEditor::valueTreePropertyChanged(juce::ValueTree &nodeChanged, const juce::Identifier &property)
