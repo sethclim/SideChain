@@ -59,6 +59,8 @@ public:
   float SideChainAudioProcessor::getRmsValue(const int channel) const;
   void callBack(std::vector<juce::Point<float>> d);
 
+  juce::AudioProcessorValueTreeState& GetAPVTS() { return apvts; }
+
   EnvelopeProcessor envelopeProcessor;
   CurveManager curveManager;
   Transport transport;

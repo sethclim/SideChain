@@ -15,7 +15,7 @@ typedef std::function<void()> RedrawEvent;
 class CurveManager : public juce::ValueTree::Listener
 {
 public:
-    CurveManager(juce::AudioProcessorValueTreeState &apvts) : nodes(apvts) {}
+    CurveManager(juce::AudioProcessorValueTreeState &apvts) : apvts(apvts), numberOfNodes(0){ }
 
     void initializeCurveManager()
     {
@@ -23,17 +23,17 @@ public:
             return;
 
         numberOfNodes = 0;
-        nodes.state.addListener(this);
+        apvts.state.addListener(this);
 
         juce::ValueTree &root = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
 
-        nodes.state.appendChild(root, nullptr);
+        apvts.state.appendChild(root, nullptr);
 
         addInitialNode(0, 0.5);
         addInitialNode(1, 0.5);
         calculateDataPointsFromTree();
 
-        DBG(nodes.state.toXmlString());
+        DBG(apvts.state.toXmlString());
 
         initialized = true;
     }
@@ -56,7 +56,7 @@ public:
     {
         jassert(coord.x <= 1.0 && coord.y <= 1.0);
 
-        if (!nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).isValid())
+        if (!apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).isValid())
             return;
 
         juce::ValueTree newNode(DraggableNodeIdentifiers::myNodeType);
@@ -67,16 +67,16 @@ public:
 
         // get the right index to land the node between two other nodes
         // X ----- here ----- X //
-        for (const auto &child : nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
+        for (const auto &child : apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
         {
             const auto &child_X = child.getProperty(DraggableNodeIdentifiers::posX);
             auto childNext_X = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
 
             if ((float)child_X < coord.x && coord.x < (float)childNext_X)
             {
-                auto childIdx = nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).indexOf(child);
+                auto childIdx = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).indexOf(child);
 
-                nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).addChild(newNode, childIdx + 1, nullptr);
+                apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).addChild(newNode, childIdx + 1, nullptr);
                 numberOfNodes++;
                 break;
             }
@@ -88,12 +88,12 @@ public:
 
     void moveNode(int id, juce::Point<float> coord) const
     {
-        auto node = nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, id);
+        auto node = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, id);
         DBG("move node " + node.toXmlString());
 
         if ((int)node.getProperty(DraggableNodeIdentifiers::id) == 0)
         {
-            auto endNode = nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, 1);
+            auto endNode = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, 1);
 
             if (checkBetweenMinMax(coord.y, 0, 1))
             {
@@ -103,7 +103,7 @@ public:
         }
         else if ((int)node.getProperty(DraggableNodeIdentifiers::id) == 1)
         {
-            auto startNode = nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, 0);
+            auto startNode = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, 0);
             if (checkBetweenMinMax(coord.y, 0, 1))
             {
                 node.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
@@ -141,7 +141,7 @@ private:
     {
         std::vector<juce::Point<float>> points = std::vector<juce::Point<float>>();
 
-        for (const auto &child : nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
+        for (const auto &child : apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
         {
             float x = child.getProperty(DraggableNodeIdentifiers::posX);
             float y = child.getProperty(DraggableNodeIdentifiers::posY);
@@ -161,7 +161,7 @@ private:
 
     void addInitialNode(float x, float y)
     {
-        if (!nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).isValid())
+        if (!apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).isValid())
             return;
 
         juce::ValueTree newNode(DraggableNodeIdentifiers::myNodeType);
@@ -170,10 +170,10 @@ private:
         newNode.setProperty(DraggableNodeIdentifiers::posY, y, nullptr);
         newNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
 
-        nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).addChild(newNode, -1, nullptr);
+        apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).addChild(newNode, -1, nullptr);
         numberOfNodes++;
 
-        DBG(nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).toXmlString());
+        DBG(apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).toXmlString());
 
         if (redrawCallback)
             (redrawCallback)();
@@ -199,16 +199,12 @@ private:
     }
 
     std::vector<juce::Point<float>> segments;
-    int numberOfNodes;
+    int numberOfNodes = 0;
     EventCallback eventCallback;
     RedrawEvent redrawCallback;
+    juce::AudioProcessorValueTreeState &apvts;
+    bool initialized = false;
 
 public:
-    int width;
-    int height;
-    int innerWidth;
-    int innerHeight;
-    juce::AudioProcessorValueTreeState &nodes;
     int controlSize = 10;
-    bool initialized = false;
 };

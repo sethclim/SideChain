@@ -13,13 +13,13 @@
 #include "../DragArea/DragArea.h"
 
 //==============================================================================
-DynamicCurveEditor::DynamicCurveEditor(CurveManager &dynCurM, juce::AudioProcessorValueTreeState &apvts) :
-    curveManager(dynCurM),
-    dragArea(apvts, dynCurM)
+DynamicCurveEditor::DynamicCurveEditor(CurveManager &curveManager, juce::AudioProcessorValueTreeState &apvts) : m_CurveManager(curveManager),
+                                                                                                                dragArea(apvts, curveManager)
 {
-    curveManager.registerOnMoveNodeCallback([this]()
-                                            { dragArea.reDraw(); });
-    curveManager.initializeCurveManager();
+    m_CurveManager.registerOnMoveNodeCallback([this]()
+                                              { dragArea.reDraw(); });
+    m_CurveManager.initializeCurveManager();
+    dragArea.StartListening();
 
     addAndMakeVisible(dragArea);
     dragArea.setBounds(0, 0, getWidth(), getHeight());

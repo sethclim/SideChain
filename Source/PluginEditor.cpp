@@ -18,7 +18,7 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
                      { return audioProcessor.getRmsValue(0); }),
       verticalMeterR([&]()
                      { return audioProcessor.getRmsValue(1); }),
-      DynamicCurveEditor(p.curveManager, p.curveManager.nodes),
+      DynamicCurveEditor(p.curveManager, p.GetAPVTS()),
       volLabel(p.envelopeProcessor.currentVol),
       relLabel(p.envelopeProcessor.relPosition),
       modeText("Off"),

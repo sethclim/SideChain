@@ -5,13 +5,17 @@
 #include "DragArea.h"
 #include <utility>
 
-DragArea::DragArea(const juce::AudioProcessorValueTreeState &tree, CurveManager &dynCurM) : nodes(tree), curveManager(dynCurM)
+DragArea::DragArea(juce::AudioProcessorValueTreeState &apvts, CurveManager &curveManager) : apvts(apvts), m_CurveManager(curveManager)
 {
     setWantsKeyboardFocus(true);
-    std::cout << "CONTROL SIZE" << curveManager.controlSize << std::endl;
 }
 
 DragArea::~DragArea() = default;
+
+void DragArea::StartListening()
+{
+    apvts.state.addListener(this);
+}
 
 void DragArea::paint(juce::Graphics &g)
 {
@@ -21,12 +25,12 @@ void DragArea::paint(juce::Graphics &g)
     p.startNewSubPath(0.0f, getHeight() - 10);
 
     int idx = 0;
-    int numNodes = nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getNumChildren();
+    int numNodes = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getNumChildren();
 
     float adj_width = getWidth() - 10;
     float adj_height = getHeight() - 10;
 
-    for (const auto &child : nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
+    for (const auto &child : apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
     {
         const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
         const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
@@ -52,15 +56,15 @@ void DragArea::paint(juce::Graphics &g)
         if ((int)child.getProperty(DraggableNodeIdentifiers::id) == selectedNodeId)
         {
             g.setColour(juce::Colours::black);
-            g.fillEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize);
+            g.fillEllipse(xpos, ypos, m_CurveManager.controlSize, m_CurveManager.controlSize);
         }
         else
         {
             g.setColour(juce::Colours::white);
-            g.fillEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize);
+            g.fillEllipse(xpos, ypos, m_CurveManager.controlSize, m_CurveManager.controlSize);
         }
         g.setColour(juce::Colours::white);
-        g.drawEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize, 2);
+        g.drawEllipse(xpos, ypos, m_CurveManager.controlSize, m_CurveManager.controlSize, 2);
 
         idx++;
     }
@@ -91,7 +95,7 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
     juce::Point<float> pos = event.position;
 
     // Check for a selected node and set it
-    for (const auto &child : nodes.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
+    for (const auto &child : apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
     {
         float x = (float)child.getProperty(DraggableNodeIdentifiers::posX);
         float y = (float)child.getProperty(DraggableNodeIdentifiers::posY);
@@ -117,7 +121,7 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
 
     if (selectedNodeId == -1 && addMode && modifiers.isRightButtonDown())
     {
-        curveManager.insertNewNodeBetween(scaleToCoord(pos));
+        m_CurveManager.insertNewNodeBetween(scaleToCoord(pos));
     }
 }
 
@@ -125,7 +129,7 @@ void DragArea::mouseDrag(const juce::MouseEvent &e)
 {
     if (selectedNodeId != -1)
     {
-        curveManager.moveNode(selectedNodeId, scaleToCoord(e.position));
+        m_CurveManager.moveNode(selectedNodeId, scaleToCoord(e.position));
     }
 }
 

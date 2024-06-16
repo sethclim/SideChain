@@ -34,7 +34,7 @@ public:
   void SetDragAreaMode(bool mode);
 
 private:
-  CurveManager &curveManager;
+  CurveManager &m_CurveManager;
   // juce::AudioProcessorValueTreeState nodeTree;
   static juce::Point<float> getPointFromNode(const juce::ValueTree &);
   DragArea dragArea;
