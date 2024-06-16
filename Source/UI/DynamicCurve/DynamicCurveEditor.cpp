@@ -13,16 +13,16 @@
 #include "../DragArea/DragArea.h"
 
 //==============================================================================
-DynamicCurveEditor::DynamicCurveEditor(CurveManager &dynCurM, juce::AudioProcessorValueTreeState& apvts) : curveManager(dynCurM)
+DynamicCurveEditor::DynamicCurveEditor(CurveManager &dynCurM, juce::AudioProcessorValueTreeState &apvts) :
+    curveManager(dynCurM),
+    dragArea(apvts, dynCurM)
 {
-    dragArea = std::make_unique<DragArea>(apvts, dynCurM);
-
     curveManager.registerOnMoveNodeCallback([this]()
-                                            { dragArea->reDraw(); });
+                                            { dragArea.reDraw(); });
     curveManager.initializeCurveManager();
 
-    addAndMakeVisible(*dragArea);
-    dragArea->setBounds(0, 0, getWidth(), getHeight());
+    addAndMakeVisible(dragArea);
+    dragArea.setBounds(0, 0, getWidth(), getHeight());
 }
 
 DynamicCurveEditor::~DynamicCurveEditor() = default;
@@ -30,13 +30,13 @@ DynamicCurveEditor::~DynamicCurveEditor() = default;
 void DynamicCurveEditor::paint(juce::Graphics &g)
 {
     g.fillAll(juce::Colours::black);
-    //g.setColour(juce::Colours::white);
+    // g.setColour(juce::Colours::white);
     g.drawRect(getLocalBounds(), 1);
 }
 
 void DynamicCurveEditor::resized()
 {
-    dragArea->setBounds(0, 0, getWidth(), getHeight());
+    dragArea.setBounds(0, 0, getWidth(), getHeight());
 }
 
 int x_start = 0, y_start = 0;
@@ -50,30 +50,6 @@ void DynamicCurveEditor::reDrawNode()
     repaint();
 }
 
-void DynamicCurveEditor::valueTreePropertyChanged(juce::ValueTree &nodeChanged, const juce::Identifier &property)
-{
-}
-
-// TODO Do I need this in the Dynamic curve editor?????
-void DynamicCurveEditor::valueTreeChildAdded(juce::ValueTree &parentTree, juce::ValueTree &childWhichHasBeenAdded)
-{
-}
-
-void DynamicCurveEditor::valueTreeChildRemoved(juce::ValueTree &parentTree, juce::ValueTree &childWhichHasBeenRemoved, int indexFromWhichChildWasRemoved)
-{
-    jassertfalse;
-}
-
-void DynamicCurveEditor::valueTreeChildOrderChanged(juce::ValueTree &parentTreeWhoseChildrenHaveMoved, int oldIndex, int newIndex)
-{
-    jassertfalse;
-}
-
-void DynamicCurveEditor::valueTreeParentChanged(juce::ValueTree &treeWhoseParentHasChanged)
-{
-    jassertfalse;
-}
-
 juce::Point<float> DynamicCurveEditor::getPointFromNode(const juce::ValueTree &vt)
 {
 
@@ -83,5 +59,5 @@ juce::Point<float> DynamicCurveEditor::getPointFromNode(const juce::ValueTree &v
     return juce::Point<float>(x, y);
 }
 
-bool DynamicCurveEditor::GetDragAreaMode() { return dragArea->GetAddMode(); }
-void DynamicCurveEditor::SetDragAreaMode(bool mode) { dragArea->SetAddMode(mode); }
+bool DynamicCurveEditor::GetDragAreaMode() { return dragArea.GetAddMode(); }
+void DynamicCurveEditor::SetDragAreaMode(bool mode) { dragArea.SetAddMode(mode); }

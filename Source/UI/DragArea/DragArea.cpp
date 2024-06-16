@@ -49,9 +49,18 @@ void DragArea::paint(juce::Graphics &g)
         }
 
         // std::cout << "xpos " << xpos << " ypos " << ypos << std::endl;
+        if ((int)child.getProperty(DraggableNodeIdentifiers::id) == selectedNodeId)
+        {
+            g.setColour(juce::Colours::black);
+            g.fillEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize);
+        }
+        else
+        {
+            g.setColour(juce::Colours::white);
+            g.fillEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize);
+        }
         g.setColour(juce::Colours::white);
-        g.fillEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize);
-        g.drawEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize, 1);
+        g.drawEllipse(xpos, ypos, curveManager.controlSize, curveManager.controlSize, 2);
 
         idx++;
     }
@@ -95,6 +104,7 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
         {
             selectedNodeId = child.getProperty(DraggableNodeIdentifiers::id);
             DBG("SELECTED");
+            repaint();
             break;
         }
         else

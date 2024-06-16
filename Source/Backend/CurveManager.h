@@ -15,12 +15,7 @@ typedef std::function<void()> RedrawEvent;
 class CurveManager : public juce::ValueTree::Listener
 {
 public:
-    CurveManager(juce::AudioProcessorValueTreeState& apvts) : nodes(apvts)
-    {
-        //nodes = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
-        //apvts.state.appendChild(juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType), nullptr);
-        //DBG(nodes.state.toXmlString());
-    }
+    CurveManager(juce::AudioProcessorValueTreeState &apvts) : nodes(apvts) {}
 
     void initializeCurveManager()
     {
@@ -30,7 +25,7 @@ public:
         numberOfNodes = 0;
         nodes.state.addListener(this);
 
-        juce::ValueTree& root = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
+        juce::ValueTree &root = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
 
         nodes.state.appendChild(root, nullptr);
 
@@ -213,7 +208,7 @@ public:
     int height;
     int innerWidth;
     int innerHeight;
-    juce::AudioProcessorValueTreeState& nodes;
+    juce::AudioProcessorValueTreeState &nodes;
     int controlSize = 10;
     bool initialized = false;
 };
