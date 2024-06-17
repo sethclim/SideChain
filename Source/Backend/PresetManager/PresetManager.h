@@ -20,7 +20,6 @@ namespace Service
         int loadPreviousPreset();
         StringArray getAllPresets() const;
         String getCurrentPreset() const;
-        void BeginListening();
 
     private:
         void valueTreeRedirected(juce::ValueTree& treeWhichHasBeenChanged) override;

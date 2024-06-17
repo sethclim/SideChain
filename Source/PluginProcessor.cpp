@@ -34,14 +34,15 @@ SideChainAudioProcessor::SideChainAudioProcessor()
                          ),
 #endif
       apvts(*this, nullptr, "PARAMETERS", createParameterLayout()),
-      envelopeProcessor(transport),
-      curveManager(apvts),
-      presetManager(apvts)
+      envelopeProcessor(transport)
 {
-    curveManager.registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> dataPoints)
-                                                       { envelopeProcessor.setSideChainEnv(std::move(dataPoints)); });
+    apvts.state.setProperty(Service::PresetManager::presetNameProperty, "", nullptr);
+    apvts.state.setProperty("version", ProjectInfo::versionString, nullptr);
 
-    presetManager.BeginListening();
+    presetManager = std::make_unique<Service::PresetManager>(apvts);
+    curveManager = std::make_unique<CurveManager>(apvts);
+    curveManager->registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> dataPoints)
+                                                       { envelopeProcessor.setSideChainEnv(std::move(dataPoints)); });
 }
 
 SideChainAudioProcessor::~SideChainAudioProcessor() = default;
@@ -219,6 +220,8 @@ void SideChainAudioProcessor::setStateInformation(const void *data, int sizeInBy
     if (xmlState.get() != nullptr)
         if (xmlState->hasTagName(apvts.state.getType()))
             apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
+
+    DBG("SET STATE " + apvts.state.toXmlString());
 }
 
 float SideChainAudioProcessor::getRmsValue(const int channel) const

@@ -25,16 +25,18 @@ public:
         numberOfNodes = 0;
         apvts.state.addListener(this);
 
-        juce::ValueTree &root = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
+        if (!apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).isValid())
+        {
+            DBG("NOT IS VALID!!!!!!!!!!!");
+            juce::ValueTree &root = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
 
-        apvts.state.appendChild(root, nullptr);
+            apvts.state.appendChild(root, nullptr);
 
-        addInitialNode(0, 0.5);
-        addInitialNode(1, 0.5);
+            addInitialNode(0, 0.5);
+            addInitialNode(1, 0.5);
+        }
+
         calculateDataPointsFromTree();
-
-        DBG(apvts.state.toXmlString());
-
         initialized = true;
     }
 

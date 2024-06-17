@@ -6,8 +6,6 @@
 #include <JuceHeader.h>
 #include "../../Backend/CurveManager.h"
 
-// class DraggableNodeEditor;
-
 class DragArea : public juce::Component, ValueTree::Listener
 {
 
@@ -29,18 +27,6 @@ public:
 
     void SetAddMode(bool mode);
     bool GetAddMode();
-
-    void valueTreeChildAdded(ValueTree &parentTree,
-                             ValueTree &childWhichHasBeenAdded) override;
-
-    void valueTreeChildRemoved(ValueTree &parentTree,
-                               ValueTree &childWhichHasBeenRemoved,
-                               int indexFromWhichChildWasRemoved) override;
-
-    void valueTreeChildOrderChanged(ValueTree &parentTreeWhoseChildrenHaveMoved,
-                                    int oldIndex, int newIndex) override;
-
-    void valueTreeParentChanged(ValueTree &treeWhoseParentHasChanged) override;
 
     void valueTreeRedirected(ValueTree &treeWhichHasBeenChanged) override;
 

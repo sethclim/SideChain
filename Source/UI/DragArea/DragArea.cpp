@@ -19,8 +19,6 @@ void DragArea::StartListening()
 
 void DragArea::paint(juce::Graphics &g)
 {
-    // g.fillAll(juce::Colours::purple);
-
     juce::Path p;
     p.startNewSubPath(0.0f, getHeight() - 10);
 
@@ -162,28 +160,7 @@ bool DragArea::GetAddMode()
     return addMode;
 }
 
-void DragArea::valueTreeChildAdded(ValueTree &parentTree, ValueTree &childWhichHasBeenAdded)
-{
-    DBG("valueTreeChildAdded");
-}
-
-void DragArea::valueTreeChildRemoved(ValueTree &parentTree, ValueTree &childWhichHasBeenRemoved, int indexFromWhichChildWasRemoved)
-{
-    DBG("valueTreeChildRemoved");
-}
-
-void DragArea::valueTreeChildOrderChanged(ValueTree &parentTreeWhoseChildrenHaveMoved, int oldIndex, int newIndex)
-{
-    DBG("valueTreeChildOrderChanged");
-}
-
-void DragArea::valueTreeParentChanged(ValueTree &treeWhoseParentHasChanged)
-{
-    DBG("valueTreeParentChanged");
-}
-
 void DragArea::valueTreeRedirected(ValueTree &treeWhichHasBeenChanged)
 {
-    DBG("valueTreeRedirected");
-    reDraw();
+    repaint();
 }

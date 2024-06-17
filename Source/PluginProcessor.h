@@ -54,20 +54,21 @@ public:
   //==============================================================================
   void getStateInformation(juce::MemoryBlock &destData) override;
   void setStateInformation(const void *data, int sizeInBytes) override;
-  Service::PresetManager &getPresetManager() { return presetManager; }
+  Service::PresetManager &getPresetManager() { return *presetManager; }
+  CurveManager& getCurveManager() { return *curveManager; }
 
   float SideChainAudioProcessor::getRmsValue(const int channel) const;
   void callBack(std::vector<juce::Point<float>> d);
 
-  juce::AudioProcessorValueTreeState& GetAPVTS() { return apvts; }
+  juce::AudioProcessorValueTreeState &GetAPVTS() { return apvts; }
 
   EnvelopeProcessor envelopeProcessor;
-  CurveManager curveManager;
   Transport transport;
 
 private:
   LinearSmoothedValue<float> rmsLevelLeft, rmsLevelRight;
-  Service::PresetManager presetManager;
+  std::unique_ptr<Service::PresetManager> presetManager;
+  std::unique_ptr <CurveManager> curveManager;
   juce::AudioProcessorValueTreeState apvts;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SideChainAudioProcessor)
 };

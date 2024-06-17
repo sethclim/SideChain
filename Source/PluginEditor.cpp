@@ -18,11 +18,11 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
                      { return audioProcessor.getRmsValue(0); }),
       verticalMeterR([&]()
                      { return audioProcessor.getRmsValue(1); }),
-      DynamicCurveEditor(p.curveManager, p.GetAPVTS()),
+      DynamicCurveEditor(p.getCurveManager(), p.GetAPVTS()),
       volLabel(p.envelopeProcessor.currentVol),
       relLabel(p.envelopeProcessor.relPosition),
       modeText("Off"),
-      presetPanel(p.getPresetManager())
+      presetPanel(p.getPresetManager(), p.GetAPVTS())
 {
   setLookAndFeel(&otherLookAndFeel);
   setResizable(true, true);

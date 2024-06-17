@@ -23,13 +23,12 @@ namespace Service
         }
         // DBG(valueTreeState.state.toXmlString());
         // valueTreeState.state.addListener(this);
-    }
 
-    void PresetManager::BeginListening()
-    {
         DBG("listening " + valueTreeState.state.toXmlString());
         valueTreeState.state.addListener(this);
         currentPreset.referTo(valueTreeState.state.getPropertyAsValue(presetNameProperty, nullptr));
+
+        DBG("PresetManager INIT " + valueTreeState.state.getPropertyAsValue(presetNameProperty, nullptr).toString());
     }
 
     void PresetManager::savePreset(const String &presetName)
@@ -129,7 +128,6 @@ namespace Service
 
     void PresetManager::valueTreeRedirected(juce::ValueTree &treeWhichHasBeenChanged)
     {
-        DBG("valueTreeRedirected 1");
         currentPreset.referTo(treeWhichHasBeenChanged.getPropertyAsValue(presetNameProperty, nullptr));
     }
 }
