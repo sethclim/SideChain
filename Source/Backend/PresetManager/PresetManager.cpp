@@ -21,8 +21,6 @@ namespace Service
                 jassertfalse;
             }
         }
-        // DBG(valueTreeState.state.toXmlString());
-        // valueTreeState.state.addListener(this);
 
         DBG("listening " + valueTreeState.state.toXmlString());
         valueTreeState.state.addListener(this);

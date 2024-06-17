@@ -41,14 +41,21 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   { OnModeTextClicked(); };
 
   addAndMakeVisible(divisionMenu);
-  divisionMenu.addItem("Eighth", Eighth);
-  divisionMenu.addItem("Quarter", Quarter);
-  divisionMenu.addItem("Half", Half);
-  divisionMenu.addItem("Whole", Whole);
+  //divisionMenu.addItem("Eighth", Eighth);
+  //divisionMenu.addItem("Quarter", Quarter);
+  //divisionMenu.addItem("Half", Half);
+  //divisionMenu.addItem("Whole", Whole);
+
+  DBG(p.GetAPVTS().state.toXmlString());
+
+  auto* parameter = p.GetAPVTS().getParameter("divisions");
+  divisionMenu.addItemList(parameter->getAllValueStrings(), 1);
 
   divisionMenu.onChange = [this]
   { divisionMenuChanged(); };
   divisionMenu.setSelectedId(2);
+
+  divisionChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(p.GetAPVTS(), "divisions", divisionMenu);
 
   addAndMakeVisible(&presetPanel);
 }

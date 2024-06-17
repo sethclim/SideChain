@@ -214,14 +214,7 @@ public:
 
 private:
     SideChainAudioProcessor &audioProcessor;
-
-    enum Divisions
-    {
-        Eighth = 1,
-        Quarter = 2,
-        Half = 3,
-        Whole = 4,
-    };
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> divisionChoiceAttachment;
 
 public:
     CustomLookandFeel otherLookAndFeel;

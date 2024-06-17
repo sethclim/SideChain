@@ -4,7 +4,6 @@
 
 #pragma once
 #include <JuceHeader.h>
-
 #include <utility>
 #include "../DraggableNodeIdentifiers.h"
 

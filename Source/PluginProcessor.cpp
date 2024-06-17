@@ -9,14 +9,12 @@
 #include "PluginProcessor.h"
 #include <utility>
 #include "PluginEditor.h"
-// #include "JucePluginDefines.h"
 
 AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 {
     AudioProcessorValueTreeState::ParameterLayout layout;
 
-    for (int i = 1; i < 2; ++i)
-        layout.add(std::make_unique<AudioParameterInt>(String(i), String(i), 0, i, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("divisions", "Divisions", StringArray("Eighth", "Quarter", "Half", "Whole"), 0));
 
     return layout;
 }
@@ -42,7 +40,7 @@ SideChainAudioProcessor::SideChainAudioProcessor()
     presetManager = std::make_unique<Service::PresetManager>(apvts);
     curveManager = std::make_unique<CurveManager>(apvts);
     curveManager->registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> dataPoints)
-                                                       { envelopeProcessor.setSideChainEnv(std::move(dataPoints)); });
+                                                        { envelopeProcessor.setSideChainEnv(std::move(dataPoints)); });
 }
 
 SideChainAudioProcessor::~SideChainAudioProcessor() = default;
@@ -148,7 +146,7 @@ bool SideChainAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts)
     return true;
 #endif
 }
-#endif q
+#endif
 
 void SideChainAudioProcessor::callBack(std::vector<juce::Point<float>> d)
 {

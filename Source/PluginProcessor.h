@@ -14,6 +14,14 @@
 #include "Backend/CurveManager.h"
 #include "Backend/PresetManager/PresetManager.h"
 
+enum Divisions
+{
+    Eighth = 1,
+    Quarter = 2,
+    Half = 3,
+    Whole = 4,
+};
+
 //==============================================================================
 class SideChainAudioProcessor : public juce::AudioProcessor
 {
