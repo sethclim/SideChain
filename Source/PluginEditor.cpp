@@ -41,14 +41,14 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   { OnModeTextClicked(); };
 
   addAndMakeVisible(divisionMenu);
-  //divisionMenu.addItem("Eighth", Eighth);
-  //divisionMenu.addItem("Quarter", Quarter);
-  //divisionMenu.addItem("Half", Half);
-  //divisionMenu.addItem("Whole", Whole);
+  // divisionMenu.addItem("Eighth", Eighth);
+  // divisionMenu.addItem("Quarter", Quarter);
+  // divisionMenu.addItem("Half", Half);
+  // divisionMenu.addItem("Whole", Whole);
 
   DBG(p.GetAPVTS().state.toXmlString());
 
-  auto* parameter = p.GetAPVTS().getParameter("divisions");
+  auto *parameter = p.GetAPVTS().getParameter("divisions");
   divisionMenu.addItemList(parameter->getAllValueStrings(), 1);
 
   divisionMenu.onChange = [this]
@@ -118,7 +118,7 @@ void SideChainAudioProcessorEditor::resized()
       juce::GridItem(DynamicCurveEditor).withArea(2, 1, 5, 4),
       juce::GridItem(modeText).withArea(5, 1, 5, 2),
       juce::GridItem(divisionMenu).withArea(5, 2, 5, 3),
-      juce::GridItem(relLabel).withArea(5, 3, 5, 4),
+      juce::GridItem(volLabel).withArea(5, 3, 5, 4),
       juce::GridItem(verticalMeterL).withArea(2, 4, 5, 4),
       juce::GridItem(verticalMeterR).withArea(2, 5, 5, 5),
   });

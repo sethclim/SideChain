@@ -14,13 +14,8 @@ typedef std::function<void()> RedrawEvent;
 class CurveManager : public juce::ValueTree::Listener
 {
 public:
-    CurveManager(juce::AudioProcessorValueTreeState &apvts) : apvts(apvts), numberOfNodes(0){ }
-
-    void initializeCurveManager()
+    CurveManager(juce::AudioProcessorValueTreeState &apvts) : apvts(apvts), numberOfNodes(0)
     {
-        if (initialized)
-            return;
-
         numberOfNodes = 0;
         apvts.state.addListener(this);
 
@@ -36,7 +31,6 @@ public:
         }
 
         calculateDataPointsFromTree();
-        initialized = true;
     }
 
     void registerOnCalculateDataPointsCallback(EventCallback cb) { eventCallback = std::move(cb); }
@@ -53,17 +47,17 @@ public:
         return segments;
     }
 
-    void insertNewNodeBetween(juce::Point<float> coord)
+    void insertNewNodeBetween(juce::Point<float> inComingCoord)
     {
-        jassert(coord.x <= 1.0 && coord.y <= 1.0);
-
         if (!apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).isValid())
             return;
 
+        inComingCoord = limitValue(inComingCoord);
+
         juce::ValueTree newNode(DraggableNodeIdentifiers::myNodeType);
 
-        newNode.setProperty(DraggableNodeIdentifiers::posX, coord.x, nullptr);
-        newNode.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::posX, inComingCoord.x, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::posY, inComingCoord.y, nullptr);
         newNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
 
         // get the right index to land the node between two other nodes
@@ -73,7 +67,7 @@ public:
             const auto &child_X = child.getProperty(DraggableNodeIdentifiers::posX);
             auto childNext_X = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
 
-            if ((float)child_X < coord.x && coord.x < (float)childNext_X)
+            if ((float)child_X < inComingCoord.x && inComingCoord.x < (float)childNext_X)
             {
                 auto childIdx = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).indexOf(child);
 
@@ -90,7 +84,6 @@ public:
     void moveNode(int id, juce::Point<float> coord) const
     {
         auto node = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, id);
-        DBG("move node " + node.toXmlString());
 
         if ((int)node.getProperty(DraggableNodeIdentifiers::id) == 0)
         {
@@ -142,7 +135,7 @@ private:
     {
         std::vector<juce::Point<float>> points = std::vector<juce::Point<float>>();
 
-        for (const auto &child : apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
+        for (const auto &child : apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
         {
             float x = child.getProperty(DraggableNodeIdentifiers::posX);
             float y = child.getProperty(DraggableNodeIdentifiers::posY);
@@ -180,15 +173,24 @@ private:
             (redrawCallback)();
     }
 
-    float limitValue(float value)
+    juce::Point<float> limitValue(juce::Point<float> value)
     {
-        if (value > 1.0)
+        if (value.x > 1.0)
         {
-            return 1.0;
+            value.x = 1.0;
         }
-        else if (value < 0.0)
+        else if (value.x < 0.0)
         {
-            return 0.0;
+            value.x = 0.0;
+        }
+
+        if (value.y > 1.0)
+        {
+            value.y = 1.0;
+        }
+        else if (value.y < 0.0)
+        {
+            value.y = 0.0;
         }
 
         return value;
@@ -199,12 +201,16 @@ private:
         return min <= value && value <= max;
     }
 
+    void valueTreeRedirected(juce::ValueTree &treeWhichHasBeenChanged)
+    {
+        calculateDataPointsFromTree();
+    }
+
     std::vector<juce::Point<float>> segments;
     int numberOfNodes = 0;
     EventCallback eventCallback;
     RedrawEvent redrawCallback;
     juce::AudioProcessorValueTreeState &apvts;
-    bool initialized = false;
 
 public:
     int controlSize = 10;

@@ -16,10 +16,10 @@
 
 enum Divisions
 {
-    Eighth = 1,
-    Quarter = 2,
-    Half = 3,
-    Whole = 4,
+  Eighth = 1,
+  Quarter = 2,
+  Half = 3,
+  Whole = 4,
 };
 
 //==============================================================================
@@ -63,7 +63,7 @@ public:
   void getStateInformation(juce::MemoryBlock &destData) override;
   void setStateInformation(const void *data, int sizeInBytes) override;
   Service::PresetManager &getPresetManager() { return *presetManager; }
-  CurveManager& getCurveManager() { return *curveManager; }
+  CurveManager &getCurveManager() { return *curveManager; }
 
   float SideChainAudioProcessor::getRmsValue(const int channel) const;
   void callBack(std::vector<juce::Point<float>> d);
@@ -76,7 +76,7 @@ public:
 private:
   LinearSmoothedValue<float> rmsLevelLeft, rmsLevelRight;
   std::unique_ptr<Service::PresetManager> presetManager;
-  std::unique_ptr <CurveManager> curveManager;
+  std::unique_ptr<CurveManager> curveManager;
   juce::AudioProcessorValueTreeState apvts;
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SideChainAudioProcessor)
 };

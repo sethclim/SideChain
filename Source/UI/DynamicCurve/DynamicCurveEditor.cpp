@@ -18,7 +18,6 @@ DynamicCurveEditor::DynamicCurveEditor(CurveManager &curveManager, juce::AudioPr
 {
     m_CurveManager.registerOnMoveNodeCallback([this]()
                                               { dragArea.reDraw(); });
-    m_CurveManager.initializeCurveManager();
     dragArea.StartListening();
 
     addAndMakeVisible(dragArea);
