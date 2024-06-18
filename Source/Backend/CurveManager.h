@@ -130,6 +130,17 @@ public:
             (redrawCallback)();
     }
 
+    void deleteNode(int id) const
+    {
+        // This is the start or end node (can't be removed)
+        if (id == 0 || id == 1)
+            return;
+
+        juce::ValueTree base = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+        auto node = base.getChildWithProperty(DraggableNodeIdentifiers::id, id);
+        base.removeChild(base.indexOf(node), nullptr);
+    }
+
 private:
     void calculateDataPointsFromTree()
     {

@@ -117,7 +117,14 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
 
     juce::ModifierKeys modifiers = juce::ModifierKeys::getCurrentModifiers();
 
-    if (selectedNodeId == -1 && addMode && modifiers.isRightButtonDown())
+    if (!editMode)
+        return;
+
+    if (selectedNodeId != -1 && modifiers.isRightButtonDown())
+    {
+        m_CurveManager.deleteNode(selectedNodeId);
+    }
+    else if (selectedNodeId == -1 && modifiers.isLeftButtonDown())
     {
         m_CurveManager.insertNewNodeBetween(scaleToCoord(pos));
     }
@@ -135,8 +142,8 @@ bool DragArea::keyPressed(const juce::KeyPress &key)
 {
     if (key == juce::KeyPress::escapeKey)
     {
-        addMode = !addMode;
-        std::cout << addMode << std::endl;
+        editMode = !editMode;
+        std::cout << editMode << std::endl;
         return true;
     }
     return false;
@@ -152,12 +159,12 @@ juce::Point<float> DragArea::scaleToCoord(juce::Point<float> position)
 
 void DragArea::SetAddMode(bool mode)
 {
-    addMode = mode;
+    editMode = mode;
 }
 
 bool DragArea::GetAddMode()
 {
-    return addMode;
+    return editMode;
 }
 
 void DragArea::valueTreeRedirected(ValueTree &treeWhichHasBeenChanged)
