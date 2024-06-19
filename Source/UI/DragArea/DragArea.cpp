@@ -51,7 +51,7 @@ void DragArea::paint(juce::Graphics &g)
         }
 
         // std::cout << "xpos " << xpos << " ypos " << ypos << std::endl;
-        if ((int)child.getProperty(DraggableNodeIdentifiers::id) == selectedNodeId)
+        if (child.getProperty(DraggableNodeIdentifiers::id) == selectedNodeId)
         {
             g.setColour(juce::Colours::black);
             g.fillEllipse(xpos, ypos, m_CurveManager.controlSize, m_CurveManager.controlSize);
@@ -111,7 +111,7 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
         }
         else
         {
-            selectedNodeId = -1;
+            selectedNodeId = "-1";
         }
     }
 
@@ -120,11 +120,11 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
     if (!editMode)
         return;
 
-    if (selectedNodeId != -1 && modifiers.isRightButtonDown())
+    if (selectedNodeId != "-1" && modifiers.isRightButtonDown())
     {
         m_CurveManager.deleteNode(selectedNodeId);
     }
-    else if (selectedNodeId == -1 && modifiers.isLeftButtonDown())
+    else if (selectedNodeId == "-1" && modifiers.isLeftButtonDown())
     {
         m_CurveManager.insertNewNodeBetween(scaleToCoord(pos));
     }
@@ -132,7 +132,7 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
 
 void DragArea::mouseDrag(const juce::MouseEvent &e)
 {
-    if (selectedNodeId != -1)
+    if (selectedNodeId != "-1")
     {
         m_CurveManager.moveNode(selectedNodeId, scaleToCoord(e.position));
     }

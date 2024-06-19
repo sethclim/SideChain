@@ -21,13 +21,12 @@ public:
 
         if (!apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).isValid())
         {
-            DBG("NOT IS VALID!!!!!!!!!!!");
             juce::ValueTree &root = juce::ValueTree(DraggableNodeIdentifiers::myRootDraggableTreeType);
 
             apvts.state.appendChild(root, nullptr);
 
-            addInitialNode(0, 0.5);
-            addInitialNode(1, 0.5);
+            addInitialNode(0, 0.5, 0);
+            addInitialNode(1, 0.5, 1);
         }
 
         calculateDataPointsFromTree();
@@ -47,31 +46,33 @@ public:
         return segments;
     }
 
-    void insertNewNodeBetween(juce::Point<float> inComingCoord)
+    void insertNewNodeBetween(juce::Point<float> coord)
     {
-        if (!apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).isValid())
+        auto base = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+
+        if (!base.isValid())
             return;
 
-        inComingCoord = limitValue(inComingCoord);
+        coord = limitValue(coord);
 
         juce::ValueTree newNode(DraggableNodeIdentifiers::myNodeType);
 
-        newNode.setProperty(DraggableNodeIdentifiers::posX, inComingCoord.x, nullptr);
-        newNode.setProperty(DraggableNodeIdentifiers::posY, inComingCoord.y, nullptr);
-        newNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::posX, coord.x, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::id, Uuid::Uuid().toString(), nullptr);
 
         // get the right index to land the node between two other nodes
         // X ----- here ----- X //
-        for (const auto &child : apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
+        for (const auto &child : base)
         {
             const auto &child_X = child.getProperty(DraggableNodeIdentifiers::posX);
             auto childNext_X = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
 
-            if ((float)child_X < inComingCoord.x && inComingCoord.x < (float)childNext_X)
+            if ((float)child_X < coord.x && coord.x < (float)childNext_X)
             {
-                auto childIdx = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).indexOf(child);
+                auto childIdx = base.indexOf(child);
 
-                apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).addChild(newNode, childIdx + 1, nullptr);
+                base.addChild(newNode, childIdx + 1, nullptr);
                 numberOfNodes++;
                 break;
             }
@@ -81,13 +82,16 @@ public:
             (redrawCallback)();
     }
 
-    void moveNode(int id, juce::Point<float> coord) const
+    void moveNode(juce::var id, juce::Point<float> coord) const
     {
-        auto node = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, id);
+        auto base = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+        auto node = base.getChildWithProperty(DraggableNodeIdentifiers::id, id);
+        DBG(id.toString());
+        DBG(base.toXmlString());
 
-        if ((int)node.getProperty(DraggableNodeIdentifiers::id) == 0)
+        if (id == "0")
         {
-            auto endNode = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, 1);
+            auto endNode = base.getChildWithProperty(DraggableNodeIdentifiers::id, 1);
 
             if (checkBetweenMinMax(coord.y, 0, 1))
             {
@@ -95,9 +99,9 @@ public:
                 endNode.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
             }
         }
-        else if ((int)node.getProperty(DraggableNodeIdentifiers::id) == 1)
+        else if (id == "1")
         {
-            auto startNode = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).getChildWithProperty(DraggableNodeIdentifiers::id, 0);
+            auto startNode = base.getChildWithProperty(DraggableNodeIdentifiers::id, 0);
             if (checkBetweenMinMax(coord.y, 0, 1))
             {
                 node.setProperty(DraggableNodeIdentifiers::posY, coord.y, nullptr);
@@ -130,15 +134,16 @@ public:
             (redrawCallback)();
     }
 
-    void deleteNode(int id) const
+    void deleteNode(juce::var id)
     {
         // This is the start or end node (can't be removed)
-        if (id == 0 || id == 1)
+        if (id == "0" || id == "1")
             return;
 
-        juce::ValueTree base = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+        auto base = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
         auto node = base.getChildWithProperty(DraggableNodeIdentifiers::id, id);
         base.removeChild(base.indexOf(node), nullptr);
+        numberOfNodes--;
     }
 
 private:
@@ -164,7 +169,7 @@ private:
         segments = points;
     }
 
-    void addInitialNode(float x, float y)
+    void addInitialNode(float x, float y, int id)
     {
         if (!apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).isValid())
             return;
@@ -173,12 +178,10 @@ private:
 
         newNode.setProperty(DraggableNodeIdentifiers::posX, x, nullptr);
         newNode.setProperty(DraggableNodeIdentifiers::posY, y, nullptr);
-        newNode.setProperty(DraggableNodeIdentifiers::id, numberOfNodes, nullptr);
+        newNode.setProperty(DraggableNodeIdentifiers::id, id, nullptr);
 
         apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).addChild(newNode, -1, nullptr);
         numberOfNodes++;
-
-        DBG(apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType).toXmlString());
 
         if (redrawCallback)
             (redrawCallback)();

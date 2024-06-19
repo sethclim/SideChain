@@ -33,6 +33,6 @@ public:
 private:
     juce::AudioProcessorValueTreeState &apvts;
     CurveManager &m_CurveManager;
-    int selectedNodeId = -1;
+    juce::var selectedNodeId = "-1";
     bool editMode = false;
 };
