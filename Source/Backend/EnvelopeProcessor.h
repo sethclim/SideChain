@@ -36,6 +36,18 @@ public:
         if (points.empty())
             return 0.0;
 
+        unsigned int newSize = points.size();
+        if (currentPointsSize == 0)
+        {
+            currentPointsSize = newSize;
+        }
+        else if (idx != 0 && newSize != currentPointsSize)
+        {
+            float prevRelPos = idx / currentPointsSize;
+            idx = newSize * prevRelPos;
+            currentPointsSize = newSize;
+        }
+
         if (relativePosition < points[1].x)
             idx = 0;
 
@@ -86,6 +98,8 @@ private:
     Transport &transport;
     unsigned int idx = 0;
     float divisions = 1;
+
+    unsigned int currentPointsSize = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EnvelopeProcessor)
 };
