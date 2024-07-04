@@ -84,6 +84,8 @@ target_sources(SideChain
         Source/Backend/PresetManager/PresetManager.h
         Source/Backend/PresetManager/PresetManager.cpp
         Source/UI/PresetManagerUI.h
+        Source/Backend/RealtimeObject/RealtimeObject.hpp
+        Source/Backend/RealtimeObject/RealtimeObjectImpl.hpp
 )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer

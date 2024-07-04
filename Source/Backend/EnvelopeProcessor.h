@@ -13,6 +13,7 @@
 #include <utility>
 #include "../DraggableNodeIdentifiers.h"
 #include "Transport.h"
+#include "RealtimeObject/RealtimeObject.hpp"
 
 class EnvelopeProcessor
 {
@@ -26,7 +27,8 @@ public:
 
     void setSideChainEnv(std::vector<juce::Point<float>> dataPoints)
     {
-        segments = std::move(dataPoints);
+        farbot::RealtimeObject<std::vector<juce::Point<float>>, farbot::RealtimeObjectOptions::nonRealtimeMutatable>::ScopedAccess<farbot::ThreadType::nonRealtime> liveSegments(segments);
+        *liveSegments = dataPoints;
     }
 
     double getNextSample(double relativePosition, std::vector<juce::Point<float>> points) noexcept
@@ -54,11 +56,12 @@ public:
     void ApplySideChainToBuffer(juce::AudioBuffer<float> &buffer, int startSample, int numSamples)
     {
         auto numChannels = buffer.getNumChannels();
+        farbot::RealtimeObject<std::vector<juce::Point<float>>, farbot::RealtimeObjectOptions::nonRealtimeMutatable>::ScopedAccess<farbot::ThreadType::realtime> liveSegments(segments);
 
         while (--numSamples >= 0)
         {
             double relativePosition = fmod(transport.ppqPositions[static_cast<unsigned long>(startSample)] * divisions, 1.0);
-            auto vol = getNextSample(relativePosition, segments);
+            auto vol = getNextSample(relativePosition, *liveSegments);
             currentVol.store(vol);
             relPosition.store(relativePosition);
 
@@ -71,7 +74,9 @@ public:
         }
     }
 
-    std::vector<juce::Point<float>> segments;
+    // std::vector<juce::Point<float>> Segments;
+    farbot::RealtimeObject<std::vector<juce::Point<float>>, farbot::RealtimeObjectOptions::nonRealtimeMutatable> segments;
+
     std::atomic<double> currentVol{0};
     std::atomic<double> relPosition{0};
 
