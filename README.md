@@ -10,6 +10,7 @@ Sidechain VST3 plugin for any DAW
 -   [x] Visual Meters
 -   [x] Presets
 -   [x] Different Subdivisions
+-   [x] Pass points from UI thread to Realtime thread in a safeway (Used Fabian's RealtimeObject)
 -   [ ] Mix Knob
 -   [ ] Curved Lines with Curve Tool
 -   [ ] Midi Trigger Mode
