@@ -73,6 +73,8 @@ target_sources(SideChain
         Source/UI/DragArea/DragArea.h
         Source/UI/DynamicCurve/DynamicCurveEditor.cpp
         Source/UI/DynamicCurve/DynamicCurveEditor.h
+        Source/UI/ControlPoint/ControlPoint.cpp
+        Source/UI/ControlPoint/ControlPoint.hpp
         Source/PluginEditor.cpp
         Source/PluginEditor.h
         Source/PluginProcessor.cpp

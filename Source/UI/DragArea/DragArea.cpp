@@ -8,7 +8,7 @@
 DragArea::DragArea(juce::AudioProcessorValueTreeState &apvts, CurveManager &curveManager) : apvts(apvts), m_CurveManager(curveManager)
 {
     setWantsKeyboardFocus(true);
-}
+} 
 
 DragArea::~DragArea() = default;
 
@@ -33,16 +33,18 @@ void DragArea::paint(juce::Graphics &g)
         const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
         const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
 
-        float xpos = (float)x * adj_width;
-        float ypos = (float)y * adj_height;
+        float halfControlSize = (float)m_CurveManager.controlSize / 2;
+        float xpos = (float)x * adj_width - halfControlSize;
+        float ypos = (float)y * adj_height - halfControlSize;
+
         p.lineTo(xpos, ypos);
         if (idx < numNodes - 1)
         {
             auto x2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posX);
             auto y2 = child.getSibling(1).getProperty(DraggableNodeIdentifiers::posY);
 
-            float x2pos = (float)x2 * adj_width;
-            float y2pos = (float)y2 * adj_height;
+            float x2pos = (float)x2 * adj_width - halfControlSize;
+            float y2pos = (float)y2 * adj_height - halfControlSize;
 
             juce::Line<float> line(juce::Point<float>((float)xpos + 5, (float)ypos + 5), juce::Point<float>((float)x2pos + 5, (float)y2pos + 5));
 
@@ -61,6 +63,7 @@ void DragArea::paint(juce::Graphics &g)
             g.setColour(juce::Colours::white);
             g.fillEllipse(xpos, ypos, m_CurveManager.controlSize, m_CurveManager.controlSize);
         }
+
         g.setColour(juce::Colours::white);
         g.drawEllipse(xpos, ypos, m_CurveManager.controlSize, m_CurveManager.controlSize, 2);
 
@@ -81,11 +84,41 @@ void DragArea::paint(juce::Graphics &g)
 void DragArea::reDraw()
 {
     repaint();
+    rePositionControlPoints();
+}
+
+void DragArea::rePositionControlPoints()
+{
+     auto& root = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+     int numChildren = root.getNumChildren();
+
+     int childIdx = 1;
+
+     for (int i = controlPoints.size() - 1; i >= 0; --i)
+     {
+         float adj_width = getWidth() - 10;
+         float adj_height = getHeight() - 10;
+
+         auto& child = root.getChild(childIdx);
+         const auto& x = child.getProperty(DraggableNodeIdentifiers::posX);
+         const auto& y = child.getProperty(DraggableNodeIdentifiers::posY);
+         
+         int width = 100;
+         int height = 50;
+
+         int startXOffset = ((float)width / 2);
+         int startYOffset = ((float)height / 2);
+
+         controlPoints[i]->setBounds(Rectangle<int>(((float)x * adj_width) - startXOffset, ((float)y * adj_height) - startYOffset, width, height));
+         childIdx++;
+     }
 }
 
 void DragArea::resized()
 {
     std::cout << "width " << getWidth() << " height " << getHeight() << std::endl;
+    // controlPoint.setBounds(Rectangle(10, 10, 100, 100));
+    rePositionControlPoints();
 }
 
 void DragArea::mouseDown(const juce::MouseEvent &event)
@@ -170,4 +203,33 @@ bool DragArea::GetAddMode()
 void DragArea::valueTreeRedirected(ValueTree &treeWhichHasBeenChanged)
 {
     repaint();
+    controlPoints.clear();
+
+    auto& root = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+    int numChildren = root.getNumChildren();
+
+    for (int i = 1; i <= numChildren - 2; i++)
+    {
+        auto c = new ControlPoint();
+        controlPoints.add(c);
+        addAndMakeVisible(c);
+
+        DBG("COUNT ");
+        DBG(controlPoints.size());
+
+        float adj_width = getWidth() - 10;
+        float adj_height = getHeight() - 10;
+
+        auto& child = root.getChild(i);
+        const auto& x = child.getProperty(DraggableNodeIdentifiers::posX);
+        const auto& y = child.getProperty(DraggableNodeIdentifiers::posY);
+
+        int width = 100;
+        int height = 50;
+
+        int startXOffset = ((float)width / 2);
+        int startYOffset = ((float)height / 2);
+
+        c->setBounds(Rectangle<int>(((float)x * adj_width) - startXOffset, ((float)y * adj_height) - startYOffset, width, height));
+    }
 }

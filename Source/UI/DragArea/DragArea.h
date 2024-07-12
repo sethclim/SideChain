@@ -5,6 +5,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "../../Backend/CurveManager.h"
+#include "../ControlPoint/ControlPoint.hpp"
 
 class DragArea : public juce::Component, ValueTree::Listener
 {
@@ -29,10 +30,13 @@ public:
     bool GetAddMode();
 
     void valueTreeRedirected(ValueTree &treeWhichHasBeenChanged) override;
+    void rePositionControlPoints();
 
 private:
     juce::AudioProcessorValueTreeState &apvts;
     CurveManager &m_CurveManager;
     juce::var selectedNodeId = "-1";
     bool editMode = false;
+
+    juce::OwnedArray<ControlPoint> controlPoints;
 };
