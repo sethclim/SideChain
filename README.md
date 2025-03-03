@@ -1,6 +1,6 @@
 # SideChain
 
-Sidechain VST3 plugin for any DAW
+Sidechain VST3 plugin for any DAW, featuring a visual graph for precise envelope adjustment. Easily create smooth, rhythmic volume effects for dynamic mixes or special effects.
 
 ![image](https://github.com/sethclim/SideChain/assets/56656904/6d5b6dcb-6802-4dd8-af7e-51cee0da4802)
 
