@@ -41,7 +41,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: build-Windows
-                  path: Build/SethJuceCMake_artefacts/Release/VST3
+                  path: Build/SideChain_artefacts/Release/VST3
 
     # build-macos:
     #     runs-on: macos-latest
