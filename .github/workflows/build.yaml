@@ -38,7 +38,7 @@ jobs:
               run: cmake --build Build --config Release --verbose
 
             - name: Archive build artifacts
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: build-Windows
                   path: Build/SethJuceCMake_artefacts/Release/VST3
