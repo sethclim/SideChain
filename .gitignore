@@ -79,7 +79,7 @@ DerivedData/
 build/
 Builds/
 **/JuceLibraryCode
-**/JUCE
+# **/JUCE
 **/cmake-build-debug
 **/cmake-xcode-build
 **/cmake-vs-build
