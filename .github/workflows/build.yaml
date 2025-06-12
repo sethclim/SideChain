@@ -36,10 +36,14 @@ jobs:
             - name: Build
               run: cmake --build Build --config Release --verbose
 
-            - name: Zip the build
-              run: |
-                  cd Build/SideChain_artefacts/Release
-                  zip -r SideChain_VST3.zip SideChain.vst3
+            - name: Archive Release
+              uses: thedoctor0/zip-release@0.7.5
+              with:
+                  type: "zip"
+                  filename: "SideChain_VST3.zip"
+                  directory: "Build/SideChain_artefacts/Release/"
+                  path: "./SideChain.vst3"
+                  exclusions: "*.git* /*node_modules/* .editorconfig"
 
             - name: Upload zip to GitHub Release
               uses: softprops/action-gh-release@v2
