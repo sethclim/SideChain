@@ -45,11 +45,12 @@ jobs:
                   path: "./VST3"
                   exclusions: "*.git* /*node_modules/* .editorconfig"
 
-            - name: Archive build artifacts
-              uses: actions/upload-artifact@v4
+            - name: Upload zip to GitHub Release
+              uses: softprops/action-gh-release@v2
               with:
-                  name: build-Windows
-                  path: Build/SideChain_artefacts/Release/SideChain_VST3.zip
+                  files: Build/SideChain_artefacts/Release/SideChain_VST3.zip
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # build-macos:
     #     runs-on: macos-latest
