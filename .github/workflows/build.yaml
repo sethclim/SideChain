@@ -35,21 +35,11 @@ jobs:
             - name: Build
               run: cmake --build Build --config Release --verbose
 
-            - name: Archive Release
-              uses: thedoctor0/zip-release@0.7.5
-              with:
-                  type: "zip"
-                  filename: "SideChain_VST3.zip"
-                  directory: "Build/SideChain_artefacts/Release/"
-                  path: "./VST3"
-                  exclusions: "*.git* /*node_modules/* .editorconfig"
-
             - name: Archive build artifacts
               uses: actions/upload-artifact@v4
               with:
                   name: build-Windows
-                  path: Build/SideChain_artefacts/Release/SideChain_VST3.zip
-
+                  path: Build/SideChain_artefacts/Release/VST3
     # build-macos:
     #     runs-on: macos-latest
 
