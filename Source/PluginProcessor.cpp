@@ -41,9 +41,14 @@ SideChainAudioProcessor::SideChainAudioProcessor()
     curveManager = std::make_unique<CurveManager>(apvts);
     curveManager->registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> dataPoints)
                                                         { envelopeProcessor.setSideChainEnv(std::move(dataPoints)); });
+
+    apvts.addParameterListener("divisions", this);
 }
 
-SideChainAudioProcessor::~SideChainAudioProcessor() = default;
+SideChainAudioProcessor::~SideChainAudioProcessor()
+{
+    apvts.removeParameterListener("divisions", this);
+};
 
 //==============================================================================
 const juce::String SideChainAudioProcessor::getName() const
@@ -137,7 +142,7 @@ bool SideChainAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts)
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-        // This checks if the input layout matches the output layout
+    // This checks if the input layout matches the output layout
 #if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
@@ -231,6 +236,31 @@ float SideChainAudioProcessor::getRmsValue(const int channel) const
         return rmsLevelRight.getCurrentValue();
 
     return 0.f;
+}
+
+void SideChainAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
+{
+    if (parameterID == "divisions")
+    {
+        int setting = int(newValue);
+        switch (setting)
+        {
+        case 0:
+            envelopeProcessor.SetDivisions(2);
+            break;
+        case 1:
+            envelopeProcessor.SetDivisions(1);
+            break;
+        case 2:
+            envelopeProcessor.SetDivisions(0.5);
+            break;
+        case 3:
+            envelopeProcessor.SetDivisions(0.25);
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 //==============================================================================

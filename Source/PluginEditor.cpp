@@ -51,8 +51,6 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   auto *parameter = p.GetAPVTS().getParameter("divisions");
   divisionMenu.addItemList(parameter->getAllValueStrings(), 1);
 
-  divisionMenu.onChange = [this]
-  { divisionMenuChanged(); };
   divisionMenu.setSelectedId(2);
 
   divisionChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(p.GetAPVTS(), "divisions", divisionMenu);
@@ -69,28 +67,6 @@ void SideChainAudioProcessorEditor::OnModeTextClicked()
 {
   DynamicCurveEditor.SetDragAreaMode(!DynamicCurveEditor.GetDragAreaMode());
   repaint();
-}
-
-void SideChainAudioProcessorEditor::divisionMenuChanged()
-{
-
-  switch (divisionMenu.getSelectedId())
-  {
-  case 1:
-    audioProcessor.envelopeProcessor.SetDivisions(2);
-    break;
-  case 2:
-    audioProcessor.envelopeProcessor.SetDivisions(1);
-    break;
-  case 3:
-    audioProcessor.envelopeProcessor.SetDivisions(0.5);
-    break;
-  case 4:
-    audioProcessor.envelopeProcessor.SetDivisions(0.25);
-    break;
-  default:
-    break;
-  }
 }
 
 //==============================================================================
