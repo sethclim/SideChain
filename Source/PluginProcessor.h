@@ -23,7 +23,7 @@ enum Divisions
 };
 
 //==============================================================================
-class SideChainAudioProcessor : public juce::AudioProcessor
+class SideChainAudioProcessor : public juce::AudioProcessor, juce::AudioProcessorValueTreeState::Listener
 {
 public:
   //==============================================================================
@@ -69,6 +69,8 @@ public:
   void callBack(std::vector<juce::Point<float>> d);
 
   juce::AudioProcessorValueTreeState &GetAPVTS() { return apvts; }
+
+  void parameterChanged(const juce::String& parameterID, float newValue) override;
 
   EnvelopeProcessor envelopeProcessor;
   Transport transport;

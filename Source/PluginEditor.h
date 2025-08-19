@@ -205,7 +205,7 @@ class SideChainAudioProcessorEditor : public juce::AudioProcessorEditor
 public:
     explicit SideChainAudioProcessorEditor(SideChainAudioProcessor &);
     void OnModeTextClicked();
-    void divisionMenuChanged();
+    //void divisionMenuChanged();
     ~SideChainAudioProcessorEditor() override;
 
     //==============================================================================
