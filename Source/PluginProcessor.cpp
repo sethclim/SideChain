@@ -45,7 +45,10 @@ SideChainAudioProcessor::SideChainAudioProcessor()
     apvts.addParameterListener("divisions", this);
 }
 
-SideChainAudioProcessor::~SideChainAudioProcessor() = default;
+SideChainAudioProcessor::~SideChainAudioProcessor()
+{
+    apvts.removeParameterListener("divisions", this);
+};
 
 //==============================================================================
 const juce::String SideChainAudioProcessor::getName() const
@@ -139,7 +142,7 @@ bool SideChainAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts)
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-        // This checks if the input layout matches the output layout
+    // This checks if the input layout matches the output layout
 #if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
@@ -235,7 +238,7 @@ float SideChainAudioProcessor::getRmsValue(const int channel) const
     return 0.f;
 }
 
-void SideChainAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)
+void SideChainAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
     if (parameterID == "divisions")
     {

@@ -69,10 +69,11 @@ public:
     {
         auto numChannels = buffer.getNumChannels();
         farbot::RealtimeObject<std::vector<juce::Point<float>>, farbot::RealtimeObjectOptions::nonRealtimeMutatable>::ScopedAccess<farbot::ThreadType::realtime> liveSegments(segments);
+        auto currentDivisions = divisions.load(std::memory_order_relaxed);
 
         while (--numSamples >= 0)
         {
-            double relativePosition = fmod(transport.ppqPositions[static_cast<unsigned long>(startSample)] * divisions, 1.0);
+            double relativePosition = fmod(transport.ppqPositions[static_cast<unsigned long>(startSample)] * currentDivisions, 1.0);
             auto vol = getNextSample(relativePosition, *liveSegments);
             currentVol.store(vol);
             relPosition.store(relativePosition);
@@ -92,12 +93,12 @@ public:
     std::atomic<double> currentVol{0};
     std::atomic<double> relPosition{0};
 
-    void SetDivisions(float newDivision) { divisions = newDivision; }
+    void SetDivisions(float newDivision) { divisions.store(newDivision, std::memory_order_relaxed); }
 
 private:
     Transport &transport;
     unsigned int idx = 0;
-    float divisions = 1;
+    std::atomic<float> divisions = { 1.0f };
 
     unsigned int currentPointsSize = 0;
 
