@@ -21,7 +21,6 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
       DynamicCurveEditor(p.getCurveManager(), p.GetAPVTS()),
       volLabel(p.envelopeProcessor.currentVol),
       relLabel(p.envelopeProcessor.relPosition),
-      modeText("Off"),
       presetPanel(p.getPresetManager(), p.GetAPVTS())
 {
   setLookAndFeel(&otherLookAndFeel);
@@ -33,12 +32,8 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   addAndMakeVisible(&relLabel, -1);
   addAndMakeVisible(&DynamicCurveEditor);
 
-  addAndMakeVisible(&modeText, -1);
   addAndMakeVisible(&verticalMeterL);
   addAndMakeVisible(&verticalMeterR);
-
-  modeText.onClick = [this]
-  { OnModeTextClicked(); };
 
   addAndMakeVisible(divisionMenu);
   // divisionMenu.addItem("Eighth", Eighth);
@@ -63,12 +58,6 @@ SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor()
   setLookAndFeel(nullptr);
 }
 
-void SideChainAudioProcessorEditor::OnModeTextClicked()
-{
-  DynamicCurveEditor.SetDragAreaMode(!DynamicCurveEditor.GetDragAreaMode());
-  repaint();
-}
-
 //==============================================================================
 void SideChainAudioProcessorEditor::paint(juce::Graphics &g)
 {
@@ -76,7 +65,6 @@ void SideChainAudioProcessorEditor::paint(juce::Graphics &g)
   g.fillAll(juce::Colours::black);
   g.setColour(juce::Colours::white);
   g.setFont(15.0f);
-  modeText.setButtonText(DynamicCurveEditor.GetDragAreaMode() ? "ON" : "OFF");
 }
 
 void SideChainAudioProcessorEditor::resized()
@@ -92,9 +80,8 @@ void SideChainAudioProcessorEditor::resized()
   grid.items.addArray({
       juce::GridItem(presetPanel).withArea(1, 1, 1, 5),
       juce::GridItem(DynamicCurveEditor).withArea(2, 1, 5, 4),
-      juce::GridItem(modeText).withArea(5, 1, 5, 2),
-      juce::GridItem(divisionMenu).withArea(5, 2, 5, 3),
-      juce::GridItem(volLabel).withArea(5, 3, 5, 4),
+      juce::GridItem(divisionMenu).withArea(5, 1, 5, 2),
+      juce::GridItem(volLabel).withArea(5, 2, 5, 3),
       juce::GridItem(verticalMeterL).withArea(2, 4, 5, 4),
       juce::GridItem(verticalMeterR).withArea(2, 5, 5, 5),
   });

@@ -121,9 +121,19 @@ void DragArea::resized()
     rePositionControlPoints();
 }
 
+namespace
+{
+    constexpr float hitTestPadding = 15.0f;
+}
+
 void DragArea::mouseDown(const juce::MouseEvent &event)
 {
     juce::Point<float> pos = event.position;
+    selectedNodeId = "-1";
+
+    float adj_width = getWidth() - 10;
+    float adj_height = getHeight() - 10;
+    float hitRadius = (m_CurveManager.controlSize / 2) + hitTestPadding;
 
     // Check for a selected node and set it
     for (const auto &child : apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType))
@@ -131,27 +141,18 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
         float x = (float)child.getProperty(DraggableNodeIdentifiers::posX);
         float y = (float)child.getProperty(DraggableNodeIdentifiers::posY);
 
-        float adj_width = getWidth() - 10;
-        float adj_height = getHeight() - 10;
-        // Check the distance between the point and where I click if its less than the radius// will work if move the center
-        // Currently just a box check
-        if (pos.x > (x * adj_width) - (m_CurveManager.controlSize / 2) && pos.x < (x * adj_width) + 10 && pos.y > (y * adj_height) - (m_CurveManager.controlSize / 2) && pos.y < (y * adj_height) + 10)
+        juce::Point<float> nodeCentre(x * adj_width, y * adj_height);
+
+        if (nodeCentre.getDistanceFrom(pos) <= hitRadius)
         {
             selectedNodeId = child.getProperty(DraggableNodeIdentifiers::id);
             DBG("SELECTED");
             repaint();
             break;
         }
-        else
-        {
-            selectedNodeId = "-1";
-        }
     }
 
     juce::ModifierKeys modifiers = juce::ModifierKeys::getCurrentModifiers();
-
-    if (!editMode)
-        return;
 
     if (selectedNodeId != "-1" && modifiers.isRightButtonDown())
     {
@@ -171,33 +172,12 @@ void DragArea::mouseDrag(const juce::MouseEvent &e)
     }
 }
 
-bool DragArea::keyPressed(const juce::KeyPress &key)
-{
-    if (key == juce::KeyPress::escapeKey)
-    {
-        editMode = !editMode;
-        std::cout << editMode << std::endl;
-        return true;
-    }
-    return false;
-}
-
 juce::Point<float> DragArea::scaleToCoord(juce::Point<float> position)
 {
     float scaled_x = position.x / ((float)getWidth() - 10);
     float scaled_y = position.y / ((float)getHeight() - 10);
 
     return juce::Point<float>(scaled_x, scaled_y);
-}
-
-void DragArea::SetAddMode(bool mode)
-{
-    editMode = mode;
-}
-
-bool DragArea::GetAddMode()
-{
-    return editMode;
 }
 
 void DragArea::valueTreeRedirected(ValueTree &treeWhichHasBeenChanged)

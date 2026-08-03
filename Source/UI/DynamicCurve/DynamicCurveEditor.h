@@ -30,9 +30,6 @@ public:
   void mouseDown(const juce::MouseEvent &event) override;
   void reDrawNode();
 
-  bool GetDragAreaMode();
-  void SetDragAreaMode(bool mode);
-
 private:
   CurveManager &m_CurveManager;
   // juce::AudioProcessorValueTreeState nodeTree;
