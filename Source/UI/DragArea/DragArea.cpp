@@ -84,41 +84,11 @@ void DragArea::paint(juce::Graphics &g)
 void DragArea::reDraw()
 {
     repaint();
-    rePositionControlPoints();
-}
-
-void DragArea::rePositionControlPoints()
-{
-    auto &root = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
-    int numChildren = root.getNumChildren();
-
-    int childIdx = 1;
-
-    for (int i = controlPoints.size() - 1; i >= 0; --i)
-    {
-        float adj_width = getWidth() - 10;
-        float adj_height = getHeight() - 10;
-
-        auto &child = root.getChild(childIdx);
-        const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
-        const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
-
-        int width = 100;
-        int height = 50;
-
-        int startXOffset = ((float)width / 2);
-        int startYOffset = ((float)height / 2);
-
-        controlPoints[i]->setBounds(Rectangle<int>(((float)x * adj_width) - startXOffset, ((float)y * adj_height) - startYOffset, width, height));
-        childIdx++;
-    }
 }
 
 void DragArea::resized()
 {
     std::cout << "width " << getWidth() << " height " << getHeight() << std::endl;
-    // controlPoint.setBounds(Rectangle(10, 10, 100, 100));
-    rePositionControlPoints();
 }
 
 namespace
@@ -183,33 +153,4 @@ juce::Point<float> DragArea::scaleToCoord(juce::Point<float> position)
 void DragArea::valueTreeRedirected(ValueTree &treeWhichHasBeenChanged)
 {
     repaint();
-    controlPoints.clear();
-
-    auto &root = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
-    int numChildren = root.getNumChildren();
-
-    for (int i = 1; i <= numChildren - 2; i++)
-    {
-        auto c = new ControlPoint();
-        controlPoints.add(c);
-        addAndMakeVisible(c);
-
-        DBG("COUNT ");
-        DBG(controlPoints.size());
-
-        float adj_width = getWidth() - 10;
-        float adj_height = getHeight() - 10;
-
-        auto &child = root.getChild(i);
-        const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
-        const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
-
-        int width = 100;
-        int height = 50;
-
-        int startXOffset = ((float)width / 2);
-        int startYOffset = ((float)height / 2);
-
-        c->setBounds(Rectangle<int>(((float)x * adj_width) - startXOffset, ((float)y * adj_height) - startYOffset, width, height));
-    }
 }
