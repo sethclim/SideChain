@@ -8,7 +8,7 @@
 DragArea::DragArea(juce::AudioProcessorValueTreeState &apvts, CurveManager &curveManager) : apvts(apvts), m_CurveManager(curveManager)
 {
     setWantsKeyboardFocus(true);
-} 
+}
 
 DragArea::~DragArea() = default;
 
@@ -89,29 +89,29 @@ void DragArea::reDraw()
 
 void DragArea::rePositionControlPoints()
 {
-     auto& root = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
-     int numChildren = root.getNumChildren();
+    auto &root = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+    int numChildren = root.getNumChildren();
 
-     int childIdx = 1;
+    int childIdx = 1;
 
-     for (int i = controlPoints.size() - 1; i >= 0; --i)
-     {
-         float adj_width = getWidth() - 10;
-         float adj_height = getHeight() - 10;
+    for (int i = controlPoints.size() - 1; i >= 0; --i)
+    {
+        float adj_width = getWidth() - 10;
+        float adj_height = getHeight() - 10;
 
-         auto& child = root.getChild(childIdx);
-         const auto& x = child.getProperty(DraggableNodeIdentifiers::posX);
-         const auto& y = child.getProperty(DraggableNodeIdentifiers::posY);
-         
-         int width = 100;
-         int height = 50;
+        auto &child = root.getChild(childIdx);
+        const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
+        const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
 
-         int startXOffset = ((float)width / 2);
-         int startYOffset = ((float)height / 2);
+        int width = 100;
+        int height = 50;
 
-         controlPoints[i]->setBounds(Rectangle<int>(((float)x * adj_width) - startXOffset, ((float)y * adj_height) - startYOffset, width, height));
-         childIdx++;
-     }
+        int startXOffset = ((float)width / 2);
+        int startYOffset = ((float)height / 2);
+
+        controlPoints[i]->setBounds(Rectangle<int>(((float)x * adj_width) - startXOffset, ((float)y * adj_height) - startYOffset, width, height));
+        childIdx++;
+    }
 }
 
 void DragArea::resized()
@@ -135,7 +135,7 @@ void DragArea::mouseDown(const juce::MouseEvent &event)
         float adj_height = getHeight() - 10;
         // Check the distance between the point and where I click if its less than the radius// will work if move the center
         // Currently just a box check
-        if (pos.x > (x * adj_width) && pos.x < (x * adj_width) + 10 && pos.y > (y * adj_height) && pos.y < (y * adj_height) + 10)
+        if (pos.x > (x * adj_width) - (m_CurveManager.controlSize / 2) && pos.x < (x * adj_width) + 10 && pos.y > (y * adj_height) - (m_CurveManager.controlSize / 2) && pos.y < (y * adj_height) + 10)
         {
             selectedNodeId = child.getProperty(DraggableNodeIdentifiers::id);
             DBG("SELECTED");
@@ -205,7 +205,7 @@ void DragArea::valueTreeRedirected(ValueTree &treeWhichHasBeenChanged)
     repaint();
     controlPoints.clear();
 
-    auto& root = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+    auto &root = apvts.state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
     int numChildren = root.getNumChildren();
 
     for (int i = 1; i <= numChildren - 2; i++)
@@ -220,9 +220,9 @@ void DragArea::valueTreeRedirected(ValueTree &treeWhichHasBeenChanged)
         float adj_width = getWidth() - 10;
         float adj_height = getHeight() - 10;
 
-        auto& child = root.getChild(i);
-        const auto& x = child.getProperty(DraggableNodeIdentifiers::posX);
-        const auto& y = child.getProperty(DraggableNodeIdentifiers::posY);
+        auto &child = root.getChild(i);
+        const auto &x = child.getProperty(DraggableNodeIdentifiers::posX);
+        const auto &y = child.getProperty(DraggableNodeIdentifiers::posY);
 
         int width = 100;
         int height = 50;
