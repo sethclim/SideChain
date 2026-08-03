@@ -166,7 +166,7 @@ void SideChainAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juc
     rmsLevelLeft.skip(buffer.getNumSamples());
     rmsLevelRight.skip(buffer.getNumSamples());
     {
-        const auto value = Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumChannels()));
+        const auto value = Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
         if (value < rmsLevelLeft.getCurrentValue())
             rmsLevelLeft.setTargetValue(value);
         else
@@ -182,7 +182,7 @@ void SideChainAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juc
     transport.process(getPlayHead(), buffer.getNumSamples());
     envelopeProcessor.ApplySideChainToBuffer(buffer, 0, buffer.getNumSamples());
     {
-        const auto value = Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumChannels()));
+        const auto value = Decibels::gainToDecibels(buffer.getRMSLevel(1, 0, buffer.getNumSamples()));
         if (value < rmsLevelRight.getCurrentValue())
             rmsLevelRight.setTargetValue(value);
         else
