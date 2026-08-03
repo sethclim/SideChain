@@ -204,7 +204,6 @@ class SideChainAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
     explicit SideChainAudioProcessorEditor(SideChainAudioProcessor &);
-    void OnModeTextClicked();
     //void divisionMenuChanged();
     ~SideChainAudioProcessorEditor() override;
 
@@ -222,7 +221,6 @@ public:
 
     AtomicLabel volLabel;
     AtomicLabel relLabel;
-    TextButton modeText;
     juce::ComboBox divisionMenu;
 
     VerticalMeter verticalMeterL, verticalMeterR;

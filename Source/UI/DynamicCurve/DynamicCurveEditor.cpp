@@ -57,6 +57,3 @@ juce::Point<float> DynamicCurveEditor::getPointFromNode(const juce::ValueTree &v
 
     return juce::Point<float>(x, y);
 }
-
-bool DynamicCurveEditor::GetDragAreaMode() { return dragArea.GetAddMode(); }
-void DynamicCurveEditor::SetDragAreaMode(bool mode) { dragArea.SetAddMode(mode); }
