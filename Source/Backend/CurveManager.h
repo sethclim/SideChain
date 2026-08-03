@@ -32,7 +32,12 @@ public:
         calculateDataPointsFromTree();
     }
 
-    void registerOnCalculateDataPointsCallback(EventCallback cb) { eventCallback = std::move(cb); }
+    void registerOnCalculateDataPointsCallback(EventCallback cb)
+    {
+        eventCallback = std::move(cb);
+        if (eventCallback)
+            (eventCallback)(segments);
+    }
 
     void registerOnMoveNodeCallback(RedrawEvent redrawEvent) { redrawCallback = std::move(redrawEvent); }
 
