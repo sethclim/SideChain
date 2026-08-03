@@ -14,7 +14,7 @@ AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 {
     AudioProcessorValueTreeState::ParameterLayout layout;
 
-    layout.add(std::make_unique<juce::AudioParameterChoice>("divisions", "Divisions", StringArray("Eighth", "Quarter", "Half", "Whole"), 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("divisions", "Divisions", StringArray("Eighth", "Quarter", "Half", "Whole"), 1));
 
     return layout;
 }
