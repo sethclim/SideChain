@@ -2,13 +2,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 namespace ui
 {
 
     DragView::DragView()
     {
-        points_ = {{0.0f, 0.5f}, {1.0f, 0.5f}};
+        points_ = {{0.0f, 0.5f}, {0.8f, 0.5f}};
     }
 
     DragView::~DragView() = default;
@@ -43,9 +44,23 @@ namespace ui
         onNodeDragged_ = std::move(callback);
     }
 
+    void DragView::setOnPointAdded(std::function<void(float, float)> callback)
+    {
+        pointAdded_ = std::move(callback);
+    }
+
     void DragView::mouseDown(const visage::MouseEvent &e)
     {
-        draggedIndex_ = nearestPointIndex(e.position.x, e.position.y);
+        if (e.isRightButton())
+        {
+            auto normalized = toNormalized(e.position.x, e.position.y);
+            if (pointAdded_)
+                pointAdded_(normalized.first, normalized.second);
+        }
+        else
+        {
+            draggedIndex_ = nearestPointIndex(e.position.x, e.position.y);
+        }
     }
 
     void DragView::mouseDrag(const visage::MouseEvent &e)

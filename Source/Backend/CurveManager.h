@@ -83,6 +83,12 @@ public:
             }
         }
 
+        // Adding a child fires valueTreeChildAdded, not the
+        // valueTreePropertyChanged this class listens for, so segments/
+        // eventCallback (visage's point list) never refreshes on its own -
+        // recompute explicitly so new nodes show up immediately.
+        calculateDataPointsFromTree();
+
         if (redrawCallback)
             (redrawCallback)();
     }

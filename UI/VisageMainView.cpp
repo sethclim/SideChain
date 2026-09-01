@@ -90,6 +90,11 @@ namespace ui
         dragView_.setOnNodeDragged(std::move(callback));
     }
 
+    void VisageMainView::setOnCurvePointAdded(std::function<void(float, float)> callback)
+    {
+        dragView_.setOnPointAdded(std::move(callback));
+    }
+
     void VisageMainView::layoutChildren(int width, int height)
     {
         float buttonWidth = 140.0f;

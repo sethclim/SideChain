@@ -27,6 +27,9 @@ namespace ui
         void setPoints(std::vector<std::pair<float, float>> normalizedPoints);
         void setOnNodeDragged(std::function<void(int index, float x, float y)> callback);
 
+        // Fired on a right-click that isn't near an existing node.
+        void setOnPointAdded(std::function<void(float x, float y)> callback);
+
         void mouseDown(const visage::MouseEvent &e) override;
         void mouseDrag(const visage::MouseEvent &e) override;
         void mouseUp(const visage::MouseEvent &e) override;
@@ -37,6 +40,7 @@ namespace ui
 
         std::vector<std::pair<float, float>> points_;
         std::function<void(int, float, float)> onNodeDragged_;
+        std::function<void(float, float)> pointAdded_;
         int draggedIndex_ = -1;
     };
 

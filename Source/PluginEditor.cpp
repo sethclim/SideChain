@@ -82,6 +82,9 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
     auto id = child.getProperty(DraggableNodeIdentifiers::id);
     audioProcessor.getCurveManager().moveNode(id, juce::Point<float>(x, y)); });
 
+  visageView.setOnCurvePointAdded([this](float x, float y)
+                                  { audioProcessor.getCurveManager().insertNewNodeBetween(juce::Point<float>(x, y)); });
+
   addAndMakeVisible(&presetPanel);
 }
 
