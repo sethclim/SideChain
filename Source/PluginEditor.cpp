@@ -10,6 +10,7 @@
 #include "PluginEditor.h"
 #include "Backend/PresetManager/PresetManager.h"
 #include "UI/PresetManagerUI.h"
+#include "DraggableNodeIdentifiers.h"
 
 //==============================================================================
 SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProcessor &p)
@@ -62,6 +63,31 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
     auto currentIndex = (int) std::round(parameter->convertFrom0to1(parameter->getValue()));
     auto nextIndex = (currentIndex + 1) % parameter->getNumSteps();
     divisionParamAttachment->setValueAsCompleteGesture((float) nextIndex); });
+
+  // Curve drag area: independent of DynamicCurveEditor/DragArea above, wired
+  // straight to CurveManager the same way the division button is wired to
+  // the "divisions" parameter.
+  //   CurveManager node changed -> registerOnCalculateDataPointsCallback -> visage points
+  //   visage node dragged -> look up node id at that index -> CurveManager.moveNode()
+  p.getCurveManager().registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> points)
+                                                             {
+    std::vector<std::pair<float, float>> normalized;
+    normalized.reserve((size_t) points.size());
+    for (auto &point : points)
+      normalized.emplace_back(point.x, point.y);
+    visageView.setCurvePoints(std::move(normalized)); });
+
+  visageView.setOnCurveNodeDragged([this](int index, float x, float y)
+                                   {
+    auto base = audioProcessor.GetAPVTS().state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+    auto child = base.getChild(index);
+    if (!child.isValid())
+      return;
+
+    // calculateDataPointsFromTree() inverts y on the way out, so invert back
+    // on the way in.
+    auto id = child.getProperty(DraggableNodeIdentifiers::id);
+    audioProcessor.getCurveManager().moveNode(id, juce::Point<float>(x, 1.0f - y)); });
 
   addAndMakeVisible(&presetPanel);
 }

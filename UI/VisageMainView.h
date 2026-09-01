@@ -3,8 +3,12 @@
 #include <visage/app.h>
 #include <visage/widgets.h>
 
+#include "DragView.h"
+
 #include <functional>
 #include <string>
+#include <utility>
+#include <vector>
 
 // Everything under UI/ renders with visage and must stay free of JUCE
 // includes, so this view can eventually be reused or tested outside the
@@ -35,11 +39,20 @@ public:
     // "next" means for the underlying JUCE parameter.
     void setDivisionClickedCallback(std::function<void()> callback);
 
+    // Curve drag area: JUCE owns the real node data (CurveManager) and pushes
+    // normalized (0-1, 0-1) points in here whenever they change.
+    void setCurvePoints(std::vector<std::pair<float, float>> normalizedPoints);
+
+    // Fired while the user drags a node: index into the vector last passed to
+    // setCurvePoints(), plus its new normalized position.
+    void setOnCurveNodeDragged(std::function<void(int index, float x, float y)> callback);
+
 private:
     void layoutChildren(int width, int height);
 
     visage::ApplicationWindow window_;
     visage::UiButton divisionButton_;
+    DragView dragView_;
     std::function<void()> divisionClicked_;
 };
 

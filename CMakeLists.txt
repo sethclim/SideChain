@@ -73,6 +73,8 @@ target_sources(SideChain
         PRIVATE
         UI/VisageMainView.h
         UI/VisageMainView.cpp
+        UI/DragView.h
+        UI/DragView.cpp
         Source/UI/DragArea/DragArea.cpp
         Source/UI/DragArea/DragArea.h
         Source/UI/DynamicCurve/DynamicCurveEditor.cpp
