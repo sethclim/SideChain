@@ -1,7 +1,32 @@
 #include "VisageMainView.h"
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+#endif
+
 namespace ui
 {
+    namespace
+    {
+        // visage's own resize path (Window::setNativeWindowSize ->
+        // windowContentsResized) adds windowBorderSize(hwnd) on top of the
+        // requested size, which is meant for decorated top-level windows.
+        // For our borderless WS_CHILD embed that border computation drifts
+        // on live resize, so force the exact bounds here instead of trusting it.
+        void forceNativeBounds(visage::ApplicationWindow &window, int width, int height)
+        {
+#ifdef _WIN32
+            if (window.window() == nullptr)
+                return;
+
+            auto hwnd = static_cast<HWND>(window.window()->nativeHandle());
+            if (hwnd != nullptr)
+                SetWindowPos(hwnd, nullptr, 0, 0, width, height, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOMOVE);
+#endif
+        }
+    }
 
     VisageMainView::VisageMainView() : divisionButton_("Quarter")
     {
@@ -30,12 +55,14 @@ namespace ui
         window_.setNativeWindowDimensions(width, height);
         layoutChildren(width, height);
         window_.show(parentNativeHandle);
+        forceNativeBounds(window_, width, height);
     }
 
     void VisageMainView::resize(int width, int height)
     {
         window_.setNativeWindowDimensions(width, height);
         layoutChildren(width, height);
+        forceNativeBounds(window_, width, height);
     }
 
     void VisageMainView::remove()

@@ -98,7 +98,8 @@ void SideChainAudioProcessorEditor::parentHierarchyChanged()
 
   if (auto *peer = getPeer())
   {
-    visageView.embed(peer->getNativeHandle(), getWidth(), getHeight());
+    auto scale = peer->getPlatformScaleFactor();
+    visageView.embed(peer->getNativeHandle(), (int)std::round(getWidth() * scale), (int)std::round(getHeight() * scale));
     visageEmbedded = true;
   }
 }
@@ -134,5 +135,8 @@ void SideChainAudioProcessorEditor::resized()
   grid.performLayout(getLocalBounds());
 
   if (visageEmbedded)
-    visageView.resize(getWidth(), getHeight());
+  {
+    auto scale = getPeer() != nullptr ? getPeer()->getPlatformScaleFactor() : 1.0;
+    visageView.resize((int)std::round(getWidth() * scale), (int)std::round(getHeight() * scale));
+  }
 }
