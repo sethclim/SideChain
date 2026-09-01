@@ -1,3 +1,6 @@
 [submodule "JUCE"]
 	path = JUCE
 	url = https://github.com/juce-framework/JUCE.git
+[submodule "visage"]
+	path = visage
+	url = git@github.com:VitalAudio/visage.git
