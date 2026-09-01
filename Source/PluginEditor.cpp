@@ -50,6 +50,19 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
 
   divisionChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(p.GetAPVTS(), "divisions", divisionMenu);
 
+  divisionParamAttachment = std::make_unique<juce::ParameterAttachment>(
+      *parameter,
+      [this, parameter](float denormalisedValue)
+      { visageView.setDivisionLabel(parameter->getText(parameter->convertTo0to1(denormalisedValue), 0).toStdString()); },
+      nullptr);
+  divisionParamAttachment->sendInitialUpdate();
+
+  visageView.setDivisionClickedCallback([this, parameter]()
+                                        {
+    auto currentIndex = (int) std::round(parameter->convertFrom0to1(parameter->getValue()));
+    auto nextIndex = (currentIndex + 1) % parameter->getNumSteps();
+    divisionParamAttachment->setValueAsCompleteGesture((float) nextIndex); });
+
   addAndMakeVisible(&presetPanel);
 }
 

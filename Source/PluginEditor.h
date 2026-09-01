@@ -205,7 +205,7 @@ class SideChainAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
     explicit SideChainAudioProcessorEditor(SideChainAudioProcessor &);
-    //void divisionMenuChanged();
+    // void divisionMenuChanged();
     ~SideChainAudioProcessorEditor() override;
 
     //==============================================================================
@@ -219,6 +219,8 @@ private:
 
     ui::VisageMainView visageView;
     bool visageEmbedded = false;
+
+    std::unique_ptr<juce::ParameterAttachment> divisionParamAttachment;
 
 public:
     CustomLookandFeel otherLookAndFeel;

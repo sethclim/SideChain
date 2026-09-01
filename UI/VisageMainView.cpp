@@ -1,44 +1,52 @@
 #include "VisageMainView.h"
 
-#include <algorithm>
+namespace ui {
 
-namespace ui
-{
+VisageMainView::VisageMainView() : divisionButton_("Quarter") {
+    window_.onDraw() = [this](visage::Canvas& canvas) {
+        canvas.setColor(0xff1a1a1a);
+        canvas.fill(0, 0, window_.width(), window_.height());
+    };
 
-    VisageMainView::VisageMainView()
-    {
-        window_.onDraw() = [this](visage::Canvas &canvas)
-        {
-            canvas.setColor(0xff1a1a1a);
-            canvas.fill(0, 0, window_.width(), window_.height());
+    window_.addChild(divisionButton_);
+    divisionButton_.onToggle() += [this](visage::Button*, bool) {
+        if (divisionClicked_)
+            divisionClicked_();
+    };
+}
 
-            float radius = std::min(window_.width(), window_.height()) * 0.15f;
-            float x = window_.width() * 0.5f - radius;
-            float y = window_.height() * 0.5f - radius;
-            canvas.setColor(0xff33ccff);
-            canvas.ring(x, y, 2.0f * radius, radius * 0.2f);
-        };
-    }
+VisageMainView::~VisageMainView() {
+    remove();
+}
 
-    VisageMainView::~VisageMainView()
-    {
-        remove();
-    }
+void VisageMainView::embed(void* parentNativeHandle, int width, int height) {
+    window_.setNativeWindowDimensions(width, height);
+    layoutChildren(width, height);
+    window_.show(parentNativeHandle);
+}
 
-    void VisageMainView::embed(void *parentNativeHandle, int width, int height)
-    {
-        window_.setNativeWindowDimensions(width, height);
-        window_.show(parentNativeHandle);
-    }
+void VisageMainView::resize(int width, int height) {
+    window_.setNativeWindowDimensions(width, height);
+    layoutChildren(width, height);
+}
 
-    void VisageMainView::resize(int width, int height)
-    {
-        window_.setNativeWindowDimensions(width, height);
-    }
+void VisageMainView::remove() {
+    window_.removeFromWindow();
+}
 
-    void VisageMainView::remove()
-    {
-        window_.removeFromWindow();
-    }
+void VisageMainView::setDivisionLabel(const std::string& label) {
+    divisionButton_.setText(label);
+}
+
+void VisageMainView::setDivisionClickedCallback(std::function<void()> callback) {
+    divisionClicked_ = std::move(callback);
+}
+
+void VisageMainView::layoutChildren(int width, int height) {
+    float buttonWidth = 140.0f;
+    float buttonHeight = 36.0f;
+    divisionButton_.setBounds(width * 0.5f - buttonWidth * 0.5f, height * 0.5f - buttonHeight * 0.5f,
+                              buttonWidth, buttonHeight);
+}
 
 }
