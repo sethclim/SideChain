@@ -55,7 +55,20 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
 
 SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor()
 {
+  visageView.remove();
   setLookAndFeel(nullptr);
+}
+
+void SideChainAudioProcessorEditor::parentHierarchyChanged()
+{
+  if (visageEmbedded)
+    return;
+
+  if (auto *peer = getPeer())
+  {
+    visageView.embed(peer->getNativeHandle(), getWidth(), getHeight());
+    visageEmbedded = true;
+  }
 }
 
 //==============================================================================
@@ -87,4 +100,7 @@ void SideChainAudioProcessorEditor::resized()
   });
 
   grid.performLayout(getLocalBounds());
+
+  if (visageEmbedded)
+    visageView.resize(getWidth(), getHeight());
 }

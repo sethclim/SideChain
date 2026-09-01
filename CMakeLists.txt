@@ -71,6 +71,8 @@ juce_generate_juce_header(SideChain)
 # CMake command.
 target_sources(SideChain
         PRIVATE
+        UI/VisageMainView.h
+        UI/VisageMainView.cpp
         Source/UI/DragArea/DragArea.cpp
         Source/UI/DragArea/DragArea.h
         Source/UI/DynamicCurve/DynamicCurveEditor.cpp
@@ -118,11 +120,16 @@ target_compile_definitions(SideChain
 # dependencies are resolved automatically, so `juce_core`, `juce_events` and so on will also be
 # linked automatically. If we'd generated a binary data target above, we would need to link to it
 # here too. This is a standard CMake command.
+target_include_directories(SideChain
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/UI)
+
 target_link_libraries(SideChain
         PRIVATE
 
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils
+        visage
         PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags

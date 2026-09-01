@@ -13,6 +13,7 @@
 #include "UI/DynamicCurve/DynamicCurveEditor.h"
 #include "UI/Meters/Meters.h"
 #include "UI/PresetManagerUI.h"
+#include "../UI/VisageMainView.h"
 
 class CustomLookandFeel : public juce::LookAndFeel_V4
 {
@@ -210,10 +211,14 @@ public:
     //==============================================================================
     void paint(juce::Graphics &) override;
     void resized() override;
+    void parentHierarchyChanged() override;
 
 private:
     SideChainAudioProcessor &audioProcessor;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> divisionChoiceAttachment;
+
+    ui::VisageMainView visageView;
+    bool visageEmbedded = false;
 
 public:
     CustomLookandFeel otherLookAndFeel;
