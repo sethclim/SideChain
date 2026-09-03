@@ -4,6 +4,7 @@
 #include <visage/widgets.h>
 
 #include "DragView.h"
+#include "PresetBar.h"
 
 #include <functional>
 #include <string>
@@ -52,12 +53,25 @@ namespace ui
         // Fired when the user requests a new node at a normalized position.
         void setOnCurvePointAdded(std::function<void(float x, float y)> callback);
 
+        // Preset bar: JUCE owns the real preset list/state (PresetManager) and
+        // pushes the current name and available names in here.
+        void setCurrentPresetName(const std::string &name);
+        void setPresetNames(std::vector<std::string> names);
+
+        // Fired when the user picks a preset from the bar's dropdown.
+        void setOnPresetSelected(std::function<void(const std::string &name)> callback);
+
+        // Fired by the preset bar's up/down arrows.
+        void setOnNextPreset(std::function<void()> callback);
+        void setOnPreviousPreset(std::function<void()> callback);
+
     private:
         void layoutChildren(int width, int height);
 
         visage::ApplicationWindow window_;
         visage::UiButton divisionButton_;
         DragView dragView_;
+        PresetBar presetBar_;
         std::function<void()> divisionClicked_;
     };
 

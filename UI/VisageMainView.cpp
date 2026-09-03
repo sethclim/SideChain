@@ -36,6 +36,7 @@ namespace ui
             canvas.fill(0, 0, window_.width(), window_.height());
         };
 
+        window_.addChild(presetBar_);
         window_.addChild(dragView_);
         window_.addChild(divisionButton_);
         divisionButton_.onToggle() += [this](visage::Button *, bool)
@@ -95,14 +96,43 @@ namespace ui
         dragView_.setOnPointAdded(std::move(callback));
     }
 
+    void VisageMainView::setCurrentPresetName(const std::string &name)
+    {
+        presetBar_.setCurrentPresetName(name);
+    }
+
+    void VisageMainView::setPresetNames(std::vector<std::string> names)
+    {
+        presetBar_.setPresetNames(std::move(names));
+    }
+
+    void VisageMainView::setOnPresetSelected(std::function<void(const std::string &)> callback)
+    {
+        presetBar_.setOnPresetSelected(std::move(callback));
+    }
+
+    void VisageMainView::setOnNextPreset(std::function<void()> callback)
+    {
+        presetBar_.setOnNextPreset(std::move(callback));
+    }
+
+    void VisageMainView::setOnPreviousPreset(std::function<void()> callback)
+    {
+        presetBar_.setOnPreviousPreset(std::move(callback));
+    }
+
     void VisageMainView::layoutChildren(int width, int height)
     {
+        float presetBarHeight = 32.0f;
         float buttonWidth = 140.0f;
         float buttonHeight = 36.0f;
-        float dragAreaHeight = height * 0.7f;
+        float contentHeight = height - presetBarHeight;
+        float dragAreaHeight = contentHeight * 0.7f;
 
-        dragView_.setBounds(0.0f, 0.0f, (float)width, dragAreaHeight);
-        divisionButton_.setBounds(width * 0.5f - buttonWidth * 0.5f, dragAreaHeight + (height - dragAreaHeight) * 0.5f - buttonHeight * 0.5f,
+        presetBar_.setBounds(0.0f, 0.0f, (float)width, presetBarHeight);
+        dragView_.setBounds(0.0f, presetBarHeight, (float)width, dragAreaHeight);
+        divisionButton_.setBounds(width * 0.5f - buttonWidth * 0.5f,
+                                  presetBarHeight + dragAreaHeight + (contentHeight - dragAreaHeight) * 0.5f - buttonHeight * 0.5f,
                                   buttonWidth, buttonHeight);
     }
 

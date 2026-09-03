@@ -85,13 +85,53 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   visageView.setOnCurvePointAdded([this](float x, float y)
                                   { audioProcessor.getCurveManager().insertNewNodeBetween(juce::Point<float>(x, y)); });
 
+  // Preset bar: independent of PresetPanel below, wired straight to
+  // Service::PresetManager the same way the division button is wired to
+  // the "divisions" parameter.
+  //   click on preset bar -> visage popup menu -> presetManager.loadPreset(name)
+  //   presetNameProperty changed (by either UI, or a full state replace) -> refreshPresetBar()
+  visageView.setOnPresetSelected([this](const std::string &name)
+                                 { audioProcessor.getPresetManager().loadPreset(name); });
+
+  visageView.setOnNextPreset([this]()
+                             { audioProcessor.getPresetManager().loadNextPreset(); });
+
+  visageView.setOnPreviousPreset([this]()
+                                 { audioProcessor.getPresetManager().loadPreviousPreset(); });
+
+  refreshPresetBar();
+  p.GetAPVTS().state.addListener(this);
+
   addAndMakeVisible(&presetPanel);
 }
 
 SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor()
 {
+  audioProcessor.GetAPVTS().state.removeListener(this);
   visageView.remove();
   setLookAndFeel(nullptr);
+}
+
+void SideChainAudioProcessorEditor::refreshPresetBar()
+{
+  auto &presetManager = audioProcessor.getPresetManager();
+  visageView.setCurrentPresetName(presetManager.getCurrentPreset().toStdString());
+
+  std::vector<std::string> names;
+  for (auto &name : presetManager.getAllPresets())
+    names.push_back(name.toStdString());
+  visageView.setPresetNames(std::move(names));
+}
+
+void SideChainAudioProcessorEditor::valueTreePropertyChanged(juce::ValueTree &, const juce::Identifier &property)
+{
+  if (property.toString() == Service::PresetManager::presetNameProperty)
+    refreshPresetBar();
+}
+
+void SideChainAudioProcessorEditor::valueTreeRedirected(juce::ValueTree &)
+{
+  refreshPresetBar();
 }
 
 void SideChainAudioProcessorEditor::parentHierarchyChanged()

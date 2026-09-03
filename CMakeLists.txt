@@ -75,6 +75,8 @@ target_sources(SideChain
         UI/VisageMainView.cpp
         UI/DragView.h
         UI/DragView.cpp
+        UI/PresetBar.h
+        UI/PresetBar.cpp
         Source/UI/DragArea/DragArea.cpp
         Source/UI/DragArea/DragArea.h
         Source/UI/DynamicCurve/DynamicCurveEditor.cpp

@@ -201,7 +201,8 @@ struct AtomicLabel
     std::atomic<double> &value;
 };
 
-class SideChainAudioProcessorEditor : public juce::AudioProcessorEditor
+class SideChainAudioProcessorEditor : public juce::AudioProcessorEditor,
+                                      private juce::ValueTree::Listener
 {
 public:
     explicit SideChainAudioProcessorEditor(SideChainAudioProcessor &);
@@ -214,6 +215,13 @@ public:
     void parentHierarchyChanged() override;
 
 private:
+    // Keeps visageView's preset bar in sync with Service::PresetManager
+    // regardless of whether the change came from the visage bar itself or
+    // from the old JUCE PresetPanel below.
+    void refreshPresetBar();
+    void valueTreePropertyChanged(juce::ValueTree &tree, const juce::Identifier &property) override;
+    void valueTreeRedirected(juce::ValueTree &tree) override;
+
     SideChainAudioProcessor &audioProcessor;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> divisionChoiceAttachment;
 
