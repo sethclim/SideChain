@@ -1,5 +1,7 @@
 #include "VisageMainView.h"
 
+#include <visage/ui.h>
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -42,10 +44,7 @@ namespace ui
         window_.addChild(leftMeter_);
         window_.addChild(rightMeter_);
         divisionButton_.onToggle() += [this](visage::Button *, bool)
-        {
-            if (divisionClicked_)
-                divisionClicked_();
-        };
+        { showDivisionMenu(); };
     }
 
     VisageMainView::~VisageMainView()
@@ -78,9 +77,32 @@ namespace ui
         divisionButton_.setText(label);
     }
 
-    void VisageMainView::setDivisionClickedCallback(std::function<void()> callback)
+    void VisageMainView::setDivisionOptions(std::vector<std::string> options)
     {
-        divisionClicked_ = std::move(callback);
+        divisionOptions_ = std::move(options);
+    }
+
+    void VisageMainView::setOnDivisionSelected(std::function<void(int)> callback)
+    {
+        onDivisionSelected_ = std::move(callback);
+    }
+
+    void VisageMainView::showDivisionMenu()
+    {
+        if (divisionOptions_.empty())
+            return;
+
+        visage::PopupMenu menu;
+        for (int i = 0; i < (int)divisionOptions_.size(); ++i)
+            menu.addOption(i, divisionOptions_[i]);
+
+        menu.onSelection() += [this](int id)
+        {
+            if (id >= 0 && id < (int)divisionOptions_.size() && onDivisionSelected_)
+                onDivisionSelected_(id);
+        };
+
+        menu.show(&divisionButton_);
     }
 
     void VisageMainView::setCurvePoints(std::vector<std::pair<float, float>> normalizedPoints)
@@ -138,7 +160,7 @@ namespace ui
         float presetBarHeight = 32.0f;
         float buttonWidth = 140.0f;
         float buttonHeight = 36.0f;
-        float meterWidth = 16.0f;
+        float meterWidth = 28.0f;
         float meterGap = 4.0f;
         float meterMargin = 8.0f;
         float meterColumnWidth = meterWidth * 2.0f + meterGap + meterMargin;

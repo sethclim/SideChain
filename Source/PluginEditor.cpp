@@ -65,11 +65,13 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
       nullptr);
   divisionParamAttachment->sendInitialUpdate();
 
-  visageView.setDivisionClickedCallback([this, parameter]()
-                                        {
-      auto currentIndex = (int) std::round(parameter->convertFrom0to1(parameter->getValue()));
-      auto nextIndex = (currentIndex + 1) % parameter->getNumSteps();
-      divisionParamAttachment->setValueAsCompleteGesture((float) nextIndex); });
+  std::vector<std::string> divisionOptions;
+  for (auto &option : parameter->getAllValueStrings())
+    divisionOptions.push_back(option.toStdString());
+  visageView.setDivisionOptions(std::move(divisionOptions));
+
+  visageView.setOnDivisionSelected([this](int index)
+                                   { divisionParamAttachment->setValueAsCompleteGesture((float)index); });
 
   p.getCurveManager().registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> points)
                                                             {

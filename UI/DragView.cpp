@@ -22,14 +22,15 @@ namespace ui
         canvas.setColor(0xffaa88ff);
         for (size_t i = 0; i + 1 < points_.size(); ++i)
         {
-            canvas.segment(points_[i].first * width(), points_[i].second * height(),
-                           points_[i + 1].first * width(), points_[i + 1].second * height(), 2.0f, true);
+            auto a = pixelForNormalized(points_[i].first, points_[i].second);
+            auto b = pixelForNormalized(points_[i + 1].first, points_[i + 1].second);
+            canvas.segment(a.first, a.second, b.first, b.second, 2.0f, true);
         }
 
         for (const auto &point : points_)
         {
-            canvas.circle(point.first * width() - kHandleRadius, point.second * height() - kHandleRadius,
-                          2.0f * kHandleRadius);
+            auto p = pixelForNormalized(point.first, point.second);
+            canvas.circle(p.first - kHandleRadius, p.second - kHandleRadius, 2.0f * kHandleRadius);
         }
     }
 
@@ -81,10 +82,19 @@ namespace ui
         draggedIndex_ = -1;
     }
 
+    std::pair<float, float> DragView::pixelForNormalized(float normalizedX, float normalizedY) const
+    {
+        float usableWidth = std::max(0.0f, width() - 2.0f * kHandleRadius);
+        float usableHeight = std::max(0.0f, height() - 2.0f * kHandleRadius);
+        return {kHandleRadius + normalizedX * usableWidth, kHandleRadius + normalizedY * usableHeight};
+    }
+
     std::pair<float, float> DragView::toNormalized(float pixelX, float pixelY) const
     {
-        float x = width() > 0.0f ? std::clamp(pixelX / width(), 0.0f, 1.0f) : 0.0f;
-        float y = height() > 0.0f ? std::clamp(pixelY / height(), 0.0f, 1.0f) : 0.0f;
+        float usableWidth = width() - 2.0f * kHandleRadius;
+        float usableHeight = height() - 2.0f * kHandleRadius;
+        float x = usableWidth > 0.0f ? std::clamp((pixelX - kHandleRadius) / usableWidth, 0.0f, 1.0f) : 0.0f;
+        float y = usableHeight > 0.0f ? std::clamp((pixelY - kHandleRadius) / usableHeight, 0.0f, 1.0f) : 0.0f;
         return {x, y};
     }
 
@@ -95,8 +105,9 @@ namespace ui
 
         for (size_t i = 0; i < points_.size(); ++i)
         {
-            float dx = points_[i].first * width() - pixelX;
-            float dy = points_[i].second * height() - pixelY;
+            auto p = pixelForNormalized(points_[i].first, points_[i].second);
+            float dx = p.first - pixelX;
+            float dy = p.second - pixelY;
             float distanceSquared = dx * dx + dy * dy;
             if (distanceSquared < closestDistanceSquared)
             {

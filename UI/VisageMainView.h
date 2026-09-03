@@ -36,12 +36,14 @@ namespace ui
         void remove();
 
         // The division button is display-only from this class's point of view:
-        // JUCE owns the real parameter value and pushes label updates in here.
+        // JUCE owns the real parameter value and pushes label updates and the
+        // full list of choices in here.
         void setDivisionLabel(const std::string &label);
+        void setDivisionOptions(std::vector<std::string> options);
 
-        // Fired when the user clicks the division button. The host decides what
-        // "next" means for the underlying JUCE parameter.
-        void setDivisionClickedCallback(std::function<void()> callback);
+        // Fired when the user picks an option from the division dropdown -
+        // index into the vector last passed to setDivisionOptions().
+        void setOnDivisionSelected(std::function<void(int index)> callback);
 
         // Curve drag area: JUCE owns the real node data (CurveManager) and pushes
         // normalized (0-1, 0-1) points in here whenever they change.
@@ -74,6 +76,7 @@ namespace ui
 
     private:
         void layoutChildren(int width, int height);
+        void showDivisionMenu();
 
         visage::ApplicationWindow window_;
         visage::UiButton divisionButton_;
@@ -81,7 +84,8 @@ namespace ui
         PresetBar presetBar_;
         MeterView leftMeter_;
         MeterView rightMeter_;
-        std::function<void()> divisionClicked_;
+        std::vector<std::string> divisionOptions_;
+        std::function<void(int)> onDivisionSelected_;
     };
 
 }

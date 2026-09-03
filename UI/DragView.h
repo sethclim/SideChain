@@ -35,6 +35,12 @@ namespace ui
         void mouseUp(const visage::MouseEvent &e) override;
 
     private:
+        // The drawable area is inset by kHandleRadius on every side so a
+        // handle at the 0 or 1 extreme is fully visible instead of having its
+        // circle clipped at the frame edge - normalized (0,0)-(1,1) still map
+        // to the true corners, just via this inset pixel range rather than
+        // the raw frame bounds.
+        std::pair<float, float> pixelForNormalized(float normalizedX, float normalizedY) const;
         std::pair<float, float> toNormalized(float pixelX, float pixelY) const;
         int nearestPointIndex(float pixelX, float pixelY) const;
 
