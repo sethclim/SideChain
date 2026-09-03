@@ -16,6 +16,11 @@ set(CMAKE_DEBUG_POSTFIX "")
 # directories, and the current project version. This is a standard CMake command.
 project(SideChain VERSION 0.0.1)
 
+# Turn OFF to compile out the original JUCE-drawn editor UI (DynamicCurveEditor,
+# VerticalMeter, PresetPanel, divisionMenu, AtomicLabel) entirely, leaving only
+# the visage-based UI embedded in PluginEditor.
+option(SIDECHAIN_LEGACY_JUCE_UI "Build the legacy JUCE-drawn editor UI alongside the visage UI" ON)
+
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
 # included JUCE directly in your source tree (perhaps as a submodule), you'll need to tell CMake to
@@ -110,7 +115,8 @@ target_compile_definitions(SideChain
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
         JUCE_WEB_BROWSER=0 # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
         JUCE_USE_CURL=0 # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
-        JUCE_VST3_CAN_REPLACE_VST2=0)
+        JUCE_VST3_CAN_REPLACE_VST2=0
+        SIDECHAIN_LEGACY_JUCE_UI=$<BOOL:${SIDECHAIN_LEGACY_JUCE_UI}>)
 
 # If your target needs extra binary assets, you can add them here. The first argument is the name of
 # a new static library target that will include all the binary resources. There is an optional

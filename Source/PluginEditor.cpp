@@ -14,7 +14,9 @@
 
 //==============================================================================
 SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProcessor &p)
-    : AudioProcessorEditor(&p), audioProcessor(p),
+    : AudioProcessorEditor(&p), audioProcessor(p)
+#if SIDECHAIN_LEGACY_JUCE_UI
+      ,
       verticalMeterL([&]()
                      { return audioProcessor.getRmsValue(0); }),
       verticalMeterR([&]()
@@ -23,18 +25,21 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
       volLabel(p.envelopeProcessor.currentVol),
       relLabel(p.envelopeProcessor.relPosition),
       presetPanel(p.getPresetManager(), p.GetAPVTS())
+#endif
 {
   setLookAndFeel(&otherLookAndFeel);
   setResizable(true, true);
   setResizeLimits(500, 300, 1000, 600);
   setSize(500, 300);
 
+#if SIDECHAIN_LEGACY_JUCE_UI
   addAndMakeVisible(&volLabel, -1);
   addAndMakeVisible(&relLabel, -1);
   addAndMakeVisible(&DynamicCurveEditor);
 
   addAndMakeVisible(&verticalMeterL);
   addAndMakeVisible(&verticalMeterR);
+#endif
 
   // Meters: independent of verticalMeterL/R above, wired straight to the
   // same atomic RMS values.
@@ -43,20 +48,23 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   visageView.setRightMeterSupplier([this]()
                                    { return audioProcessor.getRmsValue(1); });
 
+#if SIDECHAIN_LEGACY_JUCE_UI
   addAndMakeVisible(divisionMenu);
   // divisionMenu.addItem("Eighth", Eighth);
   // divisionMenu.addItem("Quarter", Quarter);
   // divisionMenu.addItem("Half", Half);
   // divisionMenu.addItem("Whole", Whole);
+#endif
 
   DBG(p.GetAPVTS().state.toXmlString());
 
   auto *parameter = p.GetAPVTS().getParameter("divisions");
+
+#if SIDECHAIN_LEGACY_JUCE_UI
   divisionMenu.addItemList(parameter->getAllValueStrings(), 1);
-
   divisionMenu.setSelectedId(2);
-
   divisionChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(p.GetAPVTS(), "divisions", divisionMenu);
+#endif
 
   divisionParamAttachment = std::make_unique<juce::ParameterAttachment>(
       *parameter,
@@ -111,7 +119,9 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   refreshPresetBar();
   p.GetAPVTS().state.addListener(this);
 
+#if SIDECHAIN_LEGACY_JUCE_UI
   addAndMakeVisible(&presetPanel);
+#endif
 }
 
 SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor()
@@ -167,6 +177,7 @@ void SideChainAudioProcessorEditor::paint(juce::Graphics &g)
 
 void SideChainAudioProcessorEditor::resized()
 {
+#if SIDECHAIN_LEGACY_JUCE_UI
   juce::Grid grid;
 
   using Track = juce::Grid::TrackInfo;
@@ -185,6 +196,7 @@ void SideChainAudioProcessorEditor::resized()
   });
 
   grid.performLayout(getLocalBounds());
+#endif
 
   if (visageEmbedded)
   {

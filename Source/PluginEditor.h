@@ -10,10 +10,13 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "../UI/VisageMainView.h"
+
+#if SIDECHAIN_LEGACY_JUCE_UI
 #include "UI/DynamicCurve/DynamicCurveEditor.h"
 #include "UI/Meters/Meters.h"
 #include "UI/PresetManagerUI.h"
-#include "../UI/VisageMainView.h"
+#endif
 
 class CustomLookandFeel : public juce::LookAndFeel_V4
 {
@@ -179,6 +182,7 @@ public:
     }
 };
 
+#if SIDECHAIN_LEGACY_JUCE_UI
 //==============================================================================
 struct AtomicLabel
     : juce::Component,
@@ -200,6 +204,7 @@ struct AtomicLabel
     juce::Label label;
     std::atomic<double> &value;
 };
+#endif
 
 class SideChainAudioProcessorEditor : public juce::AudioProcessorEditor,
                                       private juce::ValueTree::Listener
@@ -223,7 +228,9 @@ private:
     void valueTreeRedirected(juce::ValueTree &tree) override;
 
     SideChainAudioProcessor &audioProcessor;
+#if SIDECHAIN_LEGACY_JUCE_UI
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> divisionChoiceAttachment;
+#endif
 
     ui::VisageMainView visageView;
     bool visageEmbedded = false;
@@ -232,6 +239,7 @@ private:
 
 public:
     CustomLookandFeel otherLookAndFeel;
+#if SIDECHAIN_LEGACY_JUCE_UI
     DynamicCurveEditor DynamicCurveEditor;
 
     AtomicLabel volLabel;
@@ -240,6 +248,7 @@ public:
 
     VerticalMeter verticalMeterL, verticalMeterR;
     PresetPanel presetPanel;
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SideChainAudioProcessorEditor);
 };
