@@ -39,6 +39,8 @@ namespace ui
         window_.addChild(presetBar_);
         window_.addChild(dragView_);
         window_.addChild(divisionButton_);
+        window_.addChild(leftMeter_);
+        window_.addChild(rightMeter_);
         divisionButton_.onToggle() += [this](visage::Button *, bool)
         {
             if (divisionClicked_)
@@ -121,19 +123,39 @@ namespace ui
         presetBar_.setOnPreviousPreset(std::move(callback));
     }
 
+    void VisageMainView::setLeftMeterSupplier(std::function<float()> valueSupplier)
+    {
+        leftMeter_.setValueSupplier(std::move(valueSupplier));
+    }
+
+    void VisageMainView::setRightMeterSupplier(std::function<float()> valueSupplier)
+    {
+        rightMeter_.setValueSupplier(std::move(valueSupplier));
+    }
+
     void VisageMainView::layoutChildren(int width, int height)
     {
         float presetBarHeight = 32.0f;
         float buttonWidth = 140.0f;
         float buttonHeight = 36.0f;
+        float meterWidth = 16.0f;
+        float meterGap = 4.0f;
+        float meterMargin = 8.0f;
+        float meterColumnWidth = meterWidth * 2.0f + meterGap + meterMargin;
+
         float contentHeight = height - presetBarHeight;
         float dragAreaHeight = contentHeight * 0.7f;
+        float mainAreaWidth = width - meterColumnWidth;
 
         presetBar_.setBounds(0.0f, 0.0f, (float)width, presetBarHeight);
-        dragView_.setBounds(0.0f, presetBarHeight, (float)width, dragAreaHeight);
-        divisionButton_.setBounds(width * 0.5f - buttonWidth * 0.5f,
+        dragView_.setBounds(0.0f, presetBarHeight, mainAreaWidth, dragAreaHeight);
+        divisionButton_.setBounds(mainAreaWidth * 0.5f - buttonWidth * 0.5f,
                                   presetBarHeight + dragAreaHeight + (contentHeight - dragAreaHeight) * 0.5f - buttonHeight * 0.5f,
                                   buttonWidth, buttonHeight);
+
+        float meterX = mainAreaWidth;
+        leftMeter_.setBounds(meterX, presetBarHeight, meterWidth, contentHeight);
+        rightMeter_.setBounds(meterX + meterWidth + meterGap, presetBarHeight, meterWidth, contentHeight);
     }
 
 }

@@ -4,6 +4,7 @@
 #include <visage/widgets.h>
 
 #include "DragView.h"
+#include "MeterView.h"
 #include "PresetBar.h"
 
 #include <functional>
@@ -65,6 +66,12 @@ namespace ui
         void setOnNextPreset(std::function<void()> callback);
         void setOnPreviousPreset(std::function<void()> callback);
 
+        // Level meters: the host supplies a poll function per channel (e.g.
+        // reaching into the processor's atomic RMS value), matching
+        // Source/UI/Meters/Meters.h's VerticalMeter constructor.
+        void setLeftMeterSupplier(std::function<float()> valueSupplier);
+        void setRightMeterSupplier(std::function<float()> valueSupplier);
+
     private:
         void layoutChildren(int width, int height);
 
@@ -72,6 +79,8 @@ namespace ui
         visage::UiButton divisionButton_;
         DragView dragView_;
         PresetBar presetBar_;
+        MeterView leftMeter_;
+        MeterView rightMeter_;
         std::function<void()> divisionClicked_;
     };
 

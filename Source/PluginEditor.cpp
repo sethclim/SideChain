@@ -36,6 +36,13 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
   addAndMakeVisible(&verticalMeterL);
   addAndMakeVisible(&verticalMeterR);
 
+  // Meters: independent of verticalMeterL/R above, wired straight to the
+  // same atomic RMS values.
+  visageView.setLeftMeterSupplier([this]()
+                                  { return audioProcessor.getRmsValue(0); });
+  visageView.setRightMeterSupplier([this]()
+                                   { return audioProcessor.getRmsValue(1); });
+
   addAndMakeVisible(divisionMenu);
   // divisionMenu.addItem("Eighth", Eighth);
   // divisionMenu.addItem("Quarter", Quarter);

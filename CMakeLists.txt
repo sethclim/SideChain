@@ -77,6 +77,8 @@ target_sources(SideChain
         UI/DragView.cpp
         UI/PresetBar.h
         UI/PresetBar.cpp
+        UI/MeterView.h
+        UI/MeterView.cpp
         Source/UI/DragArea/DragArea.cpp
         Source/UI/DragArea/DragArea.h
         Source/UI/DynamicCurve/DynamicCurveEditor.cpp
