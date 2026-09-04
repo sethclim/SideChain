@@ -10,10 +10,13 @@
 #include "PluginEditor.h"
 #include "Backend/PresetManager/PresetManager.h"
 #include "UI/PresetManagerUI.h"
+#include "DraggableNodeIdentifiers.h"
 
 //==============================================================================
 SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProcessor &p)
-    : AudioProcessorEditor(&p), audioProcessor(p),
+    : AudioProcessorEditor(&p), audioProcessor(p)
+#if SIDECHAIN_LEGACY_JUCE_UI
+      ,
       verticalMeterL([&]()
                      { return audioProcessor.getRmsValue(0); }),
       verticalMeterR([&]()
@@ -22,40 +25,163 @@ SideChainAudioProcessorEditor::SideChainAudioProcessorEditor(SideChainAudioProce
       volLabel(p.envelopeProcessor.currentVol),
       relLabel(p.envelopeProcessor.relPosition),
       presetPanel(p.getPresetManager(), p.GetAPVTS())
+#endif
 {
   setLookAndFeel(&otherLookAndFeel);
   setResizable(true, true);
   setResizeLimits(500, 300, 1000, 600);
   setSize(500, 300);
 
+#if SIDECHAIN_LEGACY_JUCE_UI
   addAndMakeVisible(&volLabel, -1);
   addAndMakeVisible(&relLabel, -1);
   addAndMakeVisible(&DynamicCurveEditor);
 
   addAndMakeVisible(&verticalMeterL);
   addAndMakeVisible(&verticalMeterR);
+#endif
 
+  // Meters: independent of verticalMeterL/R above, wired straight to the
+  // same atomic RMS values.
+  visageView.setLeftMeterSupplier([this]()
+                                  { return audioProcessor.getRmsValue(0); });
+  visageView.setRightMeterSupplier([this]()
+                                   { return audioProcessor.getRmsValue(1); });
+
+#if SIDECHAIN_LEGACY_JUCE_UI
   addAndMakeVisible(divisionMenu);
   // divisionMenu.addItem("Eighth", Eighth);
   // divisionMenu.addItem("Quarter", Quarter);
   // divisionMenu.addItem("Half", Half);
   // divisionMenu.addItem("Whole", Whole);
+#endif
 
   DBG(p.GetAPVTS().state.toXmlString());
 
   auto *parameter = p.GetAPVTS().getParameter("divisions");
+
+#if SIDECHAIN_LEGACY_JUCE_UI
   divisionMenu.addItemList(parameter->getAllValueStrings(), 1);
-
   divisionMenu.setSelectedId(2);
-
   divisionChoiceAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(p.GetAPVTS(), "divisions", divisionMenu);
+#endif
 
+  divisionParamAttachment = std::make_unique<juce::ParameterAttachment>(
+      *parameter,
+      [this, parameter](float denormalisedValue)
+      { visageView.setDivisionLabel(parameter->getText(parameter->convertTo0to1(denormalisedValue), 0).toStdString()); },
+      nullptr);
+  divisionParamAttachment->sendInitialUpdate();
+
+  std::vector<std::string> divisionOptions;
+  for (auto &option : parameter->getAllValueStrings())
+    divisionOptions.push_back(option.toStdString());
+  visageView.setDivisionOptions(std::move(divisionOptions));
+
+  visageView.setOnDivisionSelected([this](int index)
+                                   { divisionParamAttachment->setValueAsCompleteGesture((float)index); });
+
+  p.getCurveManager().registerOnCalculateDataPointsCallback([this](std::vector<juce::Point<float>> points)
+                                                            {
+    std::vector<std::pair<float, float>> normalized;
+    normalized.reserve((size_t) points.size());
+    for (auto &point : points)
+      normalized.emplace_back(point.x, 1.0f - point.y);
+    visageView.setCurvePoints(std::move(normalized)); });
+
+  visageView.setOnCurveNodeDragged([this](int index, float x, float y)
+                                   {
+    auto base = audioProcessor.GetAPVTS().state.getChildWithName(DraggableNodeIdentifiers::myRootDraggableTreeType);
+    auto child = base.getChild(index);
+    if (!child.isValid())
+      return;
+
+    auto id = child.getProperty(DraggableNodeIdentifiers::id);
+    audioProcessor.getCurveManager().moveNode(id, juce::Point<float>(x, y)); });
+
+  visageView.setOnCurvePointAdded([this](float x, float y)
+                                  { audioProcessor.getCurveManager().insertNewNodeBetween(juce::Point<float>(x, y)); });
+
+  // Preset bar: independent of PresetPanel below, wired straight to
+  // Service::PresetManager the same way the division button is wired to
+  // the "divisions" parameter.
+  //   click on preset bar -> visage popup menu -> presetManager.loadPreset(name)
+  //   presetNameProperty changed (by either UI, or a full state replace) -> refreshPresetBar()
+  visageView.setOnPresetSelected([this](const std::string &name)
+                                 { audioProcessor.getPresetManager().loadPreset(name); });
+
+  visageView.setOnNextPreset([this]()
+                             { audioProcessor.getPresetManager().loadNextPreset(); });
+
+  visageView.setOnPreviousPreset([this]()
+                                 { audioProcessor.getPresetManager().loadPreviousPreset(); });
+
+  refreshPresetBar();
+  p.GetAPVTS().state.addListener(this);
+
+#if SIDECHAIN_LEGACY_JUCE_UI
   addAndMakeVisible(&presetPanel);
+#endif
 }
 
 SideChainAudioProcessorEditor::~SideChainAudioProcessorEditor()
 {
+  audioProcessor.GetAPVTS().state.removeListener(this);
+  visageView.remove();
   setLookAndFeel(nullptr);
+}
+
+void SideChainAudioProcessorEditor::refreshPresetBar()
+{
+  auto &presetManager = audioProcessor.getPresetManager();
+  visageView.setCurrentPresetName(presetManager.getCurrentPreset().toStdString());
+
+  std::vector<std::string> names;
+  for (auto &name : presetManager.getAllPresets())
+    names.push_back(name.toStdString());
+  visageView.setPresetNames(std::move(names));
+}
+
+void SideChainAudioProcessorEditor::valueTreePropertyChanged(juce::ValueTree &, const juce::Identifier &property)
+{
+  if (property.toString() == Service::PresetManager::presetNameProperty)
+    refreshPresetBar();
+}
+
+void SideChainAudioProcessorEditor::valueTreeRedirected(juce::ValueTree &)
+{
+  refreshPresetBar();
+}
+
+void SideChainAudioProcessorEditor::parentHierarchyChanged()
+{
+  if (visageEmbedded)
+    return;
+
+  if (auto *peer = getPeer())
+  {
+    auto scale = peer->getPlatformScaleFactor();
+    visageView.embed(peer->getNativeHandle(), (int)std::round(getWidth() * scale), (int)std::round(getHeight() * scale));
+    visageEmbedded = true;
+
+    // Some hosts haven't finished sizing the window (or reporting its real
+    // DPI scale) at the moment this component first gets a peer, which left
+    // the freshly-embedded view laid out wrong until the user's next manual
+    // resize forced a resync via resized(). Re-read both on the next
+    // message-loop tick and resync once more so it's correct without
+    // requiring the user to touch anything.
+    juce::Component::SafePointer<SideChainAudioProcessorEditor> safeThis(this);
+    juce::MessageManager::callAsync([safeThis]()
+                                    {
+      if (safeThis == nullptr)
+        return;
+
+      if (auto *peerNow = safeThis->getPeer())
+      {
+        auto scaleNow = peerNow->getPlatformScaleFactor();
+        safeThis->visageView.resize((int)std::round(safeThis->getWidth() * scaleNow), (int)std::round(safeThis->getHeight() * scaleNow));
+      } });
+  }
 }
 
 //==============================================================================
@@ -69,6 +195,7 @@ void SideChainAudioProcessorEditor::paint(juce::Graphics &g)
 
 void SideChainAudioProcessorEditor::resized()
 {
+#if SIDECHAIN_LEGACY_JUCE_UI
   juce::Grid grid;
 
   using Track = juce::Grid::TrackInfo;
@@ -87,4 +214,11 @@ void SideChainAudioProcessorEditor::resized()
   });
 
   grid.performLayout(getLocalBounds());
+#endif
+
+  if (visageEmbedded)
+  {
+    auto scale = getPeer() != nullptr ? getPeer()->getPlatformScaleFactor() : 1.0;
+    visageView.resize((int)std::round(getWidth() * scale), (int)std::round(getHeight() * scale));
+  }
 }

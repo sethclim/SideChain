@@ -1,1 +1,1 @@
-cmake -B ./cmake-vs-build -G "Visual Studio 17 2022" .
+cmake -B ./cmake-vs-build -G "Visual Studio 17 2022" -DSIDECHAIN_LEGACY_JUCE_UI=OFF .

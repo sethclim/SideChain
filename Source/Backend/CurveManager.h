@@ -32,11 +32,17 @@ public:
         calculateDataPointsFromTree();
     }
 
+    // Multiple independent listeners register here (the audio processor's
+    // envelope feed and, separately, the editor's UI), so this must not
+    // overwrite an earlier registration - each callback added is kept and
+    // fired going forward.
     void registerOnCalculateDataPointsCallback(EventCallback cb)
     {
-        eventCallback = std::move(cb);
-        if (eventCallback)
-            (eventCallback)(segments);
+        if (!cb)
+            return;
+
+        cb(segments);
+        eventCallbacks.push_back(std::move(cb));
     }
 
     void registerOnMoveNodeCallback(RedrawEvent redrawEvent) { redrawCallback = std::move(redrawEvent); }
@@ -82,6 +88,12 @@ public:
                 break;
             }
         }
+
+        // Adding a child fires valueTreeChildAdded, not the
+        // valueTreePropertyChanged this class listens for, so segments/
+        // eventCallback (visage's point list) never refreshes on its own -
+        // recompute explicitly so new nodes show up immediately.
+        calculateDataPointsFromTree();
 
         if (redrawCallback)
             (redrawCallback)();
@@ -168,8 +180,8 @@ private:
             points.push_back(point);
         }
 
-        if (eventCallback)
-            (eventCallback)(points);
+        for (const auto &callback : eventCallbacks)
+            callback(points);
 
         segments = points;
     }
@@ -227,7 +239,7 @@ private:
 
     std::vector<juce::Point<float>> segments;
     int numberOfNodes = 0;
-    EventCallback eventCallback;
+    std::vector<EventCallback> eventCallbacks;
     RedrawEvent redrawCallback;
     juce::AudioProcessorValueTreeState &apvts;
 
