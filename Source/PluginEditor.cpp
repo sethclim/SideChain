@@ -163,6 +163,24 @@ void SideChainAudioProcessorEditor::parentHierarchyChanged()
     auto scale = peer->getPlatformScaleFactor();
     visageView.embed(peer->getNativeHandle(), (int)std::round(getWidth() * scale), (int)std::round(getHeight() * scale));
     visageEmbedded = true;
+
+    // Some hosts haven't finished sizing the window (or reporting its real
+    // DPI scale) at the moment this component first gets a peer, which left
+    // the freshly-embedded view laid out wrong until the user's next manual
+    // resize forced a resync via resized(). Re-read both on the next
+    // message-loop tick and resync once more so it's correct without
+    // requiring the user to touch anything.
+    juce::Component::SafePointer<SideChainAudioProcessorEditor> safeThis(this);
+    juce::MessageManager::callAsync([safeThis]()
+                                    {
+      if (safeThis == nullptr)
+        return;
+
+      if (auto *peerNow = safeThis->getPeer())
+      {
+        auto scaleNow = peerNow->getPlatformScaleFactor();
+        safeThis->visageView.resize((int)std::round(safeThis->getWidth() * scaleNow), (int)std::round(safeThis->getHeight() * scaleNow));
+      } });
   }
 }
 

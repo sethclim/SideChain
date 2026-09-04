@@ -2,6 +2,8 @@
 
 #include <visage/ui.h>
 
+#include <algorithm>
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -157,7 +159,7 @@ namespace ui
 
     void VisageMainView::layoutChildren(int width, int height)
     {
-        float presetBarHeight = 32.0f;
+        float presetBarHeight = 36.0f;
         float buttonWidth = 140.0f;
         float buttonHeight = 36.0f;
         float meterWidth = 28.0f;
@@ -165,19 +167,24 @@ namespace ui
         float meterMargin = 8.0f;
         float meterColumnWidth = meterWidth * 2.0f + meterGap + meterMargin;
 
+        float buttonRowPadding = 12.0f;
+        float buttonRowHeight = buttonHeight + buttonRowPadding * 2.0f;
+
         float contentHeight = height - presetBarHeight;
-        float dragAreaHeight = contentHeight * 0.7f;
+        // Drag area takes all the room not needed by the button row below it,
+        // rather than a fixed proportion of the content height.
+        float dragAreaHeight = std::max(0.0f, contentHeight - buttonRowHeight);
         float mainAreaWidth = width - meterColumnWidth;
 
         presetBar_.setBounds(0.0f, 0.0f, (float)width, presetBarHeight);
         dragView_.setBounds(0.0f, presetBarHeight, mainAreaWidth, dragAreaHeight);
         divisionButton_.setBounds(mainAreaWidth * 0.5f - buttonWidth * 0.5f,
-                                  presetBarHeight + dragAreaHeight + (contentHeight - dragAreaHeight) * 0.5f - buttonHeight * 0.5f,
+                                  presetBarHeight + dragAreaHeight + buttonRowPadding,
                                   buttonWidth, buttonHeight);
 
         float meterX = mainAreaWidth;
-        leftMeter_.setBounds(meterX, presetBarHeight, meterWidth, contentHeight);
-        rightMeter_.setBounds(meterX + meterWidth + meterGap, presetBarHeight, meterWidth, contentHeight);
+        leftMeter_.setBounds(meterX, presetBarHeight, meterWidth, dragAreaHeight);
+        rightMeter_.setBounds(meterX + meterWidth + meterGap, presetBarHeight, meterWidth, dragAreaHeight);
     }
 
 }

@@ -16,6 +16,14 @@ namespace ui
 
     void DragView::draw(visage::Canvas &canvas)
     {
+        // Recessed panel look so the curve canvas reads as distinct from the
+        // surrounding chrome (preset bar / division button / meters), which
+        // all show the window's lighter background straight through.
+        canvas.setColor(0xff101012);
+        canvas.roundedRectangle(0.0f, 0.0f, width(), height(), 6.0f);
+        canvas.setColor(0xff000000);
+        canvas.roundedRectangleBorder(0.0f, 0.0f, width(), height(), 6.0f, 1.0f);
+
         if (points_.empty())
             return;
 
